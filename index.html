@@ -164,6 +164,493 @@ doc.save("relatorio_master.pdf");
 }
 
 </script>
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>MASTER CONSULTORIA ERP</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.login{
+width:300px;
+margin:120px auto;
+text-align:center;
+}
+
+.layout{
+display:flex;
+height:100vh;
+}
+
+.menu{
+width:230px;
+background:#1f3c88;
+color:white;
+padding:20px;
+}
+
+.menu button{
+width:100%;
+margin:6px 0;
+padding:10px;
+border:none;
+background:#2c4fa3;
+color:white;
+cursor:pointer;
+}
+
+.menu button:hover{
+background:#163172;
+}
+
+.conteudo{
+flex:1;
+padding:25px;
+overflow:auto;
+}
+
+.modulo{
+display:none;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="loginTela" class="login">
+
+<h2>MASTER CONSULTORIA ERP</h2>
+
+<input id="usuario" placeholder="Usuário"><br><br>
+
+<input type="password" id="senha" placeholder="Senha"><br><br>
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+<div id="sistema" style="display:none">
+
+<div class="layout">
+
+<div class="menu">
+
+<h2>MASTER ERP</h2>
+
+<button onclick="abrirModulo('dashboard')">Dashboard</button>
+
+<button onclick="abrirModulo('empresas')">Empresas</button>
+
+<button onclick="abrirModulo('clientes')">Clientes</button>
+
+<button onclick="abrirModulo('funcionarios')">Funcionários</button>
+
+<button onclick="abrirModulo('folha')">Folha</button>
+
+<button onclick="abrirModulo('financeiro')">Financeiro</button>
+
+<button onclick="abrirModulo('agenda')">Agenda Fiscal</button>
+
+<button onclick="abrirModulo('alertas')">Alertas</button>
+
+<button onclick="abrirModulo('obrigacoes')">Obrigações</button>
+
+</div>
+
+<div class="conteudo">
+
+<div id="dashboard" class="modulo">
+
+<h2>Dashboard</h2>
+
+<canvas id="grafico"></canvas>
+
+</div>
+
+<div id="empresas" class="modulo">
+
+<h2>Empresas</h2>
+
+<input id="empresaNome" placeholder="Empresa">
+
+<input id="empresaCnpj" placeholder="CNPJ">
+
+<button onclick="addEmpresa()">Cadastrar</button>
+
+<table id="tabelaEmpresas">
+
+<tr><th>Empresa</th><th>CNPJ</th></tr>
+
+</table>
+
+</div>
+
+<div id="clientes" class="modulo">
+
+<h2>Clientes</h2>
+
+<input id="clienteNome" placeholder="Nome">
+
+<button onclick="addCliente()">Cadastrar</button>
+
+<table id="tabelaClientes">
+
+<tr><th>Cliente</th></tr>
+
+</table>
+
+</div>
+
+<div id="funcionarios" class="modulo">
+
+<h2>Funcionários</h2>
+
+<input id="funcNome" placeholder="Nome">
+
+<input id="funcCargo" placeholder="Cargo">
+
+<button onclick="addFuncionario()">Cadastrar</button>
+
+<table id="tabelaFuncionarios">
+
+<tr><th>Nome</th><th>Cargo</th></tr>
+
+</table>
+
+</div>
+
+<div id="folha" class="modulo">
+
+<h2>Folha de Pagamento</h2>
+
+<input id="salario" placeholder="Salário">
+
+<button onclick="calcularFolha()">Calcular</button>
+
+<p id="resultadoFolha"></p>
+
+</div>
+
+<div id="financeiro" class="modulo">
+
+<h2>Financeiro</h2>
+
+<select id="tipoMov">
+
+<option>Receita</option>
+
+<option>Despesa</option>
+
+</select>
+
+<input id="valorMov" placeholder="Valor">
+
+<button onclick="registrarFinanceiro()">Registrar</button>
+
+<table id="tabelaFinanceiro">
+
+<tr><th>Tipo</th><th>Valor</th></tr>
+
+</table>
+
+<button onclick="exportarExcel()">Exportar Excel</button>
+
+<button onclick="gerarPDF()">Gerar PDF</button>
+
+</div>
+
+<div id="agenda" class="modulo">
+
+<h2>Agenda Fiscal</h2>
+
+<input id="empresaAgenda" placeholder="Empresa">
+
+<input type="date" id="dataAgenda">
+
+<select id="tipoAgenda">
+
+<option>DAS</option>
+<option>DCTF</option>
+<option>SPED</option>
+
+</select>
+
+<button onclick="registrarAgenda()">Registrar</button>
+
+<table id="tabelaAgenda">
+
+<tr><th>Empresa</th><th>Obrigação</th><th>Data</th></tr>
+
+</table>
+
+</div>
+
+<div id="alertas" class="modulo">
+
+<h2>Alertas de Vencimentos</h2>
+
+<ul id="listaAlertas"></ul>
+
+</div>
+
+<div id="obrigacoes" class="modulo">
+
+<h2>Obrigações Contábeis</h2>
+
+<input id="empresaObrig" placeholder="Empresa">
+
+<select id="tipoObrig">
+
+<option>ECD</option>
+<option>ECF</option>
+<option>SPED</option>
+
+</select>
+
+<input type="date" id="dataObrig">
+
+<button onclick="registrarObrig()">Registrar</button>
+
+<table id="tabelaObrig">
+
+<tr><th>Empresa</th><th>Obrigação</th><th>Data</th></tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function login(){
+
+if(document.getElementById("usuario").value=="admin" && document.getElementById("senha").value=="1234"){
+
+document.getElementById("loginTela").style.display="none"
+
+document.getElementById("sistema").style.display="block"
+
+}
+
+}
+
+function abrirModulo(id){
+
+document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
+
+document.getElementById(id).style.display="block"
+
+}
+
+function addEmpresa(){
+
+let nome=document.getElementById("empresaNome").value
+let cnpj=document.getElementById("empresaCnpj").value
+
+let tabela=document.getElementById("tabelaEmpresas")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=nome
+linha.insertCell(1).innerHTML=cnpj
+
+}
+
+function addCliente(){
+
+let nome=document.getElementById("clienteNome").value
+
+let tabela=document.getElementById("tabelaClientes")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=nome
+
+}
+
+function addFuncionario(){
+
+let nome=document.getElementById("funcNome").value
+let cargo=document.getElementById("funcCargo").value
+
+let tabela=document.getElementById("tabelaFuncionarios")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=nome
+linha.insertCell(1).innerHTML=cargo
+
+}
+
+function calcularFolha(){
+
+let salario=parseFloat(document.getElementById("salario").value)
+
+let inss=salario*0.08
+
+let liquido=salario-inss
+
+document.getElementById("resultadoFolha").innerText="Salário líquido: "+liquido
+
+}
+
+function registrarFinanceiro(){
+
+let tipo=document.getElementById("tipoMov").value
+let valor=document.getElementById("valorMov").value
+
+let tabela=document.getElementById("tabelaFinanceiro")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=tipo
+linha.insertCell(1).innerHTML=valor
+
+}
+
+function registrarAgenda(){
+
+let emp=document.getElementById("empresaAgenda").value
+let data=document.getElementById("dataAgenda").value
+let tipo=document.getElementById("tipoAgenda").value
+
+let tabela=document.getElementById("tabelaAgenda")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=emp
+linha.insertCell(1).innerHTML=tipo
+linha.insertCell(2).innerHTML=data
+
+verificarAlertas()
+
+}
+
+function verificarAlertas(){
+
+let lista=document.getElementById("listaAlertas")
+
+lista.innerHTML=""
+
+let hoje=new Date()
+
+document.querySelectorAll("#tabelaAgenda tr").forEach((r,i)=>{
+
+if(i>0){
+
+let data=new Date(r.cells[2].innerText)
+
+let diff=(data-hoje)/(1000*60*60*24)
+
+let item=document.createElement("li")
+
+if(diff<=5 && diff>=0){
+
+item.innerText="⚠ Vencimento próximo: "+r.cells[1].innerText
+
+lista.appendChild(item)
+
+}
+
+if(diff<0){
+
+item.innerText="❗ Atrasado: "+r.cells[1].innerText
+
+lista.appendChild(item)
+
+}
+
+}
+
+})
+
+}
+
+function registrarObrig(){
+
+let emp=document.getElementById("empresaObrig").value
+let tipo=document.getElementById("tipoObrig").value
+let data=document.getElementById("dataObrig").value
+
+let tabela=document.getElementById("tabelaObrig")
+
+let linha=tabela.insertRow()
+
+linha.insertCell(0).innerHTML=emp
+linha.insertCell(1).innerHTML=tipo
+linha.insertCell(2).innerHTML=data
+
+}
+
+function exportarExcel(){
+
+alert("Exportação Excel simulada")
+
+}
+
+function gerarPDF(){
+
+const { jsPDF } = window.jspdf
+
+let doc=new jsPDF()
+
+doc.text("Relatório Financeiro",20,20)
+
+doc.save("relatorio.pdf")
+
+}
+
+new Chart(document.getElementById("grafico"),{
+
+type:'bar',
+
+data:{
+labels:["Receita","Despesa","Lucro"],
+datasets:[{data:[50000,30000,20000]}]
+}
+
+})
+
+</script>
 
 </body>
+
 </html>
+</body>
+</html>
+

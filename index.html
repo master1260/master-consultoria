@@ -125,7 +125,6 @@ padding:6px;
 <h2>Empresas</h2>
 
 <input id="empresaNome" placeholder="Empresa">
-
 <input id="empresaCnpj" placeholder="CNPJ">
 
 <button onclick="addEmpresa()">Cadastrar</button>
@@ -147,7 +146,7 @@ padding:6px;
 
 <input id="clienteNome" placeholder="Nome">
 
-<button onclick="cadastrarCliente()">cadastrar</button>
+<button onclick="cadastrarCliente()">Cadastrar</button>
 
 <table id="tabelaClientes">
 
@@ -164,7 +163,6 @@ padding:6px;
 <h2>Funcionários</h2>
 
 <input id="funcNome" placeholder="Nome">
-
 <input id="funcCargo" placeholder="Cargo">
 
 <button onclick="addFuncionario()">Cadastrar</button>
@@ -240,15 +238,19 @@ padding:6px;
 
 function login(){
 
-if(
-document.getElementById("usuario").value=="admin" &&
-document.getElementById("senha").value=="1234"
-){
+let usuario = document.getElementById("usuario").value;
+let senha = document.getElementById("senha").value;
 
-document.getElementById("loginTela").style.display="none"
-document.getElementById("sistema").style.display="block"
+if(usuario == "admin" && senha == "1234"){
+
+document.getElementById("loginTela").style.display = "none";
+document.getElementById("sistema").style.display = "block";
 
 abrirModulo("dashboard")
+
+}else{
+
+alert("Usuário ou senha inválidos")
 
 }
 
@@ -276,27 +278,16 @@ linha.insertCell(1).innerHTML=cnpj
 
 }
 
-async function addCliente(){
+function cadastrarCliente(){
 
-let nome = document.getElementById("clienteNome").value
+let nome=document.getElementById("clienteNome").value
 
-const { data, error } = await supabase
-  .from("clientes")
-  .insert([
-    {
-      nome: nome
-    }
-  ])
+let tabela=document.getElementById("tabelaClientes")
 
+let linha=tabela.insertRow()
 
-if(error){
-alert("Erro ao salvar cliente")
-console.log(error)
-}else{
-alert("Cliente salvo com sucesso")
-}
+linha.insertCell(0).innerHTML=nome
 
-}
 }
 
 function addFuncionario(){
@@ -357,63 +348,9 @@ data:[50000,30000,20000]
 })
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<script>
-const SUPABASE_URL = "https://dikwusajnuioqmdwszey.supabase.co";
-const SUPABASE_KEY = "sb_publishable_RjuaEbpsSZZMU8oeusDdgFw_abzhe...";
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
- async function cadastrarCliente(){
-
-const nome = document.getElementById("clienteNome").value;
-
-
-const { data, error } = await supabaseClient
-.from('clientes')
-.insert([
-{
-nome: nome
-
-}
-])
-
-if(error){
-alert("Erro ao salvar cliente")
-console.log(error)
-}else{
-alert("Cliente salvo com sucesso")
-}
-
-}
-<script>
-  
-function login(){
-alert("botão funcionando")
-let usuario = document.getElementById("usuario").value;
-let senha = document.getElementById("senha").value;
-
-if(usuario == "admin" && senha == "1234"){
-
-document.getElementById("loginTela").style.display = "none";
-document.getElementById("sistema").style.display = "block";
-
-}else{
-
-alert("Usuário ou senha inválidos");
-
-}
-
-}
-
-</script>
 
 </body>
 </html>
-
-
-
-
 
 
 

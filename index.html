@@ -356,16 +356,14 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
  async function cadastrarCliente(){
 
 const nome = document.getElementById("clienteNome").value;
-const cnpj = "";
-const email = "";
+
 
 const { data, error } = await supabase
 .from('clientes')
 .insert([
 {
-nome: nome,
-cnpj: cnpj,
-email: email
+nome: nome
+
 }
 ])
 
@@ -381,6 +379,7 @@ alert("Cliente salvo com sucesso")
 </body>
 
 </html>
+
 
 
 

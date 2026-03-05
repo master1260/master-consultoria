@@ -147,7 +147,7 @@ padding:6px;
 
 <input id="clienteNome" placeholder="Nome">
 
-<button onclick="cadastrarCliente()">cadastrar</button>
+<button onclick="addCliente()">cadastrar</button>
 
 <table id="tabelaClientes">
 
@@ -276,16 +276,27 @@ linha.insertCell(1).innerHTML=cnpj
 
 }
 
-function addCliente(){
+async function addCliente(){
 
-let nome=document.getElementById("clienteNome").value
+let nome = document.getElementById("clienteNome").value
 
-let tabela=document.getElementById("tabelaClientes")
+const { data, error } = await supabase
+  .from("clientes")
+  .insert([
+    {
+      nome: nome
+    }
+  ])
 
-let linha=tabela.insertRow()
 
-linha.insertCell(0).innerHTML=nome
+if(error){
+alert("Erro ao salvar cliente")
+console.log(error)
+}else{
+alert("Cliente salvo com sucesso")
+}
 
+}
 }
 
 function addFuncionario(){
@@ -379,6 +390,7 @@ alert("Cliente salvo com sucesso")
 </body>
 
 </html>
+
 
 
 

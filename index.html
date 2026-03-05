@@ -1,181 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>MASTER CONSULTORIA EMPRESARIAL E SAÚDE</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-body { font-family: Arial; background:#f4f6f9; padding:20px; }
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-.container { background:white; padding:20px; border-radius:10px; max-width:1100px; margin:auto; box-shadow:0 0 15px rgba(0,0,0,0.2);}
-.logo { font-size:28px; font-weight:bold; color:#1f3c88; text-align:center; }
-.sub { text-align:center; margin-bottom:20px; color:#555; }
-input, button { padding:8px; margin:5px; }
-button { background:#1f3c88; color:white; border:none; border-radius:5px; cursor:pointer; }
-button:hover { background:#163172; }
-table { border-collapse:collapse; width:100%; margin-top:20px; }
-th, td { border:1px solid #ccc; padding:8px; text-align:center; }
-th { background:#eee; }
-.section { margin-top:30px; }
-.total { font-weight:bold; font-size:18px; margin-top:10px; }
-</style>
-</head>
-<body>
-
-<div class="container">
-
-<div class="logo">MASTER CONSULTORIA</div>
-<div class="sub">Empresarial & Saúde</div>
-
-<h3>Cadastro Empresa</h3>
-<input type="text" id="empresa" placeholder="Nome Empresa">
-<input type="text" id="cnpj" placeholder="CNPJ">
-
-<div class="section">
-<h3>Folha de Pagamento</h3>
-
-<input type="text" id="nome" placeholder="Nome Funcionário">
-<input type="number" id="salario" placeholder="Salário">
-<input type="number" id="horas" placeholder="Horas Extras">
-<button onclick="addFolha()">Adicionar</button>
-
-<table>
-<thead>
-<tr>
-<th>Nome</th><th>Salário</th><th>Líquido</th><th>Ação</th>
-</tr>
-</thead>
-<tbody id="tabelaFolha"></tbody>
-</table>
-
-<div class="total" id="totalFolha"></div>
-
-<button onclick="exportarExcel()">Exportar Excel</button>
-<button onclick="gerarPDF()">Gerar PDF</button>
-
-</div>
-
-<div class="section">
-<h3>Financeiro</h3>
-
-<input type="text" id="desc" placeholder="Descrição">
-<input type="number" id="valor" placeholder="Valor">
-<select id="tipo">
-<option value="Entrada">Entrada</option>
-<option value="Saída">Saída</option>
-</select>
-
-<button onclick="addFinanceiro()">Adicionar</button>
-
-<table>
-<thead>
-<tr>
-<th>Descrição</th><th>Valor</th><th>Tipo</th>
-</tr>
-</thead>
-<tbody id="tabelaFinanceiro"></tbody>
-</table>
-
-<div class="total" id="saldo"></div>
-
-</div>
-
-</div>
-
-<script>
-
-function addFolha(){
-let nome=document.getElementById("nome").value;
-let salario=parseFloat(document.getElementById("salario").value);
-let horas=parseFloat(document.getElementById("horas").value)||0;
-
-let inss=salario*0.08;
-let irrf=salario*0.075;
-let liquido=salario-inss-irrf+(horas*25);
-
-let linha=`<tr>
-<td>${nome}</td>
-<td>${salario.toFixed(2)}</td>
-<td>${liquido.toFixed(2)}</td>
-<td><button onclick="this.parentElement.parentElement.remove();atualizarTotal();">Excluir</button></td>
-</tr>`;
-
-document.getElementById("tabelaFolha").innerHTML+=linha;
-
-atualizarTotal();
-}
-
-function atualizarTotal(){
-let total=0;
-document.querySelectorAll("#tabelaFolha tr").forEach(l=>{
-total+=parseFloat(l.children[2].innerText);
-});
-document.getElementById("totalFolha").innerText="Total Folha: R$ "+total.toFixed(2);
-}
-
-function addFinanceiro(){
-let desc=document.getElementById("desc").value;
-let valor=parseFloat(document.getElementById("valor").value);
-let tipo=document.getElementById("tipo").value;
-
-let linha=`<tr>
-<td>${desc}</td>
-<td>${valor.toFixed(2)}</td>
-<td>${tipo}</td>
-</tr>`;
-
-document.getElementById("tabelaFinanceiro").innerHTML+=linha;
-
-atualizarSaldo();
-}
-
-function atualizarSaldo(){
-let saldo=0;
-document.querySelectorAll("#tabelaFinanceiro tr").forEach(l=>{
-let valor=parseFloat(l.children[1].innerText);
-let tipo=l.children[2].innerText;
-if(tipo=="Entrada") saldo+=valor;
-else saldo-=valor;
-});
-document.getElementById("saldo").innerText="Saldo Financeiro: R$ "+saldo.toFixed(2);
-}
-
-function exportarExcel(){
-let tabela=document.getElementById("tabelaFolha").outerHTML;
-let url='data:application/vnd.ms-excel,'+encodeURIComponent(tabela);
-let link=document.createElement("a");
-link.href=url;
-link.download="folha_master.xls";
-link.click();
-}
-
-async function gerarPDF(){
-const { jsPDF } = window.jspdf;
-let doc=new jsPDF();
-doc.text("MASTER CONSULTORIA EMPRESARIAL E SAÚDE",10,10);
-doc.text("Relatório Folha",10,20);
-
-let y=30;
-document.querySelectorAll("#tabelaFolha tr").forEach(l=>{
-doc.text(l.innerText,10,y);
-y+=10;
-});
-
-doc.save("relatorio_master.pdf");
-}
-
-</script>
-<!DOCTYPE html>
-<html>
 
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>MASTER CONSULTORIA ERP</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
@@ -193,7 +26,7 @@ text-align:center;
 
 .layout{
 display:flex;
-height:100vh;
+min-height:100vh;
 }
 
 .menu{
@@ -269,22 +102,11 @@ padding:6px;
 <h2>MASTER ERP</h2>
 
 <button onclick="abrirModulo('dashboard')">Dashboard</button>
-
 <button onclick="abrirModulo('empresas')">Empresas</button>
-
 <button onclick="abrirModulo('clientes')">Clientes</button>
-
 <button onclick="abrirModulo('funcionarios')">Funcionários</button>
-
-<button onclick="abrirModulo('folha')">Folha</button>
-
 <button onclick="abrirModulo('financeiro')">Financeiro</button>
-
 <button onclick="abrirModulo('agenda')">Agenda Fiscal</button>
-
-<button onclick="abrirModulo('alertas')">Alertas</button>
-
-<button onclick="abrirModulo('obrigacoes')">Obrigações</button>
 
 </div>
 
@@ -310,7 +132,10 @@ padding:6px;
 
 <table id="tabelaEmpresas">
 
-<tr><th>Empresa</th><th>CNPJ</th></tr>
+<tr>
+<th>Empresa</th>
+<th>CNPJ</th>
+</tr>
 
 </table>
 
@@ -326,7 +151,9 @@ padding:6px;
 
 <table id="tabelaClientes">
 
-<tr><th>Cliente</th></tr>
+<tr>
+<th>Cliente</th>
+</tr>
 
 </table>
 
@@ -344,21 +171,12 @@ padding:6px;
 
 <table id="tabelaFuncionarios">
 
-<tr><th>Nome</th><th>Cargo</th></tr>
+<tr>
+<th>Nome</th>
+<th>Cargo</th>
+</tr>
 
 </table>
-
-</div>
-
-<div id="folha" class="modulo">
-
-<h2>Folha de Pagamento</h2>
-
-<input id="salario" placeholder="Salário">
-
-<button onclick="calcularFolha()">Calcular</button>
-
-<p id="resultadoFolha"></p>
 
 </div>
 
@@ -367,11 +185,8 @@ padding:6px;
 <h2>Financeiro</h2>
 
 <select id="tipoMov">
-
 <option>Receita</option>
-
 <option>Despesa</option>
-
 </select>
 
 <input id="valorMov" placeholder="Valor">
@@ -380,13 +195,12 @@ padding:6px;
 
 <table id="tabelaFinanceiro">
 
-<tr><th>Tipo</th><th>Valor</th></tr>
+<tr>
+<th>Tipo</th>
+<th>Valor</th>
+</tr>
 
 </table>
-
-<button onclick="exportarExcel()">Exportar Excel</button>
-
-<button onclick="gerarPDF()">Gerar PDF</button>
 
 </div>
 
@@ -399,72 +213,42 @@ padding:6px;
 <input type="date" id="dataAgenda">
 
 <select id="tipoAgenda">
-
 <option>DAS</option>
 <option>DCTF</option>
 <option>SPED</option>
-
 </select>
 
 <button onclick="registrarAgenda()">Registrar</button>
 
 <table id="tabelaAgenda">
 
-<tr><th>Empresa</th><th>Obrigação</th><th>Data</th></tr>
-
-</table>
-
-</div>
-
-<div id="alertas" class="modulo">
-
-<h2>Alertas de Vencimentos</h2>
-
-<ul id="listaAlertas"></ul>
-
-</div>
-
-<div id="obrigacoes" class="modulo">
-
-<h2>Obrigações Contábeis</h2>
-
-<input id="empresaObrig" placeholder="Empresa">
-
-<select id="tipoObrig">
-
-<option>ECD</option>
-<option>ECF</option>
-<option>SPED</option>
-
-</select>
-
-<input type="date" id="dataObrig">
-
-<button onclick="registrarObrig()">Registrar</button>
-
-<table id="tabelaObrig">
-
-<tr><th>Empresa</th><th>Obrigação</th><th>Data</th></tr>
+<tr>
+<th>Empresa</th>
+<th>Obrigação</th>
+<th>Data</th>
+</tr>
 
 </table>
 
 </div>
 
 </div>
-
 </div>
-
 </div>
 
 <script>
 
 function login(){
 
-if(document.getElementById("usuario").value=="admin" && document.getElementById("senha").value=="1234"){
+if(
+document.getElementById("usuario").value=="admin" &&
+document.getElementById("senha").value=="1234"
+){
 
 document.getElementById("loginTela").style.display="none"
-
 document.getElementById("sistema").style.display="block"
+
+abrirModulo("dashboard")
 
 }
 
@@ -518,18 +302,6 @@ linha.insertCell(1).innerHTML=cargo
 
 }
 
-function calcularFolha(){
-
-let salario=parseFloat(document.getElementById("salario").value)
-
-let inss=salario*0.08
-
-let liquido=salario-inss
-
-document.getElementById("resultadoFolha").innerText="Salário líquido: "+liquido
-
-}
-
 function registrarFinanceiro(){
 
 let tipo=document.getElementById("tipoMov").value
@@ -558,82 +330,6 @@ linha.insertCell(0).innerHTML=emp
 linha.insertCell(1).innerHTML=tipo
 linha.insertCell(2).innerHTML=data
 
-verificarAlertas()
-
-}
-
-function verificarAlertas(){
-
-let lista=document.getElementById("listaAlertas")
-
-lista.innerHTML=""
-
-let hoje=new Date()
-
-document.querySelectorAll("#tabelaAgenda tr").forEach((r,i)=>{
-
-if(i>0){
-
-let data=new Date(r.cells[2].innerText)
-
-let diff=(data-hoje)/(1000*60*60*24)
-
-let item=document.createElement("li")
-
-if(diff<=5 && diff>=0){
-
-item.innerText="⚠ Vencimento próximo: "+r.cells[1].innerText
-
-lista.appendChild(item)
-
-}
-
-if(diff<0){
-
-item.innerText="❗ Atrasado: "+r.cells[1].innerText
-
-lista.appendChild(item)
-
-}
-
-}
-
-})
-
-}
-
-function registrarObrig(){
-
-let emp=document.getElementById("empresaObrig").value
-let tipo=document.getElementById("tipoObrig").value
-let data=document.getElementById("dataObrig").value
-
-let tabela=document.getElementById("tabelaObrig")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=emp
-linha.insertCell(1).innerHTML=tipo
-linha.insertCell(2).innerHTML=data
-
-}
-
-function exportarExcel(){
-
-alert("Exportação Excel simulada")
-
-}
-
-function gerarPDF(){
-
-const { jsPDF } = window.jspdf
-
-let doc=new jsPDF()
-
-doc.text("Relatório Financeiro",20,20)
-
-doc.save("relatorio.pdf")
-
 }
 
 new Chart(document.getElementById("grafico"),{
@@ -642,7 +338,9 @@ type:'bar',
 
 data:{
 labels:["Receita","Despesa","Lucro"],
-datasets:[{data:[50000,30000,20000]}]
+datasets:[{
+data:[50000,30000,20000]
+}]
 }
 
 })
@@ -652,7 +350,7 @@ datasets:[{data:[50000,30000,20000]}]
 </body>
 
 </html>
-</body>
-</html>
+
+
 
 

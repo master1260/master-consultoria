@@ -294,6 +294,23 @@ if(error){
 alert("Erro ao salvar cliente");
 console.log(error);
 }else{
+
+alert("Cliente salvo com sucesso");
+
+let tabela = document.getElementById("tabelaClientes");
+
+let linha = tabela.insertRow();
+
+linha.insertCell(0).innerHTML = nome;
+
+}
+
+}
+
+if(error){
+alert("Erro ao salvar cliente");
+console.log(error);
+}else{
 alert("Cliente salvo com sucesso");
 }
 
@@ -360,6 +377,7 @@ data:[50000,30000,20000]
 
 </body>
 </html>
+
 
 
 

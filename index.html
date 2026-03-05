@@ -353,11 +353,12 @@ const SUPABASE_URL = "https://dikwusajnuioqmdwszey.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RjuaEbpsSZZMU8oeusDdgFw_abzhe...";
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  async function cadastrarCliente(){
-const nome =
-  document.getElementById("clienteNome").value;
-    const cnpj = "";
-    const email = "";
+ async function cadastrarCliente(){
+
+const nome = document.getElementById("clienteNome").value;
+const cnpj = "";
+const email = "";
+
 const { data, error } = await supabase
 .from('clientes')
 .insert([
@@ -380,6 +381,7 @@ alert("Cliente salvo com sucesso")
 </body>
 
 </html>
+
 
 
 

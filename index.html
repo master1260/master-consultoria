@@ -346,10 +346,38 @@ data:[50000,30000,20000]
 })
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+<script>
+const SUPABASE_URL = "https://dikwusajnuioqmdwszey.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RjuaEbpsSZZMU8oeusDdgFw_abzhe...";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  async function salvarCliente(nome, cnpj, email){
+
+const { data, error } = await supabase
+.from('clientes')
+.insert([
+{
+nome: nome,
+cnpj: cnpj,
+email: email
+}
+])
+
+if(error){
+alert("Erro ao salvar cliente")
+console.log(error)
+}else{
+alert("Cliente salvo com sucesso")
+}
+
+}
+</script>
 </body>
 
 </html>
+
 
 
 

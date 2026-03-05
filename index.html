@@ -278,15 +278,24 @@ linha.insertCell(1).innerHTML=cnpj
 
 }
 
-function cadastrarCliente(){
+async function cadastrarCliente(){
 
-let nome=document.getElementById("clienteNome").value
+let nome = document.getElementById("clienteNome").value;
 
-let tabela=document.getElementById("tabelaClientes")
+const { data, error } = await supabaseClient
+.from("clientes")
+.insert([
+{
+nome: nome
+}
+])
 
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=nome
+if(error){
+alert("Erro ao salvar cliente");
+console.log(error);
+}else{
+alert("Cliente salvo com sucesso");
+}
 
 }
 
@@ -351,6 +360,7 @@ data:[50000,30000,20000]
 
 </body>
 </html>
+
 
 
 

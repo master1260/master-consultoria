@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>MASTER ERP</title>
+<title>MASTER ERP CONTÁBIL</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,17 +11,20 @@
 <style>
 
 body{
+margin:0;
 font-family:Arial;
 background:#f4f6f9;
-margin:0;
+}
+
+.layout{
+display:flex;
 }
 
 .menu{
-width:220px;
+width:230px;
 background:#1f3c88;
 color:white;
-height:100vh;
-float:left;
+min-height:100vh;
 padding:20px;
 }
 
@@ -35,9 +38,37 @@ color:white;
 cursor:pointer;
 }
 
+.menu button:hover{
+background:#163172;
+}
+
 .conteudo{
-margin-left:240px;
+flex:1;
+padding:25px;
+}
+
+.modulo{
+display:none;
+background:white;
 padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+}
+
+input,select{
+padding:6px;
+margin:4px;
 }
 
 </style>
@@ -46,6 +77,8 @@ padding:20px;
 
 <body>
 
+<div class="layout">
+
 <div class="menu">
 
 <h2>MASTER ERP</h2>
@@ -53,41 +86,94 @@ padding:20px;
 <button onclick="abrir('dashboard')">Dashboard</button>
 <button onclick="abrir('clientes')">Clientes</button>
 <button onclick="abrir('empresas')">Empresas</button>
+<button onclick="abrir('financeiro')">Fluxo de Caixa</button>
+<button onclick="abrir('dre')">DRE</button>
+<button onclick="abrir('balancete')">Balancete</button>
+<button onclick="abrir('balanco')">Balanço</button>
 
 </div>
 
 <div class="conteudo">
 
-<div id="dashboard">
+<div id="dashboard" class="modulo">
 
-<h2>Dashboard</h2>
+<h2>Dashboard Contábil</h2>
 
 <canvas id="grafico"></canvas>
 
 </div>
 
-<div id="clientes" style="display:none">
+<div id="clientes" class="modulo">
 
 <h2>Clientes</h2>
 
-<input id="nomeCliente" placeholder="Nome">
+<input id="clienteNome" placeholder="Nome">
 
-<button onclick="salvarCliente()">Salvar</button>
+<button onclick="addCliente()">Salvar</button>
 
-<ul id="listaClientes"></ul>
+<table id="tabelaClientes">
+<tr><th>Cliente</th></tr>
+</table>
 
 </div>
 
-<div id="empresas" style="display:none">
+<div id="empresas" class="modulo">
 
 <h2>Empresas</h2>
 
-<input id="nomeEmpresa" placeholder="Empresa">
-<input id="cnpjEmpresa" placeholder="CNPJ">
+<input id="empresaNome" placeholder="Empresa">
+<input id="empresaCnpj" placeholder="CNPJ">
 
-<button onclick="salvarEmpresa()">Salvar</button>
+<button onclick="addEmpresa()">Salvar</button>
 
-<ul id="listaEmpresas"></ul>
+<table id="tabelaEmpresas">
+<tr><th>Empresa</th><th>CNPJ</th></tr>
+</table>
+
+</div>
+
+<div id="financeiro" class="modulo">
+
+<h2>Fluxo de Caixa</h2>
+
+<select id="tipoMov">
+<option>Receita</option>
+<option>Despesa</option>
+</select>
+
+<input id="valorMov" placeholder="Valor">
+
+<button onclick="addFinanceiro()">Registrar</button>
+
+<table id="tabelaFinanceiro">
+<tr><th>Tipo</th><th>Valor</th></tr>
+</table>
+
+</div>
+
+<div id="dre" class="modulo">
+
+<h2>DRE Automática</h2>
+
+<p id="resultadoDRE"></p>
+
+</div>
+
+<div id="balancete" class="modulo">
+
+<h2>Balancete</h2>
+
+<p id="resultadoBalancete"></p>
+
+</div>
+
+<div id="balanco" class="modulo">
+
+<h2>Balanço Patrimonial</h2>
+
+<p id="resultadoBalanco"></p>
+
+</div>
 
 </div>
 
@@ -103,17 +189,15 @@ const supabase=supabase.createClient(supabaseUrl,supabaseKey)
 
 function abrir(id){
 
-document.getElementById("dashboard").style.display="none"
-document.getElementById("clientes").style.display="none"
-document.getElementById("empresas").style.display="none"
+document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
 
 document.getElementById(id).style.display="block"
 
 }
 
-async function salvarCliente(){
+async function addCliente(){
 
-let nome=document.getElementById("nomeCliente").value
+let nome=document.getElementById("clienteNome").value
 
 await supabase.from("clientes").insert([{nome:nome}])
 
@@ -125,33 +209,26 @@ async function carregarClientes(){
 
 let {data}=await supabase.from("clientes").select("*")
 
-let lista=document.getElementById("listaClientes")
+let tabela=document.getElementById("tabelaClientes")
 
-lista.innerHTML=""
+tabela.innerHTML="<tr><th>Cliente</th></tr>"
 
 data.forEach(c=>{
 
-let li=document.createElement("li")
+let l=tabela.insertRow()
 
-li.innerText=c.nome
-
-lista.appendChild(li)
+l.insertCell(0).innerHTML=c.nome
 
 })
 
 }
 
-async function salvarEmpresa(){
+async function addEmpresa(){
 
-let nome=document.getElementById("nomeEmpresa").value
-let cnpj=document.getElementById("cnpjEmpresa").value
+let nome=document.getElementById("empresaNome").value
+let cnpj=document.getElementById("empresaCnpj").value
 
-await supabase.from("empresas").insert([{
-
-nome:nome,
-cnpj:cnpj
-
-}])
+await supabase.from("empresas").insert([{nome:nome,cnpj:cnpj}])
 
 carregarEmpresas()
 
@@ -161,24 +238,70 @@ async function carregarEmpresas(){
 
 let {data}=await supabase.from("empresas").select("*")
 
-let lista=document.getElementById("listaEmpresas")
+let tabela=document.getElementById("tabelaEmpresas")
 
-lista.innerHTML=""
+tabela.innerHTML="<tr><th>Empresa</th><th>CNPJ</th></tr>"
 
 data.forEach(e=>{
 
-let li=document.createElement("li")
+let l=tabela.insertRow()
 
-li.innerText=e.nome+" - "+e.cnpj
-
-lista.appendChild(li)
+l.insertCell(0).innerHTML=e.nome
+l.insertCell(1).innerHTML=e.cnpj
 
 })
 
 }
 
+async function addFinanceiro(){
+
+let tipo=document.getElementById("tipoMov").value
+let valor=parseFloat(document.getElementById("valorMov").value)
+
+await supabase.from("financeiro").insert([{tipo:tipo,valor:valor}])
+
+carregarFinanceiro()
+
+}
+
+async function carregarFinanceiro(){
+
+let {data}=await supabase.from("financeiro").select("*")
+
+let tabela=document.getElementById("tabelaFinanceiro")
+
+tabela.innerHTML="<tr><th>Tipo</th><th>Valor</th></tr>"
+
+let receita=0
+let despesa=0
+
+data.forEach(f=>{
+
+let l=tabela.insertRow()
+
+l.insertCell(0).innerHTML=f.tipo
+l.insertCell(1).innerHTML=f.valor
+
+if(f.tipo=="Receita") receita+=f.valor
+if(f.tipo=="Despesa") despesa+=f.valor
+
+})
+
+let lucro=receita-despesa
+
+document.getElementById("resultadoDRE").innerHTML="Receita: "+receita+" | Despesa: "+despesa+" | Lucro: "+lucro
+
+document.getElementById("resultadoBalancete").innerHTML="Total Receita: "+receita+" / Total Despesa: "+despesa
+
+document.getElementById("resultadoBalanco").innerHTML="Ativo: "+receita+" | Passivo: "+despesa+" | Patrimônio: "+lucro
+
+}
+
 carregarClientes()
 carregarEmpresas()
+carregarFinanceiro()
+
+abrir("dashboard")
 
 new Chart(document.getElementById("grafico"),{
 

@@ -38,7 +38,7 @@ padding:20px;
 
 .menu button{
 width:100%;
-margin:6px 0;
+margin:4px 0;
 padding:10px;
 border:none;
 background:#2c4fa3;
@@ -62,6 +62,7 @@ background:white;
 padding:20px;
 border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
+margin-bottom:20px;
 }
 
 table{
@@ -73,6 +74,11 @@ margin-top:10px;
 th,td{
 border:1px solid #ddd;
 padding:6px;
+}
+
+input,select{
+padding:6px;
+margin:4px;
 }
 
 </style>
@@ -102,11 +108,19 @@ padding:6px;
 <h2>MASTER ERP</h2>
 
 <button onclick="abrirModulo('dashboard')">Dashboard</button>
-<button onclick="abrirModulo('empresas')">Empresas</button>
 <button onclick="abrirModulo('clientes')">Clientes</button>
+<button onclick="abrirModulo('empresas')">Empresas</button>
 <button onclick="abrirModulo('funcionarios')">Funcionários</button>
 <button onclick="abrirModulo('financeiro')">Financeiro</button>
 <button onclick="abrirModulo('agenda')">Agenda Fiscal</button>
+<button onclick="abrirModulo('contas')">Plano de Contas</button>
+<button onclick="abrirModulo('contabil')">Contábil</button>
+<button onclick="abrirModulo('impostos')">Impostos</button>
+<button onclick="abrirModulo('folha')">Folha</button>
+<button onclick="abrirModulo('honorarios')">Honorários</button>
+<button onclick="abrirModulo('banco')">Conciliação Bancária</button>
+<button onclick="abrirModulo('xml')">Importação XML</button>
+<button onclick="abrirModulo('relatorios')">Relatórios</button>
 
 </div>
 
@@ -120,6 +134,20 @@ padding:6px;
 
 </div>
 
+<div id="clientes" class="modulo">
+
+<h2>Clientes</h2>
+
+<input id="clienteNome" placeholder="Nome">
+
+<button onclick="addCliente()">Cadastrar</button>
+
+<table id="tabelaClientes">
+<tr><th>Cliente</th></tr>
+</table>
+
+</div>
+
 <div id="empresas" class="modulo">
 
 <h2>Empresas</h2>
@@ -130,30 +158,7 @@ padding:6px;
 <button onclick="addEmpresa()">Cadastrar</button>
 
 <table id="tabelaEmpresas">
-
-<tr>
-<th>Empresa</th>
-<th>CNPJ</th>
-</tr>
-
-</table>
-
-</div>
-
-<div id="clientes" class="modulo">
-
-<h2>Clientes</h2>
-
-<input id="clienteNome" placeholder="Nome">
-
-<button onclick="cadastrarCliente()">Cadastrar</button>
-
-<table id="tabelaClientes">
-
-<tr>
-<th>Cliente</th>
-</tr>
-
+<tr><th>Empresa</th><th>CNPJ</th></tr>
 </table>
 
 </div>
@@ -163,17 +168,12 @@ padding:6px;
 <h2>Funcionários</h2>
 
 <input id="funcNome" placeholder="Nome">
-<input id="funcCargo" placeholder="Cargo">
+<input id="funcSalario" placeholder="Salário">
 
 <button onclick="addFuncionario()">Cadastrar</button>
 
 <table id="tabelaFuncionarios">
-
-<tr>
-<th>Nome</th>
-<th>Cargo</th>
-</tr>
-
+<tr><th>Nome</th><th>Salário</th></tr>
 </table>
 
 </div>
@@ -189,15 +189,10 @@ padding:6px;
 
 <input id="valorMov" placeholder="Valor">
 
-<button onclick="registrarFinanceiro()">Registrar</button>
+<button onclick="addFinanceiro()">Registrar</button>
 
 <table id="tabelaFinanceiro">
-
-<tr>
-<th>Tipo</th>
-<th>Valor</th>
-</tr>
-
+<tr><th>Tipo</th><th>Valor</th></tr>
 </table>
 
 </div>
@@ -207,44 +202,133 @@ padding:6px;
 <h2>Agenda Fiscal</h2>
 
 <input id="empresaAgenda" placeholder="Empresa">
-
 <input type="date" id="dataAgenda">
 
-<select id="tipoAgenda">
-<option>DAS</option>
-<option>DCTF</option>
-<option>SPED</option>
-</select>
-
-<button onclick="registrarAgenda()">Registrar</button>
+<button onclick="addAgenda()">Registrar</button>
 
 <table id="tabelaAgenda">
-
-<tr>
-<th>Empresa</th>
-<th>Obrigação</th>
-<th>Data</th>
-</tr>
-
+<tr><th>Empresa</th><th>Data</th></tr>
 </table>
 
 </div>
 
+<div id="contas" class="modulo">
+
+<h2>Plano de Contas</h2>
+
+<input id="contaNome" placeholder="Conta">
+
+<button onclick="addConta()">Cadastrar</button>
+
+<table id="tabelaContas">
+<tr><th>Conta</th></tr>
+</table>
+
 </div>
+
+<div id="contabil" class="modulo">
+
+<h2>Contabilidade</h2>
+
+<button onclick="alert('Balancete gerado')">Balancete</button>
+<button onclick="alert('Balanço gerado')">Balanço</button>
+<button onclick="alert('DRE gerada')">DRE</button>
+
 </div>
+
+<div id="impostos" class="modulo">
+
+<h2>Controle de Impostos</h2>
+
+<select>
+<option>DAS</option>
+<option>DARF</option>
+<option>ISS</option>
+<option>ICMS</option>
+<option>PIS</option>
+<option>COFINS</option>
+</select>
+
+<input placeholder="Valor">
+
+<button onclick="alert('Imposto registrado')">Registrar</button>
+
+</div>
+
+<div id="folha" class="modulo">
+
+<h2>Folha de Pagamento</h2>
+
+<input id="salario" placeholder="Salário">
+
+<button onclick="calcularFolha()">Calcular</button>
+
+<p id="resultadoFolha"></p>
+
+</div>
+
+<div id="honorarios" class="modulo">
+
+<h2>Controle de Honorários</h2>
+
+<input id="clienteHonorario" placeholder="Cliente">
+<input id="valorHonorario" placeholder="Valor">
+
+<button onclick="addHonorario()">Registrar</button>
+
+<table id="tabelaHonorarios">
+<tr><th>Cliente</th><th>Valor</th></tr>
+</table>
+
+</div>
+
+<div id="banco" class="modulo">
+
+<h2>Conciliação Bancária</h2>
+
+<input type="file">
+
+<button onclick="alert('Extrato importado')">Importar Extrato</button>
+
+</div>
+
+<div id="xml" class="modulo">
+
+<h2>Importação XML Nota Fiscal</h2>
+
+<input type="file" id="xmlNotas" multiple>
+
+<button onclick="importarXML()">Importar XML</button>
+
+</div>
+
+<div id="relatorios" class="modulo">
+
+<h2>Relatórios</h2>
+
+<button onclick="alert('Fluxo de caixa gerado')">Fluxo de Caixa</button>
+
+<button onclick="alert('SPED básico gerado')">Exportar SPED</button>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
 
 function login(){
 
-let usuario = document.getElementById("usuario").value;
-let senha = document.getElementById("senha").value;
+let u=document.getElementById("usuario").value
+let s=document.getElementById("senha").value
 
-if(usuario == "admin" && senha == "1234"){
+if(u=="admin" && s=="1234"){
 
-document.getElementById("loginTela").style.display = "none";
-document.getElementById("sistema").style.display = "block";
+document.getElementById("loginTela").style.display="none"
+document.getElementById("sistema").style.display="block"
 
 abrirModulo("dashboard")
 
@@ -264,99 +348,116 @@ document.getElementById(id).style.display="block"
 
 }
 
+function addCliente(){
+
+let nome=document.getElementById("clienteNome").value
+let t=document.getElementById("tabelaClientes")
+
+let l=t.insertRow()
+
+l.insertCell(0).innerHTML=nome
+
+}
+
 function addEmpresa(){
 
 let nome=document.getElementById("empresaNome").value
 let cnpj=document.getElementById("empresaCnpj").value
 
-let tabela=document.getElementById("tabelaEmpresas")
+let t=document.getElementById("tabelaEmpresas")
 
-let linha=tabela.insertRow()
+let l=t.insertRow()
 
-linha.insertCell(0).innerHTML=nome
-linha.insertCell(1).innerHTML=cnpj
-
-}
-
-async function cadastrarCliente(){
-
-let nome = document.getElementById("clienteNome").value;
-
-const { data, error } = await supabaseClient
-.from("clientes")
-.insert([
-{
-nome: nome
-}
-])
-
-if(error){
-alert("Erro ao salvar cliente");
-console.log(error);
-}else{
-
-alert("Cliente salvo com sucesso");
-
-let tabela = document.getElementById("tabelaClientes");
-
-let linha = tabela.insertRow();
-
-linha.insertCell(0).innerHTML = nome;
-
-}
-
-}
-
-if(error){
-alert("Erro ao salvar cliente");
-console.log(error);
-}else{
-alert("Cliente salvo com sucesso");
-}
+l.insertCell(0).innerHTML=nome
+l.insertCell(1).innerHTML=cnpj
 
 }
 
 function addFuncionario(){
 
 let nome=document.getElementById("funcNome").value
-let cargo=document.getElementById("funcCargo").value
+let salario=document.getElementById("funcSalario").value
 
-let tabela=document.getElementById("tabelaFuncionarios")
+let t=document.getElementById("tabelaFuncionarios")
 
-let linha=tabela.insertRow()
+let l=t.insertRow()
 
-linha.insertCell(0).innerHTML=nome
-linha.insertCell(1).innerHTML=cargo
+l.insertCell(0).innerHTML=nome
+l.insertCell(1).innerHTML=salario
 
 }
 
-function registrarFinanceiro(){
+function addFinanceiro(){
 
 let tipo=document.getElementById("tipoMov").value
 let valor=document.getElementById("valorMov").value
 
-let tabela=document.getElementById("tabelaFinanceiro")
+let t=document.getElementById("tabelaFinanceiro")
 
-let linha=tabela.insertRow()
+let l=t.insertRow()
 
-linha.insertCell(0).innerHTML=tipo
-linha.insertCell(1).innerHTML=valor
+l.insertCell(0).innerHTML=tipo
+l.insertCell(1).innerHTML=valor
 
 }
 
-function registrarAgenda(){
+function addAgenda(){
 
 let emp=document.getElementById("empresaAgenda").value
 let data=document.getElementById("dataAgenda").value
-let tipo=document.getElementById("tipoAgenda").value
 
-let tabela=document.getElementById("tabelaAgenda")
+let t=document.getElementById("tabelaAgenda")
 
-let linha=tabela.insertRow()
+let l=t.insertRow()
 
-linha.insertCell(0).innerHTML=emp
-linha.insertCell(1).innerHTML=tipo
-linha.insertCell(2).innerHTML=data
+l.insertCell(0).innerHTML=emp
+l.insertCell(1).innerHTML=data
+
+}
+
+function addConta(){
+
+let nome=document.getElementById("contaNome").value
+
+let t=document.getElementById("tabelaContas")
+
+let l=t.insertRow()
+
+l.insertCell(0).innerHTML=nome
+
+}
+
+function calcularFolha(){
+
+let salario=parseFloat(document.getElementById("salario").value)
+
+let inss=salario*0.08
+
+let liquido=salario-inss
+
+document.getElementById("resultadoFolha").innerHTML="Salário líquido: "+liquido
+
+}
+
+function addHonorario(){
+
+let cliente=document.getElementById("clienteHonorario").value
+let valor=document.getElementById("valorHonorario").value
+
+let t=document.getElementById("tabelaHonorarios")
+
+let l=t.insertRow()
+
+l.insertCell(0).innerHTML=cliente
+l.insertCell(1).innerHTML=valor
+
+}
+
+function importarXML(){
+
+let arquivos=document.getElementById("xmlNotas").files
+
+alert(arquivos.length+" XML importados")
 
 }
 
@@ -377,16 +478,3 @@ data:[50000,30000,20000]
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
+
+
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <meta charset="UTF-8">
@@ -16,12 +17,6 @@ body{
 margin:0;
 font-family:Arial;
 background:#f4f6f9;
-}
-
-.login{
-width:300px;
-margin:120px auto;
-text-align:center;
 }
 
 .layout{
@@ -53,7 +48,6 @@ background:#163172;
 .conteudo{
 flex:1;
 padding:25px;
-overflow:auto;
 }
 
 .modulo{
@@ -61,7 +55,6 @@ display:none;
 background:white;
 padding:20px;
 border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
 margin-bottom:20px;
 }
 
@@ -76,29 +69,11 @@ border:1px solid #ddd;
 padding:6px;
 }
 
-input,select{
-padding:6px;
-margin:4px;
-}
-
 </style>
 
 </head>
 
 <body>
-
-<div id="loginTela" class="login">
-
-<h2>MASTER CONSULTORIA ERP</h2>
-
-<input id="usuario" placeholder="Usuário"><br><br>
-<input type="password" id="senha" placeholder="Senha"><br><br>
-
-<button onclick="login()">Entrar</button>
-
-</div>
-
-<div id="sistema" style="display:none">
 
 <div class="layout">
 
@@ -109,7 +84,7 @@ margin:4px;
 <button onclick="abrirModulo('dashboard')">Dashboard</button>
 <button onclick="abrirModulo('clientes')">Clientes</button>
 <button onclick="abrirModulo('empresas')">Empresas</button>
-<button onclick="abrirModulo('financeiro')">Financeiro</button>
+<button onclick="abrirModulo('financeiro')">Fluxo de Caixa</button>
 <button onclick="abrirModulo('relatorios')">Relatórios</button>
 
 </div>
@@ -152,7 +127,7 @@ margin:4px;
 
 <div id="financeiro" class="modulo">
 
-<h2>Financeiro</h2>
+<h2>Fluxo de Caixa</h2>
 
 <select id="tipoMov">
 <option>Receita</option>
@@ -171,13 +146,13 @@ margin:4px;
 
 <div id="relatorios" class="modulo">
 
-<h2>Relatórios</h2>
+<h2>Relatórios Contábeis</h2>
 
-<button onclick="alert('Fluxo de caixa gerado')">Fluxo de Caixa</button>
+<button onclick="gerarBalanco()">Balanço Patrimonial</button>
+<button onclick="gerarDRE()">DRE</button>
+<button onclick="gerarBalancete()">Balancete</button>
 
-<button onclick="alert('SPED básico gerado')">Exportar SPED</button>
-
-</div>
+<div id="resultadoRelatorio"></div>
 
 </div>
 
@@ -187,31 +162,13 @@ margin:4px;
 
 <script>
 
-function login(){
-
-let u=document.getElementById("usuario").value
-let s=document.getElementById("senha").value
-
-if(u=="admin" && s=="1234"){
-
-document.getElementById("loginTela").style.display="none"
-document.getElementById("sistema").style.display="block"
-
-abrirModulo("dashboard")
-
-}else{
-
-alert("Usuário ou senha inválidos")
-
-}
-
-}
-
 function abrirModulo(id){
 
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
 
 document.getElementById(id).style.display="block"
+
+if(id=="dashboard") carregarGrafico()
 
 }
 
@@ -219,11 +176,11 @@ function addCliente(){
 
 let nome=document.getElementById("clienteNome").value
 
-let t=document.getElementById("tabelaClientes")
+let tabela=document.getElementById("tabelaClientes")
 
-let l=t.insertRow()
+let linha=tabela.insertRow()
 
-l.insertCell(0).innerHTML=nome
+linha.insertCell(0).innerHTML=nome
 
 }
 
@@ -232,12 +189,12 @@ function addEmpresa(){
 let nome=document.getElementById("empresaNome").value
 let cnpj=document.getElementById("empresaCnpj").value
 
-let t=document.getElementById("tabelaEmpresas")
+let tabela=document.getElementById("tabelaEmpresas")
 
-let l=t.insertRow()
+let linha=tabela.insertRow()
 
-l.insertCell(0).innerHTML=nome
-l.insertCell(1).innerHTML=cnpj
+linha.insertCell(0).innerHTML=nome
+linha.insertCell(1).innerHTML=cnpj
 
 }
 
@@ -246,27 +203,118 @@ function addFinanceiro(){
 let tipo=document.getElementById("tipoMov").value
 let valor=document.getElementById("valorMov").value
 
-let t=document.getElementById("tabelaFinanceiro")
+let tabela=document.getElementById("tabelaFinanceiro")
 
-let l=t.insertRow()
+let linha=tabela.insertRow()
 
-l.insertCell(0).innerHTML=tipo
-l.insertCell(1).innerHTML=valor
+linha.insertCell(0).innerHTML=tipo
+linha.insertCell(1).innerHTML=valor
 
 }
+
+function carregarGrafico(){
 
 new Chart(document.getElementById("grafico"),{
 
 type:'bar',
 
 data:{
-labels:["Receita","Despesa","Lucro"],
+labels:["Receitas","Despesas","Lucro"],
 datasets:[{
-data:[50000,30000,20000]
+data:[50000,30000,20000],
+backgroundColor:["green","red","blue"]
 }]
 }
 
 })
+
+}
+
+function gerarBalanco(){
+
+let receitas=0
+let despesas=0
+
+let linhas=document.querySelectorAll("#tabelaFinanceiro tr")
+
+linhas.forEach((l,i)=>{
+
+if(i>0){
+
+let tipo=l.cells[0].innerText
+let valor=parseFloat(l.cells[1].innerText)
+
+if(tipo=="Receita") receitas+=valor
+if(tipo=="Despesa") despesas+=valor
+
+}
+
+})
+
+let patrimonio=receitas-despesas
+
+document.getElementById("resultadoRelatorio").innerHTML=
+
+"<h3>Balanço Patrimonial</h3>"+
+"Ativo: "+receitas+"<br>"+
+"Passivo: "+despesas+"<br>"+
+"Patrimônio Líquido: "+patrimonio
+
+}
+
+function gerarDRE(){
+
+let receitas=0
+let despesas=0
+
+let linhas=document.querySelectorAll("#tabelaFinanceiro tr")
+
+linhas.forEach((l,i)=>{
+
+if(i>0){
+
+let tipo=l.cells[0].innerText
+let valor=parseFloat(l.cells[1].innerText)
+
+if(tipo=="Receita") receitas+=valor
+if(tipo=="Despesa") despesas+=valor
+
+}
+
+})
+
+let lucro=receitas-despesas
+
+document.getElementById("resultadoRelatorio").innerHTML=
+
+"<h3>DRE</h3>"+
+"Receita Total: "+receitas+"<br>"+
+"Despesas Totais: "+despesas+"<br>"+
+"Lucro Líquido: "+lucro
+
+}
+
+function gerarBalancete(){
+
+let html="<h3>Balancete</h3>"
+
+let linhas=document.querySelectorAll("#tabelaFinanceiro tr")
+
+linhas.forEach((l,i)=>{
+
+if(i>0){
+
+html+=l.cells[0].innerText+" - "+l.cells[1].innerText+"<br>"
+
+}
+
+})
+
+document.getElementById("resultadoRelatorio").innerHTML=html
+
+}
+
+abrirModulo("dashboard")
 
 </script>
 

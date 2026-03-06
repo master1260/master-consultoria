@@ -18,7 +18,7 @@ display:flex;
 }
 
 .menu{
-width:240px;
+width:250px;
 background:#1f3c88;
 color:white;
 min-height:100vh;
@@ -68,7 +68,7 @@ padding:6px;
 margin:4px;
 }
 
-</style></head><body><div id="loginTela" class="login"><h2>MASTER ERP</h2><input id="usuario" placeholder="Usuário"><br><br>
+</style></head><body><div id="loginTela" class="login"><h2>MASTER ERP CONTÁBIL</h2><input id="usuario" placeholder="Usuário"><br><br>
 <input id="senha" type="password" placeholder="Senha"><br><br>
 
 <button onclick="login()">Entrar</button>
@@ -79,11 +79,12 @@ margin:4px;
 <button onclick="abrir('funcionarios')">Funcionários</button>
 <button onclick="abrir('financeiro')">Fluxo de Caixa</button>
 <button onclick="abrir('honorarios')">Honorários</button>
+<button onclick="abrir('agenda')">Agenda Fiscal</button>
 <button onclick="abrir('impostos')">Impostos</button>
 <button onclick="abrir('relatorios')">Relatórios</button>
 <button onclick="abrir('xml')">Importar XML</button>
 
-</div><div class="conteudo"><div id="dashboard" class="modulo"><h2>Dashboard</h2><canvas id="grafico"></canvas>
+</div><div class="conteudo"><div id="dashboard" class="modulo"><h2>Dashboard Contábil</h2><canvas id="grafico"></canvas>
 
 </div><div id="clientes" class="modulo"><h2>Clientes</h2><input id="clienteNome" placeholder="Nome"><button onclick="addCliente()">Cadastrar</button>
 
@@ -111,6 +112,11 @@ margin:4px;
 
 <table id="tabelaHonorarios">
 <tr><th>Cliente</th><th>Valor</th></tr>
+</table></div><div id="agenda" class="modulo"><h2>Agenda Fiscal</h2><input id="empresaAgenda" placeholder="Empresa">
+<input type="date" id="dataAgenda"><button onclick="registrarAgenda()">Registrar</button>
+
+<table id="tabelaAgenda">
+<tr><th>Empresa</th><th>Data</th></tr>
 </table></div><div id="impostos" class="modulo"><h2>Cálculo de Impostos</h2><select id="tipoImposto">
 <option>ISS</option>
 <option>ICMS</option>
@@ -125,7 +131,6 @@ margin:4px;
 <p id="resultadoXML"></p></div></div></div></div><script>
 
 const supabaseUrl="https://dikwusajnuioqmdwszey.supabase.co"
-
 const supabaseKey="sb_publishable_RjuaEbpS5ZMU8oeusDdgFw_abzh0zv3"
 
 const supabaseClient=supabase.createClient(supabaseUrl,supabaseKey)
@@ -154,50 +159,6 @@ document.getElementById(id).style.display="block"
 
 }
 
-async function addCliente(){
-
-let nome=document.getElementById("clienteNome").value
-
-await supabaseClient.from("clientes").insert([{nome:nome}])
-
-let tabela=document.getElementById("tabelaClientes")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=nome
-
-}
-
-async function addEmpresa(){
-
-let nome=document.getElementById("empresaNome").value
-let cnpj=document.getElementById("empresaCnpj").value
-
-await supabaseClient.from("empresas").insert([{nome:nome,cnpj:cnpj}])
-
-let tabela=document.getElementById("tabelaEmpresas")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=nome
-linha.insertCell(1).innerHTML=cnpj
-
-}
-
-function addFuncionario(){
-
-let nome=document.getElementById("funcNome").value
-let salario=document.getElementById("funcSalario").value
-
-let tabela=document.getElementById("tabelaFuncionarios")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=nome
-linha.insertCell(1).innerHTML=salario
-
-}
-
 let receita=0
 let despesa=0
 
@@ -216,18 +177,10 @@ linha.insertCell(1).innerHTML=valor
 if(tipo=="Receita") receita+=valor
 if(tipo=="Despesa") despesa+=valor
 
-atualizarRelatorios()
-
-}
-
-function atualizarRelatorios(){
-
 let lucro=receita-despesa
 
-document.getElementById("dre").innerHTML="DRE → Receita: "+receita+" Despesa: "+despesa+" Lucro: "+lucro
-
-document.getElementById("balancete").innerHTML="Balancete → Receitas "+receita+" | Despesas "+despesa
-
+document.getElementById("dre").innerHTML="DRE → Receita "+receita+" Despesa "+despesa+" Lucro "+lucro
+document.getElementById("balancete").innerHTML="Balancete → Receita "+receita+" Despesa "+despesa
 document.getElementById("balanco").innerHTML="Balanço → Ativo "+receita+" Passivo "+despesa+" Patrimônio "+lucro
 
 }
@@ -241,7 +194,7 @@ let taxa={ISS:0.05,ICMS:0.18,PIS:0.0165,COFINS:0.076}
 
 let resultado=valor*taxa[tipo]
 
-document.getElementById("resultadoImposto").innerHTML="Imposto: "+resultado.toFixed(2)
+document.getElementById("resultadoImposto").innerHTML="Imposto "+resultado.toFixed(2)
 
 }
 
@@ -261,7 +214,7 @@ let doc=parser.parseFromString(xml,"text/xml")
 
 let valor=doc.getElementsByTagName("vNF")[0]?.textContent
 
-document.getElementById("resultadoXML").innerHTML="Valor NF: "+valor
+document.getElementById("resultadoXML").innerHTML="Valor NF "+valor
 
 }
 

@@ -9,8 +9,7 @@
 <title>MASTER CONSULTORIA ERP</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script 
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 body{
@@ -93,7 +92,6 @@ margin:4px;
 <h2>MASTER CONSULTORIA ERP</h2>
 
 <input id="usuario" placeholder="Usuário"><br><br>
-
 <input type="password" id="senha" placeholder="Senha"><br><br>
 
 <button onclick="login()">Entrar</button>
@@ -111,16 +109,7 @@ margin:4px;
 <button onclick="abrirModulo('dashboard')">Dashboard</button>
 <button onclick="abrirModulo('clientes')">Clientes</button>
 <button onclick="abrirModulo('empresas')">Empresas</button>
-<button onclick="abrirModulo('funcionarios')">Funcionários</button>
 <button onclick="abrirModulo('financeiro')">Financeiro</button>
-<button onclick="abrirModulo('agenda')">Agenda Fiscal</button>
-<button onclick="abrirModulo('contas')">Plano de Contas</button>
-<button onclick="abrirModulo('contabil')">Contábil</button>
-<button onclick="abrirModulo('impostos')">Impostos</button>
-<button onclick="abrirModulo('folha')">Folha</button>
-<button onclick="abrirModulo('honorarios')">Honorários</button>
-<button onclick="abrirModulo('banco')">Conciliação Bancária</button>
-<button onclick="abrirModulo('xml')">Importação XML</button>
 <button onclick="abrirModulo('relatorios')">Relatórios</button>
 
 </div>
@@ -128,11 +117,8 @@ margin:4px;
 <div class="conteudo">
 
 <div id="dashboard" class="modulo">
-
 <h2>Dashboard</h2>
-
 <canvas id="grafico"></canvas>
-
 </div>
 
 <div id="clientes" class="modulo">
@@ -164,21 +150,6 @@ margin:4px;
 
 </div>
 
-<div id="funcionarios" class="modulo">
-
-<h2>Funcionários</h2>
-
-<input id="funcNome" placeholder="Nome">
-<input id="funcSalario" placeholder="Salário">
-
-<button onclick="addFuncionario()">Cadastrar</button>
-
-<table id="tabelaFuncionarios">
-<tr><th>Nome</th><th>Salário</th></tr>
-</table>
-
-</div>
-
 <div id="financeiro" class="modulo">
 
 <h2>Financeiro</h2>
@@ -195,111 +166,6 @@ margin:4px;
 <table id="tabelaFinanceiro">
 <tr><th>Tipo</th><th>Valor</th></tr>
 </table>
-
-</div>
-
-<div id="agenda" class="modulo">
-
-<h2>Agenda Fiscal</h2>
-
-<input id="empresaAgenda" placeholder="Empresa">
-<input type="date" id="dataAgenda">
-
-<button onclick="addAgenda()">Registrar</button>
-
-<table id="tabelaAgenda">
-<tr><th>Empresa</th><th>Data</th></tr>
-</table>
-
-</div>
-
-<div id="contas" class="modulo">
-
-<h2>Plano de Contas</h2>
-
-<input id="contaNome" placeholder="Conta">
-
-<button onclick="addConta()">Cadastrar</button>
-
-<table id="tabelaContas">
-<tr><th>Conta</th></tr>
-</table>
-
-</div>
-
-<div id="contabil" class="modulo">
-
-<h2>Contabilidade</h2>
-
-<button onclick="alert('Balancete gerado')">Balancete</button>
-<button onclick="alert('Balanço gerado')">Balanço</button>
-<button onclick="alert('DRE gerada')">DRE</button>
-
-</div>
-
-<div id="impostos" class="modulo">
-
-<h2>Controle de Impostos</h2>
-
-<select>
-<option>DAS</option>
-<option>DARF</option>
-<option>ISS</option>
-<option>ICMS</option>
-<option>PIS</option>
-<option>COFINS</option>
-</select>
-
-<input placeholder="Valor">
-
-<button onclick="alert('Imposto registrado')">Registrar</button>
-
-</div>
-
-<div id="folha" class="modulo">
-
-<h2>Folha de Pagamento</h2>
-
-<input id="salario" placeholder="Salário">
-
-<button onclick="calcularFolha()">Calcular</button>
-
-<p id="resultadoFolha"></p>
-
-</div>
-
-<div id="honorarios" class="modulo">
-
-<h2>Controle de Honorários</h2>
-
-<input id="clienteHonorario" placeholder="Cliente">
-<input id="valorHonorario" placeholder="Valor">
-
-<button onclick="addHonorario()">Registrar</button>
-
-<table id="tabelaHonorarios">
-<tr><th>Cliente</th><th>Valor</th></tr>
-</table>
-
-</div>
-
-<div id="banco" class="modulo">
-
-<h2>Conciliação Bancária</h2>
-
-<input type="file">
-
-<button onclick="alert('Extrato importado')">Importar Extrato</button>
-
-</div>
-
-<div id="xml" class="modulo">
-
-<h2>Importação XML Nota Fiscal</h2>
-
-<input type="file" id="xmlNotas" multiple>
-
-<button onclick="importarXML()">Importar XML</button>
 
 </div>
 
@@ -338,28 +204,21 @@ abrirModulo("dashboard")
 alert("Usuário ou senha inválidos")
 
 }
-const supabaseUrl = "https://dikwusajnuioqmdwszey.supabase.co";
 
-const supabaseKey = "sb_publishable_RjuaEbpS5ZMU8oeusDdgFw...";
-
-
-function abrirModulo(id){
-
-document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
-document.getElementById(id).style.display="block"
 }
 
 function abrirModulo(id){
 
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
 
-document.getElementById(id).style.display="block";
+document.getElementById(id).style.display="block"
 
 }
 
 function addCliente(){
 
 let nome=document.getElementById("clienteNome").value
+
 let t=document.getElementById("tabelaClientes")
 
 let l=t.insertRow()
@@ -382,20 +241,6 @@ l.insertCell(1).innerHTML=cnpj
 
 }
 
-function addFuncionario(){
-
-let nome=document.getElementById("funcNome").value
-let salario=document.getElementById("funcSalario").value
-
-let t=document.getElementById("tabelaFuncionarios")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=nome
-l.insertCell(1).innerHTML=salario
-
-}
-
 function addFinanceiro(){
 
 let tipo=document.getElementById("tipoMov").value
@@ -407,66 +252,6 @@ let l=t.insertRow()
 
 l.insertCell(0).innerHTML=tipo
 l.insertCell(1).innerHTML=valor
-
-}
-
-function addAgenda(){
-
-let emp=document.getElementById("empresaAgenda").value
-let data=document.getElementById("dataAgenda").value
-
-let t=document.getElementById("tabelaAgenda")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=emp
-l.insertCell(1).innerHTML=data
-
-}
-
-function addConta(){
-
-let nome=document.getElementById("contaNome").value
-
-let t=document.getElementById("tabelaContas")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=nome
-
-}
-
-function calcularFolha(){
-
-let salario=parseFloat(document.getElementById("salario").value)
-
-let inss=salario*0.08
-
-let liquido=salario-inss
-
-document.getElementById("resultadoFolha").innerHTML="Salário líquido: "+liquido
-
-}
-
-function addHonorario(){
-
-let cliente=document.getElementById("clienteHonorario").value
-let valor=document.getElementById("valorHonorario").value
-
-let t=document.getElementById("tabelaHonorarios")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=cliente
-l.insertCell(1).innerHTML=valor
-
-}
-
-function importarXML(){
-
-let arquivos=document.getElementById("xmlNotas").files
-
-alert(arquivos.length+" XML importados")
 
 }
 
@@ -487,7 +272,3 @@ data:[50000,30000,20000]
 
 </body>
 </html>
-
-
-
-

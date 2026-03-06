@@ -9,7 +9,8 @@
 <title>MASTER CONSULTORIA ERP</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script 
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 
 body{
@@ -337,7 +338,16 @@ abrirModulo("dashboard")
 alert("Usuário ou senha inválidos")
 
 }
+const supabaseUrl = "https://dikwusajnuioqmdwszey.supabase.co";
 
+const supabaseKey = "sb_publishable_RjuaEbpS5ZMU8oeusDdgFw...";
+
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+function abrirModulo(id){
+
+document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
+document.getElementById(id).style.display="block"
 }
 
 function abrirModulo(id){
@@ -478,3 +488,4 @@ data:[50000,30000,20000]
 
 </body>
 </html>
+

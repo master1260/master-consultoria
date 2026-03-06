@@ -1,81 +1,43 @@
-
-
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASTER ERP</title>
 
-<title>MASTER CONSULTORIA ERP</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
 background:#f4f6f9;
-}
-
-.layout{
-display:flex;
-min-height:100vh;
+margin:0;
 }
 
 .menu{
-width:230px;
+width:220px;
 background:#1f3c88;
 color:white;
+height:100vh;
+float:left;
 padding:20px;
 }
 
 .menu button{
 width:100%;
-margin:4px 0;
 padding:10px;
-border:none;
+margin:5px 0;
 background:#2c4fa3;
+border:none;
 color:white;
 cursor:pointer;
 }
 
-.menu button:hover{
-background:#163172;
-}
-
 .conteudo{
-flex:1;
-padding:25px;
-overflow:auto;
-}
-
-.modulo{
-display:none;
-background:white;
+margin-left:240px;
 padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-margin-bottom:20px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:6px;
-}
-
-input,select{
-padding:6px;
-margin:4px;
 }
 
 </style>
@@ -84,32 +46,19 @@ margin:4px;
 
 <body>
 
-<div class="layout">
-
 <div class="menu">
 
 <h2>MASTER ERP</h2>
 
-<button onclick="abrirModulo('dashboard')">Dashboard</button>
-<button onclick="abrirModulo('clientes')">Clientes</button>
-<button onclick="abrirModulo('empresas')">Empresas</button>
-<button onclick="abrirModulo('funcionarios')">Funcionários</button>
-<button onclick="abrirModulo('financeiro')">Fluxo de Caixa</button>
-<button onclick="abrirModulo('agenda')">Agenda Fiscal</button>
-<button onclick="abrirModulo('contas')">Plano de Contas</button>
-<button onclick="abrirModulo('contabil')">Contábil</button>
-<button onclick="abrirModulo('impostos')">Impostos</button>
-<button onclick="abrirModulo('folha')">Folha</button>
-<button onclick="abrirModulo('honorarios')">Honorários</button>
-<button onclick="abrirModulo('banco')">Conciliação Bancária</button>
-<button onclick="abrirModulo('xml')">Importação XML</button>
-<button onclick="abrirModulo('relatorios')">Relatórios</button>
+<button onclick="abrir('dashboard')">Dashboard</button>
+<button onclick="abrir('clientes')">Clientes</button>
+<button onclick="abrir('empresas')">Empresas</button>
 
 </div>
 
 <div class="conteudo">
 
-<div id="dashboard" class="modulo">
+<div id="dashboard">
 
 <h2>Dashboard</h2>
 
@@ -117,183 +66,28 @@ margin:4px;
 
 </div>
 
-<div id="clientes" class="modulo">
+<div id="clientes" style="display:none">
 
 <h2>Clientes</h2>
 
-<input id="clienteNome" placeholder="Nome">
+<input id="nomeCliente" placeholder="Nome">
 
-<button onclick="addCliente()">Cadastrar</button>
+<button onclick="salvarCliente()">Salvar</button>
 
-<table id="tabelaClientes">
-<tr><th>Cliente</th></tr>
-</table>
+<ul id="listaClientes"></ul>
 
 </div>
 
-<div id="empresas" class="modulo">
+<div id="empresas" style="display:none">
 
 <h2>Empresas</h2>
 
-<input id="empresaNome" placeholder="Empresa">
-<input id="empresaCnpj" placeholder="CNPJ">
+<input id="nomeEmpresa" placeholder="Empresa">
+<input id="cnpjEmpresa" placeholder="CNPJ">
 
-<button onclick="addEmpresa()">Cadastrar</button>
+<button onclick="salvarEmpresa()">Salvar</button>
 
-<table id="tabelaEmpresas">
-<tr><th>Empresa</th><th>CNPJ</th></tr>
-</table>
-
-</div>
-
-<div id="funcionarios" class="modulo">
-
-<h2>Funcionários</h2>
-
-<input id="funcNome" placeholder="Nome">
-<input id="funcSalario" placeholder="Salário">
-
-<button onclick="addFuncionario()">Cadastrar</button>
-
-<table id="tabelaFuncionarios">
-<tr><th>Nome</th><th>Salário</th></tr>
-</table>
-
-</div>
-
-<div id="financeiro" class="modulo">
-
-<h2>Fluxo de Caixa</h2>
-
-<select id="tipoMov">
-<option>Receita</option>
-<option>Despesa</option>
-</select>
-
-<input id="valorMov" placeholder="Valor">
-
-<button onclick="addFinanceiro()">Registrar</button>
-
-<table id="tabelaFinanceiro">
-<tr><th>Tipo</th><th>Valor</th></tr>
-</table>
-
-</div>
-
-<div id="agenda" class="modulo">
-
-<h2>Agenda Fiscal</h2>
-
-<input id="empresaAgenda" placeholder="Empresa">
-<input type="date" id="dataAgenda">
-
-<button onclick="addAgenda()">Registrar</button>
-
-<table id="tabelaAgenda">
-<tr><th>Empresa</th><th>Data</th></tr>
-</table>
-
-</div>
-
-<div id="contas" class="modulo">
-
-<h2>Plano de Contas</h2>
-
-<input id="contaNome" placeholder="Conta">
-
-<button onclick="addConta()">Cadastrar</button>
-
-<table id="tabelaContas">
-<tr><th>Conta</th></tr>
-</table>
-
-</div>
-
-<div id="contabil" class="modulo">
-
-<h2>Contabilidade</h2>
-
-<button onclick="alert('Balancete gerado')">Balancete</button>
-<button onclick="alert('Balanço gerado')">Balanço Patrimonial</button>
-<button onclick="alert('DRE gerada')">DRE</button>
-
-</div>
-
-<div id="impostos" class="modulo">
-
-<h2>Controle de Impostos</h2>
-
-<select>
-<option>DAS</option>
-<option>DARF</option>
-<option>ISS</option>
-<option>ICMS</option>
-<option>PIS</option>
-<option>COFINS</option>
-</select>
-
-<input placeholder="Valor">
-
-<button onclick="alert('Imposto registrado')">Registrar</button>
-
-</div>
-
-<div id="folha" class="modulo">
-
-<h2>Folha de Pagamento</h2>
-
-<input id="salario" placeholder="Salário">
-
-<button onclick="calcularFolha()">Calcular</button>
-
-<p id="resultadoFolha"></p>
-
-</div>
-
-<div id="honorarios" class="modulo">
-
-<h2>Honorários</h2>
-
-<input id="clienteHonorario" placeholder="Cliente">
-<input id="valorHonorario" placeholder="Valor">
-
-<button onclick="addHonorario()">Registrar</button>
-
-<table id="tabelaHonorarios">
-<tr><th>Cliente</th><th>Valor</th></tr>
-</table>
-
-</div>
-
-<div id="banco" class="modulo">
-
-<h2>Conciliação Bancária</h2>
-
-<input type="file">
-
-<button onclick="alert('Extrato importado')">Importar Extrato</button>
-
-</div>
-
-<div id="xml" class="modulo">
-
-<h2>Importação XML NF-e</h2>
-
-<input type="file" multiple>
-
-<button onclick="importarXML()">Importar XML</button>
-
-</div>
-
-<div id="relatorios" class="modulo">
-
-<h2>Relatórios Contábeis</h2>
-
-<button onclick="alert('Balancete gerado')">Balancete</button>
-<button onclick="alert('DRE gerada')">DRE</button>
-<button onclick="alert('Balanço gerado')">Balanço Patrimonial</button>
-
-</div>
+<ul id="listaEmpresas"></ul>
 
 </div>
 
@@ -301,133 +95,90 @@ margin:4px;
 
 <script>
 
-const supabaseUrl = "https://dikwusajnuioqmdwszey.supabase.co"
+const supabaseUrl="https://dikwusajnuioqmdwszey.supabase.co"
 
-const supabaseKey = "sb_publishable_RjuaEbpS5ZMU8oeusDdgFw_abzh0zv3"
+const supabaseKey="sb_publishable_RjuaEbpS5ZMU8oeusDdgFw_abzh0zv3"
 
-const supabaseClient = supabase.createClient(supabaseUrl,supabaseKey)
+const supabase=supabase.createClient(supabaseUrl,supabaseKey)
 
-function abrirModulo(id){
+function abrir(id){
 
-document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
+document.getElementById("dashboard").style.display="none"
+document.getElementById("clientes").style.display="none"
+document.getElementById("empresas").style.display="none"
 
 document.getElementById(id).style.display="block"
 
 }
 
-function addCliente(){
+async function salvarCliente(){
 
-let nome=document.getElementById("clienteNome").value
+let nome=document.getElementById("nomeCliente").value
 
-let t=document.getElementById("tabelaClientes")
+await supabase.from("clientes").insert([{nome:nome}])
 
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=nome
+carregarClientes()
 
 }
 
-function addEmpresa(){
+async function carregarClientes(){
 
-let nome=document.getElementById("empresaNome").value
-let cnpj=document.getElementById("empresaCnpj").value
+let {data}=await supabase.from("clientes").select("*")
 
-let t=document.getElementById("tabelaEmpresas")
+let lista=document.getElementById("listaClientes")
 
-let l=t.insertRow()
+lista.innerHTML=""
 
-l.insertCell(0).innerHTML=nome
-l.insertCell(1).innerHTML=cnpj
+data.forEach(c=>{
 
-}
+let li=document.createElement("li")
 
-function addFuncionario(){
+li.innerText=c.nome
 
-let nome=document.getElementById("funcNome").value
-let salario=document.getElementById("funcSalario").value
+lista.appendChild(li)
 
-let t=document.getElementById("tabelaFuncionarios")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=nome
-l.insertCell(1).innerHTML=salario
+})
 
 }
 
-function addFinanceiro(){
+async function salvarEmpresa(){
 
-let tipo=document.getElementById("tipoMov").value
-let valor=document.getElementById("valorMov").value
+let nome=document.getElementById("nomeEmpresa").value
+let cnpj=document.getElementById("cnpjEmpresa").value
 
-let t=document.getElementById("tabelaFinanceiro")
+await supabase.from("empresas").insert([{
 
-let l=t.insertRow()
+nome:nome,
+cnpj:cnpj
 
-l.insertCell(0).innerHTML=tipo
-l.insertCell(1).innerHTML=valor
+}])
 
-}
-
-function addAgenda(){
-
-let emp=document.getElementById("empresaAgenda").value
-let data=document.getElementById("dataAgenda").value
-
-let t=document.getElementById("tabelaAgenda")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=emp
-l.insertCell(1).innerHTML=data
+carregarEmpresas()
 
 }
 
-function addConta(){
+async function carregarEmpresas(){
 
-let nome=document.getElementById("contaNome").value
+let {data}=await supabase.from("empresas").select("*")
 
-let t=document.getElementById("tabelaContas")
+let lista=document.getElementById("listaEmpresas")
 
-let l=t.insertRow()
+lista.innerHTML=""
 
-l.insertCell(0).innerHTML=nome
+data.forEach(e=>{
 
-}
+let li=document.createElement("li")
 
-function calcularFolha(){
+li.innerText=e.nome+" - "+e.cnpj
 
-let salario=parseFloat(document.getElementById("salario").value)
+lista.appendChild(li)
 
-let inss=salario*0.08
-
-let liquido=salario-inss
-
-document.getElementById("resultadoFolha").innerHTML="Salário líquido: "+liquido
+})
 
 }
 
-function addHonorario(){
-
-let cliente=document.getElementById("clienteHonorario").value
-let valor=document.getElementById("valorHonorario").value
-
-let t=document.getElementById("tabelaHonorarios")
-
-let l=t.insertRow()
-
-l.insertCell(0).innerHTML=cliente
-l.insertCell(1).innerHTML=valor
-
-}
-
-function importarXML(){
-
-alert("XML importado")
-
-}
-
-abrirModulo("dashboard")
+carregarClientes()
+carregarEmpresas()
 
 new Chart(document.getElementById("grafico"),{
 
@@ -436,8 +187,11 @@ type:'bar',
 data:{
 labels:["Receita","Despesa","Lucro"],
 datasets:[{
+
 data:[50000,30000,20000]
+
 }]
+
 }
 
 })
@@ -446,4 +200,3 @@ data:[50000,30000,20000]
 
 </body>
 </html>
-

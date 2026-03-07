@@ -1,7 +1,6 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MASTER ERP CONTÁBIL</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><style>
-
-body{
+ <!DOCTYPE html><html> <head><meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>MASTER ERP CONTÁBIL</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style> body{
 margin:0;
 font-family:Arial;
 background:#f4f6f9;
@@ -9,20 +8,20 @@ background:#f4f6f9;
 
 .layout{
 display:flex;
+min-height:100vh;
 }
 
 .menu{
-width:230px;
+width:240px;
 background:#1f3c88;
 color:white;
-min-height:100vh;
 padding:20px;
 }
 
 .menu button{
 width:100%;
 padding:10px;
-margin:5px 0;
+margin:4px 0;
 border:none;
 background:#2c4fa3;
 color:white;
@@ -39,7 +38,6 @@ display:none;
 background:white;
 padding:20px;
 border-radius:10px;
-margin-bottom:20px;
 }
 
 table{
@@ -53,67 +51,63 @@ border:1px solid #ddd;
 padding:6px;
 }
 
-</style></head><body><div class="layout"><div class="menu"><h2>MASTER ERP</h2><button onclick="abrir('dashboard')">Dashboard</button>
-<button onclick="abrir('clientes')">Clientes</button>
-<button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('financeiro')">Fluxo de Caixa</button>
-<button onclick="abrir('honorarios')">Honorários</button>
-<button onclick="abrir('impostos')">Impostos</button>
-<button onclick="abrir('agenda')">Agenda Fiscal</button>
-<button onclick="abrir('xml')">Importar XML</button>
-<button onclick="abrir('relatorios')">Relatórios</button>
+input,select{
+padding:6px;
+margin:4px;
+}
 
-</div><div class="conteudo"><div id="dashboard" class="modulo"><h2>Dashboard Financeiro</h2><canvas id="grafico"></canvas>
+.login{
+width:300px;
+margin:120px auto;
+text-align:center;
+}
 
-</div><div id="clientes" class="modulo"><h2>Clientes</h2><input id="clienteNome" placeholder="Nome"><button onclick="addCliente()">Cadastrar</button>
+</style></head><body><div id="loginTela" class="login"><h2>MASTER ERP</h2><input id="loginEmail" placeholder="Email"><br><br>
+<input id="loginSenha" type="password" placeholder="Senha"><br><br>
 
-<table id="tabelaClientes">
-<tr><th>Cliente</th></tr>
-</table></div><div id="empresas" class="modulo"><h2>Empresas</h2><input id="empresaNome" placeholder="Empresa">
-<input id="empresaCnpj" placeholder="CNPJ"><button onclick="addEmpresa()">Cadastrar</button>
+<button onclick="login()">Entrar</button>
 
-<table id="tabelaEmpresas">
-<tr><th>Empresa</th><th>CNPJ</th></tr>
-</table></div><div id="financeiro" class="modulo"><h2>Fluxo de Caixa</h2><select id="tipoMov">
-<option>Receita</option>
-<option>Despesa</option>
-</select><input id="valorMov" placeholder="Valor"><button onclick="addFinanceiro()">Registrar</button>
+</div><div id="sistema" style="display:none"><div class="layout"><div class="menu"><h2>MASTER ERP</h2><button onclick="abrir('dashboard')">Dashboard</button>  
+<button onclick="abrir('clientes')">Clientes</button>  
+<button onclick="abrir('empresas')">Empresas</button>  
+<button onclick="abrir('financeiro')">Financeiro</button>  
+<button onclick="abrir('impostos')">Impostos</button>  
+<button onclick="abrir('xml')">Importação XML</button>  
+<button onclick="abrir('contabil')">Contábil</button> </div><div class="conteudo"><div id="dashboard" class="modulo"><h2>Dashboard</h2>  
+<canvas id="grafico"></canvas></div><div id="clientes" class="modulo"><h2>Clientes</h2><input id="clienteNome" placeholder="Nome"><button onclick="addCliente()">Cadastrar</button> <table id="tabelaClientes">  
+<tr><th>Cliente</th></tr>  
+</table></div><div id="empresas" class="modulo"><h2>Empresas</h2><input id="empresaNome" placeholder="Empresa">  
+<input id="empresaCnpj" placeholder="CNPJ"><button onclick="addEmpresa()">Cadastrar</button> <table id="tabelaEmpresas">  
+<tr><th>Empresa</th><th>CNPJ</th></tr>  
+</table></div><div id="financeiro" class="modulo"><h2>Fluxo de Caixa</h2><select id="tipoMov">  
+<option>Receita</option>  
+<option>Despesa</option>  
+</select><input id="valorMov" placeholder="Valor"><button onclick="addFinanceiro()">Registrar</button> <table id="tabelaFinanceiro">  
+<tr><th>Tipo</th><th>Valor</th></tr>  
+</table></div><div id="impostos" class="modulo"><h2>Cálculo Automático de Impostos</h2><input id="faturamento" placeholder="Faturamento"><button onclick="calcularImpostos()">Calcular</button> <p id="resultadoImpostos"></p></div><div id="xml" class="modulo"><h2>Importação XML NF-e</h2><input type="file" id="xmlFile"><button onclick="importarXML()">Importar XML</button> <p id="resultadoXML"></p></div><div id="contabil" class="modulo"><h2>Contabilidade</h2><button onclick="gerarDRE()">DRE</button>  
+<button onclick="gerarBalanco()">Balanço</button>  
+<button onclick="gerarBalancete()">Balancete</button> <div id="resultadoContabil"></div></div></div>  
+</div>  
+</div><script> const SUPABASE_URL = "https://dikwusajnuioqmdwszey.supabase.co"
+const SUPABASE_KEY = "sb_publishable_RjuaEbpS5ZMU8oeusDdgFw_abzh0zv3"
 
-<table id="tabelaFinanceiro">
-<tr><th>Tipo</th><th>Valor</th></tr>
-</table></div><div id="honorarios" class="modulo"><h2>Honorários</h2><input id="clienteHonorario" placeholder="Cliente">
-<input id="valorHonorario" placeholder="Valor"><button onclick="addHonorario()">Registrar</button>
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-<table id="tabelaHonorarios">
-<tr><th>Cliente</th><th>Valor</th></tr>
-</table></div><div id="impostos" class="modulo"><h2>Impostos</h2><select id="tipoImposto">
-<option>DAS</option>
-<option>DARF</option>
-<option>ISS</option>
-<option>ICMS</option>
-</select><input id="empresaImposto" placeholder="Empresa">
-<input id="valorImposto" placeholder="Valor"><button onclick="addImposto()">Registrar</button>
+function login(){
 
-<table id="tabelaImpostos">
-<tr><th>Empresa</th><th>Imposto</th><th>Valor</th></tr>
-</table></div><div id="agenda" class="modulo"><h2>Agenda Fiscal</h2><input id="empresaAgenda" placeholder="Empresa">
-<input id="obrigacaoAgenda" placeholder="Obrigação"><button onclick="addAgenda()">Registrar</button>
+let email=document.getElementById("loginEmail").value
+let senha=document.getElementById("loginSenha").value
 
-<table id="tabelaAgenda">
-<tr><th>Empresa</th><th>Obrigação</th></tr>
-</table></div><div id="xml" class="modulo"><h2>Importar XML NFe</h2><input type="file" id="xmlFile"><button onclick="importarXML()">Importar XML</button>
+if(email && senha){
 
-<p id="resultadoXML"></p></div><div id="relatorios" class="modulo"><h2>Relatórios</h2><button onclick="gerarDRE()">Gerar DRE</button>
-<button onclick="gerarBalanco()">Balanço</button>
-<button onclick="gerarBalancete()">Balancete</button>
-<button onclick="gerarPDF()">Exportar PDF</button>
+document.getElementById("loginTela").style.display="none"
+document.getElementById("sistema").style.display="block"
 
-<div id="resultadoRelatorios"></div></div></div></div><script>
+abrir("dashboard")
 
-const supabaseUrl="https://dikwusajnuioqmdwszey.supabase.co"
-const supabaseKey="COLE_AQUI_SUA_PUBLISHABLE_KEY"
+}
 
-const supabaseClient=supabase.createClient(supabaseUrl,supabaseKey)
+}
 
 function abrir(id){
 
@@ -123,11 +117,11 @@ document.getElementById(id).style.display="block"
 
 }
 
-abrir("dashboard")
-
-function addCliente(){
+async function addCliente(){
 
 let nome=document.getElementById("clienteNome").value
+
+await supabaseClient.from("clientes").insert({nome:nome})
 
 let tabela=document.getElementById("tabelaClientes")
 
@@ -137,10 +131,12 @@ linha.insertCell(0).innerHTML=nome
 
 }
 
-function addEmpresa(){
+async function addEmpresa(){
 
 let nome=document.getElementById("empresaNome").value
 let cnpj=document.getElementById("empresaCnpj").value
+
+await supabaseClient.from("empresas").insert({nome:nome,cnpj:cnpj})
 
 let tabela=document.getElementById("tabelaEmpresas")
 
@@ -151,10 +147,12 @@ linha.insertCell(1).innerHTML=cnpj
 
 }
 
-function addFinanceiro(){
+async function addFinanceiro(){
 
 let tipo=document.getElementById("tipoMov").value
 let valor=document.getElementById("valorMov").value
+
+await supabaseClient.from("financeiro").insert({tipo:tipo,valor:valor})
 
 let tabela=document.getElementById("tabelaFinanceiro")
 
@@ -165,47 +163,16 @@ linha.insertCell(1).innerHTML=valor
 
 }
 
-function addHonorario(){
+function calcularImpostos(){
 
-let cliente=document.getElementById("clienteHonorario").value
-let valor=document.getElementById("valorHonorario").value
+let faturamento = parseFloat(document.getElementById("faturamento").value)
 
-let tabela=document.getElementById("tabelaHonorarios")
+let simples = faturamento * 0.06
+let iss = faturamento * 0.02
+let icms = faturamento * 0.18
 
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=cliente
-linha.insertCell(1).innerHTML=valor
-
-}
-
-function addImposto(){
-
-let empresa=document.getElementById("empresaImposto").value
-let tipo=document.getElementById("tipoImposto").value
-let valor=document.getElementById("valorImposto").value
-
-let tabela=document.getElementById("tabelaImpostos")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=empresa
-linha.insertCell(1).innerHTML=tipo
-linha.insertCell(2).innerHTML=valor
-
-}
-
-function addAgenda(){
-
-let empresa=document.getElementById("empresaAgenda").value
-let obrigacao=document.getElementById("obrigacaoAgenda").value
-
-let tabela=document.getElementById("tabelaAgenda")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=empresa
-linha.insertCell(1).innerHTML=obrigacao
+document.getElementById("resultadoImpostos").innerHTML =
+"Simples: "+simples+" | ISS: "+iss+" | ICMS: "+icms
 
 }
 
@@ -225,7 +192,7 @@ let doc=parser.parseFromString(xml,"text/xml")
 
 let valor=doc.getElementsByTagName("vNF")[0]?.textContent
 
-document.getElementById("resultadoXML").innerHTML="Valor da nota: "+valor
+document.getElementById("resultadoXML").innerHTML="Valor da NF-e: "+valor
 
 }
 
@@ -235,46 +202,39 @@ reader.readAsText(file)
 
 function gerarDRE(){
 
-document.getElementById("resultadoRelatorios").innerHTML="DRE gerada"
+document.getElementById("resultadoContabil").innerHTML="DRE gerada"
 
 }
 
 function gerarBalanco(){
 
-document.getElementById("resultadoRelatorios").innerHTML="Balanço gerado"
+document.getElementById("resultadoContabil").innerHTML="Balanço gerado"
 
 }
 
 function gerarBalancete(){
 
-document.getElementById("resultadoRelatorios").innerHTML="Balancete gerado"
+document.getElementById("resultadoContabil").innerHTML="Balancete gerado"
 
 }
 
-function gerarPDF(){
+const ctx = document.getElementById("grafico")
 
-const { jsPDF } = window.jspdf
+if(ctx){
 
-let doc=new jsPDF()
-
-doc.text("Relatório ERP Contábil",20,20)
-
-doc.save("relatorio.pdf")
-
-}
-
-new Chart(document.getElementById("grafico"),{
-
+new Chart(ctx,{
 type:'bar',
-
 data:{
 labels:["Receita","Despesa","Lucro"],
 datasets:[{
 data:[50000,30000,20000]
 }]
 }
-
 })
 
+}
+
 </script></body>
-</html>
+
+</html>  
+

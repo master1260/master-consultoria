@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -52,6 +52,7 @@ display:none;
 background:white;
 padding:20px;
 border-radius:10px;
+margin-bottom:20px;
 }
 
 table{
@@ -122,48 +123,80 @@ text-align:center;
 <div class="conteudo">
 
 <div id="dashboard" class="modulo">
+
 <h2>Dashboard Financeiro</h2>
+
 <canvas id="grafico"></canvas>
+
 </div>
 
 <div id="clientes" class="modulo">
+
 <h2>Clientes</h2>
+
 <input id="clienteNome" placeholder="Nome">
+
 <button onclick="addCliente()">Cadastrar</button>
 
 <table id="tabelaClientes">
-<tr><th>Cliente</th></tr>
+
+<tr>
+<th>Cliente</th>
+</tr>
+
 </table>
+
 </div>
 
 <div id="empresas" class="modulo">
+
 <h2>Empresas</h2>
+
 <input id="empresaNome" placeholder="Empresa">
 <input id="empresaCnpj" placeholder="CNPJ">
+
 <button onclick="addEmpresa()">Cadastrar</button>
 
 <table id="tabelaEmpresas">
-<tr><th>Empresa</th><th>CNPJ</th></tr>
+
+<tr>
+<th>Empresa</th>
+<th>CNPJ</th>
+</tr>
+
 </table>
+
 </div>
 
 <div id="funcionarios" class="modulo">
+
 <h2>Funcionários</h2>
+
 <input id="funcNome" placeholder="Nome">
 <input id="funcSalario" placeholder="Salário">
+
 <button onclick="addFuncionario()">Cadastrar</button>
 
 <table id="tabelaFuncionarios">
-<tr><th>Nome</th><th>Salário</th></tr>
+
+<tr>
+<th>Nome</th>
+<th>Salário</th>
+</tr>
+
 </table>
+
 </div>
 
 <div id="financeiro" class="modulo">
+
 <h2>Fluxo de Caixa</h2>
 
 <select id="tipoMov">
+
 <option>Receita</option>
 <option>Despesa</option>
+
 </select>
 
 <input id="valorMov" placeholder="Valor">
@@ -171,7 +204,12 @@ text-align:center;
 <button onclick="addFinanceiro()">Registrar</button>
 
 <table id="tabelaFinanceiro">
-<tr><th>Tipo</th><th>Valor</th></tr>
+
+<tr>
+<th>Tipo</th>
+<th>Valor</th>
+</tr>
+
 </table>
 
 </div>
@@ -181,14 +219,9 @@ text-align:center;
 <h2>Agenda Fiscal</h2>
 
 <input id="empresaAgenda" placeholder="Empresa">
-
 <input id="dataAgenda" placeholder="Obrigação">
 
 <button onclick="addAgenda()">Registrar</button>
-
-<table id="tabelaAgenda">
-<tr><th>Empresa</th><th>Obrigação</th></tr>
-</table>
 
 </div>
 
@@ -199,10 +232,6 @@ text-align:center;
 <input id="contaNome" placeholder="Conta contábil">
 
 <button onclick="addConta()">Cadastrar</button>
-
-<table id="tabelaContas">
-<tr><th>Conta</th></tr>
-</table>
 
 </div>
 
@@ -247,14 +276,9 @@ text-align:center;
 <h2>Honorários</h2>
 
 <input id="clienteHonorario" placeholder="Cliente">
-
 <input id="valorHonorario" placeholder="Valor">
 
 <button onclick="addHonorario()">Registrar</button>
-
-<table id="tabelaHonorarios">
-<tr><th>Cliente</th><th>Valor</th></tr>
-</table>
 
 </div>
 
@@ -264,7 +288,7 @@ text-align:center;
 
 <input type="file">
 
-<button onclick="alert('Extrato importado')">Importar Extrato</button>
+<button onclick="alert('Extrato importado')">Importar</button>
 
 </div>
 
@@ -304,17 +328,10 @@ const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
 
 function login(){
 
-let email=document.getElementById("loginEmail").value
-let senha=document.getElementById("loginSenha").value
-
-if(email && senha){
-
 document.getElementById("loginTela").style.display="none"
 document.getElementById("sistema").style.display="block"
 
 abrir("dashboard")
-
-}
 
 }
 
@@ -332,12 +349,6 @@ let nome=document.getElementById("clienteNome").value
 
 await supabaseClient.from("clientes").insert({nome:nome})
 
-let tabela=document.getElementById("tabelaClientes")
-
-let linha=tabela.insertRow()
-
-linha.insertCell(0).innerHTML=nome
-
 }
 
 async function addEmpresa(){
@@ -347,12 +358,14 @@ let cnpj=document.getElementById("empresaCnpj").value
 
 await supabaseClient.from("empresas").insert({nome:nome,cnpj:cnpj})
 
-let tabela=document.getElementById("tabelaEmpresas")
+}
 
-let linha=tabela.insertRow()
+async function addFinanceiro(){
 
-linha.insertCell(0).innerHTML=nome
-linha.insertCell(1).innerHTML=cnpj
+let tipo=document.getElementById("tipoMov").value
+let valor=document.getElementById("valorMov").value
+
+await supabaseClient.from("financeiro").insert({tipo:tipo,valor:valor})
 
 }
 
@@ -364,7 +377,9 @@ let simples=faturamento*0.06
 let iss=faturamento*0.02
 let icms=faturamento*0.18
 
-document.getElementById("resultadoImpostos").innerHTML="Simples: "+simples+" | ISS: "+iss+" | ICMS: "+icms
+document.getElementById("resultadoImpostos").innerHTML=
+
+"Simples: "+simples+" | ISS: "+iss+" | ICMS: "+icms
 
 }
 
@@ -405,11 +420,21 @@ const ctx=document.getElementById("grafico")
 if(ctx){
 
 new Chart(ctx,{
+
 type:'bar',
+
 data:{
+
 labels:["Receita","Despesa","Lucro"],
-datasets:[{data:[50000,30000,20000]}]
+
+datasets:[{
+
+data:[50000,30000,20000]
+
+}]
+
 }
+
 })
 
 }
@@ -417,7 +442,4 @@ datasets:[{data:[50000,30000,20000]}]
 </script>
 
 </body>
-
 </html>
-
-

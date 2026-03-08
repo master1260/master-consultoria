@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
-<title>ERP MASTER CONTÁBIL</title>
+<title>ERP MASTER ULTRA</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,52 +12,47 @@
 <style>
 
 body{
-font-family:Arial;
 margin:0;
-display:flex
+font-family:Arial;
+display:flex;
+background:#f4f6f9;
 }
 
 #menu{
-width:240px;
+width:260px;
 background:#1c2b4a;
 color:white;
 min-height:100vh;
-padding:20px
+padding:20px;
 }
 
 #menu button{
 width:100%;
 padding:10px;
-margin-bottom:6px;
 border:none;
 background:none;
 color:white;
+text-align:left;
 cursor:pointer;
-text-align:left
+margin-bottom:4px;
 }
 
 #conteudo{
 flex:1;
-padding:20px
+padding:20px;
 }
 
 .modulo{
-display:none
+display:none;
+background:white;
+padding:20px;
+border-radius:6px;
+margin-bottom:20px;
 }
 
 input{
-padding:8px;
-margin:4px
-}
-
-table{
-border-collapse:collapse;
-width:100%
-}
-
-td,th{
-border:1px solid #ddd;
-padding:6px
+padding:6px;
+margin:4px;
 }
 
 </style>
@@ -65,164 +61,143 @@ padding:6px
 
 <body>
 
-<!-- MENU -->
-
 <div id="menu">
 
-<h3>ERP MASTER</h3>
+<h2>ERP MASTER</h2>
 
 <button onclick="abrir('dashboard')">Dashboard</button>
-<button onclick="abrir('clientes')">Clientes</button>
-<button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('financeiro')">Fluxo de Caixa</button>
-<button onclick="abrir('dre')">DRE</button>
-<button onclick="abrir('balanco')">Balanço</button>
+
+<h3>Contabilidade</h3>
+<button onclick="abrir('planocontas')">Plano de Contas</button>
+<button onclick="abrir('lancamentos')">Lançamentos</button>
 <button onclick="abrir('balancete')">Balancete</button>
-<button onclick="abrir('fiscal')">Fiscal</button>
+<button onclick="abrir('balanco')">Balanço</button>
+<button onclick="abrir('dre')">DRE</button>
+
+<h3>Fiscal</h3>
+<button onclick="abrir('simples')">Simples Nacional</button>
 <button onclick="abrir('lucroreal')">Lucro Real</button>
-<button onclick="abrir('funcionarios')">Funcionários</button>
-<button onclick="abrir('folha')">Folha</button>
-<button onclick="abrir('portal')">Portal Cliente</button>
-<button onclick="abrir('admin')">Admin SaaS</button>
+
+<h3>Financeiro</h3>
+<button onclick="abrir('conciliacao')">Conciliação Bancária</button>
+<button onclick="abrir('contaspagar')">Contas a Pagar</button>
+<button onclick="abrir('contasreceber')">Contas a Receber</button>
+
+<h3>Folha</h3>
+<button onclick="abrir('folha')">Folha de Pagamento</button>
+
+<h3>SPED</h3>
+<button onclick="abrir('spedcontabil')">SPED Contábil</button>
+<button onclick="abrir('spedfiscal')">SPED Fiscal</button>
+
+<h3>Relatórios</h3>
+<button onclick="abrir('relatorios')">Relatórios</button>
 
 </div>
-
-<!-- CONTEÚDO -->
 
 <div id="conteudo">
 
-<!-- LOGIN -->
-
-<div id="login">
-
-<h2>Login</h2>
-
-<input id="email" placeholder="Email">
-<input id="senha" type="password" placeholder="Senha">
-
-<button onclick="login()">Entrar</button>
-
-</div>
-
-<!-- DASHBOARD -->
-
 <div id="dashboard" class="modulo">
-
 <h2>Dashboard</h2>
-
 <canvas id="grafico"></canvas>
-
 </div>
 
-<!-- CLIENTES -->
 
-<div id="clientes" class="modulo">
-
-<h2>Clientes</h2>
-
-<input id="clienteNome" placeholder="Nome">
-
-<button onclick="addCliente()">Salvar</button>
-
-<table id="tabelaClientes"></table>
-
+<div id="planocontas" class="modulo">
+<h2>Plano de Contas</h2>
+<input placeholder="Conta">
+<button>Salvar</button>
 </div>
 
-<!-- EMPRESAS -->
 
-<div id="empresas" class="modulo">
-
-<h2>Empresas</h2>
-
-<input id="empresaNome" placeholder="Empresa">
-<input id="empresaCnpj" placeholder="CNPJ">
-
-<button onclick="addEmpresa()">Salvar</button>
-
+<div id="lancamentos" class="modulo">
+<h2>Lançamentos</h2>
+<input id="debito" placeholder="Débito">
+<input id="credito" placeholder="Crédito">
+<input id="valorLancamento" placeholder="Valor">
+<button onclick="lancar()">Registrar</button>
 </div>
 
-<!-- FINANCEIRO -->
-
-<div id="financeiro" class="modulo">
-
-<h2>Fluxo de Caixa</h2>
-
-<select id="tipoMov">
-<option>Receita</option>
-<option>Despesa</option>
-</select>
-
-<input id="valorMov" placeholder="Valor">
-
-<button onclick="addFinanceiro()">Registrar</button>
-
-</div>
-
-<!-- DRE -->
-
-<div id="dre" class="modulo">
-
-<h2>DRE</h2>
-
-<button onclick="gerarDRE()">Gerar</button>
-
-<div id="resultadoDRE"></div>
-
-</div>
-
-<!-- BALANÇO -->
-
-<div id="balanco" class="modulo">
-
-<h2>Balanço Patrimonial</h2>
-
-<button onclick="gerarBalanco()">Gerar</button>
-
-<div id="resultadoBalanco"></div>
-
-</div>
-
-<!-- BALANCETE -->
 
 <div id="balancete" class="modulo">
-
 <h2>Balancete</h2>
+<button onclick="alert('Balancete gerado')">Gerar</button>
+</div>
 
-<button onclick="gerarBalancete()">Gerar</button>
 
-<div id="resultadoBalancete"></div>
+<div id="balanco" class="modulo">
+<h2>Balanço Patrimonial</h2>
+<button onclick="alert('Balanço gerado')">Gerar</button>
+</div>
+
+
+<div id="dre" class="modulo">
+<h2>DRE</h2>
+<button onclick="alert('DRE gerado')">Gerar</button>
+</div>
+
+
+<div id="simples" class="modulo">
+<h2>Simples Nacional</h2>
+
+<input id="faturamentoSimples" placeholder="Faturamento">
+
+<button onclick="calcularSimples()">Calcular</button>
+
+<div id="resultadoSimples"></div>
 
 </div>
 
-<!-- LUCRO REAL -->
 
 <div id="lucroreal" class="modulo">
 
 <h2>Lucro Real</h2>
 
 <input id="receitaLR" placeholder="Receita">
-<input id="despesaLR" placeholder="Despesas">
+<input id="despesaLR" placeholder="Despesa">
 
 <button onclick="calcularLucroReal()">Calcular</button>
 
-<div id="resultadoLucroReal"></div>
+<div id="resultadoLR"></div>
 
 </div>
 
-<!-- FUNCIONÁRIOS -->
 
-<div id="funcionarios" class="modulo">
+<div id="conciliacao" class="modulo">
 
-<h2>Funcionários</h2>
+<h2>Conciliação Bancária</h2>
 
-<input id="funcNome" placeholder="Nome">
-<input id="funcSalario" placeholder="Salário">
+<input id="descBanco" placeholder="Descrição">
+<input id="valorBanco" placeholder="Valor">
 
-<button onclick="addFuncionario()">Salvar</button>
+<button onclick="registrarBanco()">Registrar</button>
 
 </div>
 
-<!-- FOLHA -->
+
+<div id="contaspagar" class="modulo">
+
+<h2>Contas a Pagar</h2>
+
+<input id="pagarDesc" placeholder="Descrição">
+<input id="pagarValor" placeholder="Valor">
+
+<button onclick="addContaPagar()">Salvar</button>
+
+</div>
+
+
+<div id="contasreceber" class="modulo">
+
+<h2>Contas a Receber</h2>
+
+<input id="receberDesc" placeholder="Descrição">
+<input id="receberValor" placeholder="Valor">
+
+<button onclick="addContaReceber()">Salvar</button>
+
+</div>
+
 
 <div id="folha" class="modulo">
 
@@ -236,29 +211,31 @@ padding:6px
 
 </div>
 
-<!-- PORTAL CLIENTE -->
 
-<div id="portal" class="modulo">
+<div id="spedcontabil" class="modulo">
 
-<h2>Portal Cliente</h2>
+<h2>SPED Contábil</h2>
 
-<input id="empresaPortal" placeholder="Empresa">
-
-<button onclick="verPortal()">Consultar</button>
-
-<div id="dadosPortal"></div>
+<button onclick="gerarSPED()">Gerar Arquivo</button>
 
 </div>
 
-<!-- ADMIN -->
 
-<div id="admin" class="modulo">
+<div id="spedfiscal" class="modulo">
 
-<h2>Painel SaaS</h2>
+<h2>SPED Fiscal</h2>
 
-<input id="nomeEscritorio" placeholder="Escritório">
+<button onclick="gerarSPEDFiscal()">Gerar Arquivo</button>
 
-<button onclick="criarEscritorio()">Criar</button>
+</div>
+
+
+<div id="relatorios" class="modulo">
+
+<h2>Relatórios</h2>
+
+<button onclick="relatorioDRE()">Relatório DRE</button>
+<button onclick="relatorioBalanco()">Relatório Balanço</button>
 
 </div>
 
@@ -267,9 +244,13 @@ padding:6px
 <script>
 
 const SUPABASE_URL="https://dikwusajnuioqmdwszey.supabase.co"
+
 const SUPABASE_KEY="sb_publishable_RjuaEbpS5ZMU8oeusDdgFw_abzh0zv3"
 
-const supabaseClient = supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
+const supabaseClient=supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+)
 
 function abrir(id){
 
@@ -280,89 +261,30 @@ document.getElementById(id).style.display="block"
 
 }
 
-async function login(){
-
-let email=document.getElementById("email").value
-let senha=document.getElementById("senha").value
-
-const {data,error}=await supabaseClient.auth.signInWithPassword({
-
-email:email,
-password:senha
-
-})
-
-if(error){
-
-alert("Erro login")
-
-}else{
-
-document.getElementById("login").style.display="none"
 abrir("dashboard")
 
-}
+
+function lancar(){
+
+let debito=document.getElementById("debito").value
+let credito=document.getElementById("credito").value
+let valor=document.getElementById("valorLancamento").value
+
+alert("Lançamento registrado")
 
 }
 
-async function addCliente(){
 
-let nome=document.getElementById("clienteNome").value
+function calcularSimples(){
 
-await supabaseClient.from("clientes")
-.insert([{nome:nome}])
+let faturamento=parseFloat(document.getElementById("faturamentoSimples").value)
 
-alert("Cliente salvo")
+let DAS=faturamento*0.06
 
-}
-
-async function addEmpresa(){
-
-let nome=document.getElementById("empresaNome").value
-let cnpj=document.getElementById("empresaCnpj").value
-
-await supabaseClient.from("empresas")
-.insert([{nome:nome,cnpj:cnpj}])
-
-alert("Empresa salva")
+document.getElementById("resultadoSimples").innerHTML="DAS:"+DAS
 
 }
 
-async function addFinanceiro(){
-
-let tipo=document.getElementById("tipoMov").value
-let valor=parseFloat(document.getElementById("valorMov").value)
-
-await supabaseClient.from("financeiro")
-.insert([{tipo:tipo,valor:valor}])
-
-alert("Lançamento salvo")
-
-}
-
-async function gerarDRE(){
-
-const {data}=await supabaseClient
-.from("financeiro")
-.select("*")
-
-let receitas=0
-let despesas=0
-
-data.forEach(l=>{
-
-if(l.tipo=="Receita") receitas+=Number(l.valor)
-if(l.tipo=="Despesa") despesas+=Number(l.valor)
-
-})
-
-let lucro=receitas-despesas
-
-document.getElementById("resultadoDRE").innerHTML=
-
-"Receitas:"+receitas+"<br>Despesas:"+despesas+"<br>Lucro:"+lucro
-
-}
 
 function calcularLucroReal(){
 
@@ -374,11 +296,35 @@ let lucro=receita-despesa
 let irpj=lucro*0.15
 let csll=lucro*0.09
 
-document.getElementById("resultadoLucroReal").innerHTML=
-
-"Lucro:"+lucro+"<br>IRPJ:"+irpj+"<br>CSLL:"+csll
+document.getElementById("resultadoLR").innerHTML=
+"Lucro:"+lucro+" IRPJ:"+irpj+" CSLL:"+csll
 
 }
+
+
+function registrarBanco(){
+
+let desc=document.getElementById("descBanco").value
+let valor=document.getElementById("valorBanco").value
+
+alert("Movimento bancário registrado")
+
+}
+
+
+function addContaPagar(){
+
+alert("Conta a pagar salva")
+
+}
+
+
+function addContaReceber(){
+
+alert("Conta a receber salva")
+
+}
+
 
 function calcularFolha(){
 
@@ -388,33 +334,55 @@ let inss=salario*0.11
 let fgts=salario*0.08
 
 document.getElementById("resultadoFolha").innerHTML=
-
-"INSS:"+inss+"<br>FGTS:"+fgts
-
-}
-
-async function addFuncionario(){
-
-let nome=document.getElementById("funcNome").value
-let salario=parseFloat(document.getElementById("funcSalario").value)
-
-await supabaseClient
-.from("funcionarios")
-.insert([{nome:nome,salario:salario}])
-
-alert("Funcionário salvo")
+"INSS:"+inss+" FGTS:"+fgts
 
 }
 
-async function criarEscritorio(){
 
-let nome=document.getElementById("nomeEscritorio").value
+function gerarSPED(){
 
-await supabaseClient
-.from("escritorios")
-.insert([{nome:nome,plano:"Starter"}])
+let arquivo="SPED CONTABIL GERADO"
 
-alert("Escritório criado")
+let blob=new Blob([arquivo],{type:"text/plain"})
+
+let link=document.createElement("a")
+
+link.href=URL.createObjectURL(blob)
+
+link.download="sped_contabil.txt"
+
+link.click()
+
+}
+
+
+function gerarSPEDFiscal(){
+
+let arquivo="SPED FISCAL GERADO"
+
+let blob=new Blob([arquivo],{type:"text/plain"})
+
+let link=document.createElement("a")
+
+link.href=URL.createObjectURL(blob)
+
+link.download="sped_fiscal.txt"
+
+link.click()
+
+}
+
+
+function relatorioDRE(){
+
+alert("Relatório DRE gerado")
+
+}
+
+
+function relatorioBalanco(){
+
+alert("Relatório Balanço gerado")
 
 }
 

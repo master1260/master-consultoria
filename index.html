@@ -1,5 +1,4 @@
-
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -110,9 +109,9 @@ padding:6px;
 <button onclick="abrir('spedcontabil')">SPED Contábil</button>
 <button onclick="abrir('spedfiscal')">SPED Fiscal</button>
 
-<h3>Cliente</h3>
+<h3>Relatórios</h3>
 
-<button onclick="abrir('portal')">Portal Cliente</button>
+<button onclick="abrir('relatorios')">Relatórios</button>
 
 </div>
 
@@ -292,27 +291,21 @@ padding:6px;
 
 </div>
 
-<div id="spedcontabil" class="modulo">
+<div id="relatorios" class="modulo">
 
-<h2>SPED Contábil</h2>
+<h2>Relatórios</h2>
 
-<button onclick="gerarSPEDContabil()">Gerar Arquivo</button>
+<button onclick="relatorioBalancete()">Balancete</button>
 
-</div>
+<button onclick="relatorioDRE()">DRE</button>
 
-<div id="spedfiscal" class="modulo">
+<button onclick="relatorioFluxo()">Fluxo de Caixa</button>
 
-<h2>SPED Fiscal</h2>
+<button onclick="relatorioClientes()">Clientes</button>
 
-<button onclick="gerarSPEDFiscal()">Gerar Arquivo</button>
+<button onclick="relatorioEmpresas()">Empresas</button>
 
-</div>
-
-<div id="portal" class="modulo">
-
-<h2>Portal Cliente</h2>
-
-<div id="portalDados"></div>
+<div id="resultadoRelatorio"></div>
 
 </div>
 
@@ -373,74 +366,41 @@ let valor=parseFloat(document.getElementById("valorLanc").value)
 
 lancamentos.push({deb,cred,valor})
 
-alert("Lançamento registrado")
-
 }
 
 function gerarBalancete(){
 
-let contasSaldo={}
+let total=0
 
 lancamentos.forEach(l=>{
-
-if(!contasSaldo[l.deb]) contasSaldo[l.deb]=0
-if(!contasSaldo[l.cred]) contasSaldo[l.cred]=0
-
-contasSaldo[l.deb]+=l.valor
-contasSaldo[l.cred]-=l.valor
-
+total+=l.valor
 })
 
-let html="<table><tr><th>Conta</th><th>Saldo</th></tr>"
-
-for(let c in contasSaldo){
-
-html+="<tr><td>"+c+"</td><td>"+contasSaldo[c]+"</td></tr>"
-
-}
-
-html+="</table>"
-
-document.getElementById("balanceteResultado").innerHTML=html
+document.getElementById("balanceteResultado").innerHTML="Total movimentado: "+total
 
 }
 
 function gerarBalanco(){
 
 let ativo=0
-let passivo=0
 
 lancamentos.forEach(l=>{
 ativo+=l.valor
 })
 
-document.getElementById("balancoResultado").innerHTML=
-
-"Ativo: "+ativo+
-"<br>Passivo: "+passivo+
-"<br>Patrimônio: "+(ativo-passivo)
+document.getElementById("balancoResultado").innerHTML="Ativo: "+ativo
 
 }
 
 function gerarDRE(){
 
 let receita=0
-let despesa=0
 
 lancamentos.forEach(l=>{
-
-if(l.cred==="Receita") receita+=l.valor
-if(l.deb==="Despesa") despesa+=l.valor
-
+receita+=l.valor
 })
 
-let lucro=receita-despesa
-
-document.getElementById("dreResultado").innerHTML=
-
-"Receita: "+receita+
-"<br>Despesa: "+despesa+
-"<br>Lucro: "+lucro
+document.getElementById("dreResultado").innerHTML="Lucro: "+receita
 
 }
 
@@ -454,74 +414,53 @@ document.getElementById("resultadoFiscal").innerHTML="DAS: "+das
 
 }
 
-function lerXML(){
+function relatorioBalancete(){
 
-let file=document.getElementById("arquivoXML").files[0]
-
-let reader=new FileReader()
-
-reader.onload=function(e){
-
-let xml=e.target.result
-
-let parser=new DOMParser()
-
-let doc=parser.parseFromString(xml,"text/xml")
-
-let produtos=doc.getElementsByTagName("det")
-
-let html=""
 let total=0
 
-for(let i=0;i<produtos.length;i++){
+lancamentos.forEach(l=>{
+total+=l.valor
+})
 
-let nome=produtos[i].getElementsByTagName("xProd")[0].textContent
-let valor=parseFloat(produtos[i].getElementsByTagName("vProd")[0].textContent)
-
-total+=valor
-
-html+=nome+" - "+valor+"<br>"
+document.getElementById("resultadoRelatorio").innerHTML="Total movimentado: "+total
 
 }
 
-document.getElementById("resultadoXML").innerHTML=
+function relatorioDRE(){
 
-"<b>Produtos:</b><br>"+html+
-"<br>Total:"+total
+let receita=0
 
-}
+lancamentos.forEach(l=>{
+receita+=l.valor
+})
 
-reader.readAsText(file)
-
-}
-
-function gerarSPEDContabil(){
-
-alert("Arquivo SPED Contábil gerado")
+document.getElementById("resultadoRelatorio").innerHTML="Lucro: "+receita
 
 }
 
-function gerarSPEDFiscal(){
+function relatorioFluxo(){
 
-alert("Arquivo SPED Fiscal gerado")
+let html=""
+
+fluxo.forEach(f=>{
+html+=f.desc+" - "+f.valor+"<br>"
+})
+
+document.getElementById("resultadoRelatorio").innerHTML=html
 
 }
 
-new Chart(
+function relatorioClientes(){
 
-document.getElementById("grafico"),
+document.getElementById("resultadoRelatorio").innerHTML=clientes.join("<br>")
 
-{
-type:"bar",
-data:{
-labels:["Receita","Despesa"],
-datasets:[{
-data:[50000,30000]
-}]
-}
 }
 
-)
+function relatorioEmpresas(){
+
+document.getElementById("resultadoRelatorio").innerHTML=empresas.join("<br>")
+
+}
 
 </script>
 

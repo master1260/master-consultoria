@@ -1,3 +1,5 @@
+Html
+Copiar código
 <!DOCTYPE html>
 <html>
 
@@ -52,6 +54,21 @@ padding:6px;
 margin:4px;
 }
 
+.cards{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:8px;
+box-shadow:0 0 5px #ccc;
+min-width:150px;
+}
+
 table{
 border-collapse:collapse;
 width:100%;
@@ -89,22 +106,19 @@ padding:6px;
 <button onclick="abrir('balanco')">Balanço</button>
 <button onclick="abrir('dre')">DRE</button>
 
-<h3>Fiscal</h3>
-
-<button onclick="abrir('fiscal')">Impostos</button>
-
 <h3>Financeiro</h3>
 
 <button onclick="abrir('fluxo')">Fluxo Caixa</button>
 <button onclick="abrir('pagar')">Contas Pagar</button>
 <button onclick="abrir('receber')">Contas Receber</button>
 
-<h3>Notas</h3>
+<h3>Fiscal</h3>
+
+<button onclick="abrir('fiscal')">Cálculo Impostos</button>
+
+<h3>Documentos</h3>
 
 <button onclick="abrir('xml')">Importar XML</button>
-
-<h3>SPED</h3>
-
 <button onclick="abrir('sped')">Gerar SPED</button>
 
 <h3>Relatórios</h3>
@@ -116,45 +130,91 @@ padding:6px;
 <div id="conteudo">
 
 <div id="dashboard" class="modulo">
+
 <h2>Dashboard BI</h2>
+
+<div class="cards">
+
+<div class="card">
+<b>Saldo Caixa</b>
+<div id="saldoCaixa">0</div>
+</div>
+
+<div class="card">
+<b>Lucro</b>
+<div id="lucroTotal">0</div>
+</div>
+
+<div class="card">
+<b>Empresas</b>
+<div id="totalEmpresas">0</div>
+</div>
+
+<div class="card">
+<b>Clientes</b>
+<div id="totalClientes">0</div>
+</div>
+
+</div>
+
 <canvas id="grafico"></canvas>
+
 </div>
 
 <div id="clientes" class="modulo">
+
 <h2>Clientes</h2>
+
 <input id="clienteNome">
 <button onclick="addCliente()">Salvar</button>
+
 <div id="listaClientes"></div>
+
 </div>
 
 <div id="empresas" class="modulo">
+
 <h2>Empresas</h2>
+
 <input id="empresaNome">
 <button onclick="addEmpresa()">Salvar</button>
+
 <div id="listaEmpresas"></div>
+
 </div>
 
 <div id="funcionarios" class="modulo">
+
 <h2>Funcionários</h2>
+
 <input id="funcNome">
 <button onclick="addFuncionario()">Salvar</button>
+
 <div id="listaFuncionarios"></div>
+
 </div>
 
 <div id="planocontas" class="modulo">
+
 <h2>Plano de Contas</h2>
+
 <input id="contaNome">
+
 <select id="tipoConta">
 <option>Ativo</option>
 <option>Passivo</option>
 <option>Receita</option>
 <option>Despesa</option>
 </select>
+
 <button onclick="addConta()">Adicionar</button>
+
 <div id="listaContas"></div>
+
 </div>
 
 <div id="lancamentos" class="modulo">
+
 <h2>Lançamento Contábil</h2>
 
 <input id="debito" placeholder="Débito">
@@ -166,96 +226,149 @@ padding:6px;
 </div>
 
 <div id="livrodiario" class="modulo">
+
 <h2>Livro Diário</h2>
+
 <button onclick="livroDiario()">Gerar</button>
+
 <div id="resultadoDiario"></div>
+
 </div>
 
 <div id="livrorazao" class="modulo">
+
 <h2>Livro Razão</h2>
+
 <input id="contaRazao">
+
 <button onclick="livroRazao()">Gerar</button>
+
 <div id="resultadoRazao"></div>
+
 </div>
 
 <div id="balancete" class="modulo">
+
 <h2>Balancete</h2>
+
 <button onclick="balancete()">Gerar</button>
+
 <div id="resultadoBalancete"></div>
+
 </div>
 
 <div id="balanco" class="modulo">
+
 <h2>Balanço</h2>
+
 <button onclick="balanco()">Gerar</button>
+
 <div id="resultadoBalanco"></div>
+
 </div>
 
 <div id="dre" class="modulo">
-<h2>DRE</h2>
-<button onclick="dre()">Gerar</button>
-<div id="resultadoDRE"></div>
-</div>
 
-<div id="fiscal" class="modulo">
-<h2>Cálculo de Impostos</h2>
-<input id="valorNota">
-<button onclick="impostos()">Calcular</button>
-<div id="resultadoFiscal"></div>
+<h2>DRE</h2>
+
+<button onclick="dre()">Gerar</button>
+
+<div id="resultadoDRE"></div>
+
 </div>
 
 <div id="fluxo" class="modulo">
+
 <h2>Fluxo de Caixa</h2>
+
 <input id="fluxoDesc">
 <input id="fluxoValor">
+
 <button onclick="addFluxo()">Registrar</button>
+
 <div id="listaFluxo"></div>
+
 </div>
 
 <div id="pagar" class="modulo">
+
 <h2>Contas a Pagar</h2>
+
 <input id="pagarDesc">
 <input id="pagarValor">
+
 <button onclick="addPagar()">Salvar</button>
+
 <div id="listaPagar"></div>
+
 </div>
 
 <div id="receber" class="modulo">
+
 <h2>Contas a Receber</h2>
+
 <input id="receberDesc">
 <input id="receberValor">
+
 <button onclick="addReceber()">Salvar</button>
+
 <div id="listaReceber"></div>
+
+</div>
+
+<div id="fiscal" class="modulo">
+
+<h2>Cálculo de Impostos</h2>
+
+<input id="valorNota">
+
+<button onclick="impostos()">Calcular</button>
+
+<div id="resultadoFiscal"></div>
+
 </div>
 
 <div id="xml" class="modulo">
+
 <h2>Importar XML</h2>
-<input type="file" id="arquivoXML" multiple>
+
+<input type="file" id="arquivoXML">
+
 <button onclick="lerXML()">Importar</button>
+
 <div id="resultadoXML"></div>
+
 </div>
 
 <div id="sped" class="modulo">
+
 <h2>SPED</h2>
+
 <button onclick="sped()">Gerar TXT</button>
+
 </div>
 
 <div id="relatorios" class="modulo">
+
 <h2>Relatórios</h2>
+
 <button onclick="relatorioBalancete()">Balancete</button>
 <button onclick="relatorioDRE()">DRE</button>
+
 <div id="resultadoRelatorio"></div>
+
 </div>
 
 </div>
 
 <script>
 
+/* sistema */
+
 function abrir(id){
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
 document.getElementById(id).style.display="block"
 }
-
-abrir("dashboard")
 
 let clientes=[]
 let empresas=[]
@@ -266,25 +379,112 @@ let fluxo=[]
 let pagar=[]
 let receber=[]
 
+abrir("dashboard")
+
+carregarDados()
+
+setTimeout(atualizarDashboard,200)
+
+function salvarDados(){
+
+let dados={
+clientes,
+empresas,
+funcionarios,
+contas,
+lancamentos,
+fluxo,
+pagar,
+receber
+}
+
+localStorage.setItem("erpMaster",JSON.stringify(dados))
+
+}
+
+function carregarDados(){
+
+let dados=localStorage.getItem("erpMaster")
+
+if(dados){
+
+let sistema=JSON.parse(dados)
+
+clientes=sistema.clientes||[]
+empresas=sistema.empresas||[]
+funcionarios=sistema.funcionarios||[]
+contas=sistema.contas||[]
+lancamentos=sistema.lancamentos||[]
+fluxo=sistema.fluxo||[]
+pagar=sistema.pagar||[]
+receber=sistema.receber||[]
+
+}
+
+}
+
+/* dashboard */
+
+function atualizarDashboard(){
+
+let receitas=0
+let despesas=0
+
+receber.forEach(r=>receitas+=r.valor)
+pagar.forEach(p=>despesas+=p.valor)
+
+let saldo=receitas-despesas
+
+saldoCaixa.innerText="R$ "+saldo.toFixed(2)
+lucroTotal.innerText="R$ "+saldo.toFixed(2)
+totalEmpresas.innerText=empresas.length
+totalClientes.innerText=clientes.length
+
+new Chart(
+document.getElementById("grafico"),
+{
+type:"bar",
+data:{
+labels:["Receitas","Despesas"],
+datasets:[{
+data:[receitas,despesas],
+backgroundColor:["green","red"]
+}]
+}
+}
+)
+
+}
+
+/* cadastros */
+
 function addCliente(){
 clientes.push(clienteNome.value)
 listaClientes.innerHTML=clientes.join("<br>")
+salvarDados()
+atualizarDashboard()
 }
 
 function addEmpresa(){
 empresas.push(empresaNome.value)
 listaEmpresas.innerHTML=empresas.join("<br>")
+salvarDados()
+atualizarDashboard()
 }
 
 function addFuncionario(){
 funcionarios.push(funcNome.value)
 listaFuncionarios.innerHTML=funcionarios.join("<br>")
+salvarDados()
 }
 
 function addConta(){
 contas.push({nome:contaNome.value,tipo:tipoConta.value})
 listaContas.innerHTML=contas.map(c=>c.nome+" - "+c.tipo).join("<br>")
+salvarDados()
 }
+
+/* contabilidade */
 
 function lancar(){
 
@@ -292,7 +492,9 @@ let deb=debito.value
 let cred=credito.value
 let valor=parseFloat(valorLanc.value)
 
-lancamentos.push({deb,cred,valor,data:new Date()})
+lancamentos.push({deb,cred,valor})
+
+salvarDados()
 
 }
 
@@ -301,7 +503,7 @@ function livroDiario(){
 let html=""
 
 lancamentos.forEach(l=>{
-html+=l.data+" "+l.deb+" "+l.cred+" "+l.valor+"<br>"
+html+=l.deb+" "+l.cred+" "+l.valor+"<br>"
 })
 
 resultadoDiario.innerHTML=html
@@ -315,8 +517,11 @@ let saldo=0
 let html=""
 
 lancamentos.forEach(l=>{
+
 if(l.deb==conta){saldo+=l.valor;html+="D "+l.valor+"<br>"}
+
 if(l.cred==conta){saldo-=l.valor;html+="C "+l.valor+"<br>"}
+
 })
 
 resultadoRazao.innerHTML=html+"Saldo:"+saldo
@@ -328,14 +533,18 @@ function balancete(){
 let mapa={}
 
 lancamentos.forEach(l=>{
+
 mapa[l.deb]=(mapa[l.deb]||0)+l.valor
 mapa[l.cred]=(mapa[l.cred]||0)-l.valor
+
 })
 
 let html=""
 
 for(let c in mapa){
+
 html+=c+" : "+mapa[c]+"<br>"
+
 }
 
 resultadoBalancete.innerHTML=html
@@ -348,8 +557,11 @@ let ativo=0
 let passivo=0
 
 contas.forEach(c=>{
+
 if(c.tipo=="Ativo")ativo++
+
 if(c.tipo=="Passivo")passivo++
+
 })
 
 resultadoBalanco.innerHTML="Ativo:"+ativo+" Passivo:"+passivo
@@ -358,17 +570,50 @@ resultadoBalanco.innerHTML="Ativo:"+ativo+" Passivo:"+passivo
 
 function dre(){
 
-let receita=0
-let despesa=0
+let receitas=receber.reduce((a,b)=>a+b.valor,0)
+let despesas=pagar.reduce((a,b)=>a+b.valor,0)
 
-contas.forEach(c=>{
-if(c.tipo=="Receita")receita++
-if(c.tipo=="Despesa")despesa++
-})
-
-resultadoDRE.innerHTML="Lucro:"+ (receita-despesa)
+resultadoDRE.innerHTML="Lucro:"+ (receitas-despesas)
 
 }
+
+/* financeiro */
+
+function addFluxo(){
+
+fluxo.push({desc:fluxoDesc.value,valor:parseFloat(fluxoValor.value)})
+
+listaFluxo.innerHTML=fluxo.map(f=>f.desc+" "+f.valor).join("<br>")
+
+salvarDados()
+
+}
+
+function addPagar(){
+
+pagar.push({desc:pagarDesc.value,valor:parseFloat(pagarValor.value)})
+
+listaPagar.innerHTML=pagar.map(p=>p.desc+" "+p.valor).join("<br>")
+
+salvarDados()
+
+atualizarDashboard()
+
+}
+
+function addReceber(){
+
+receber.push({desc:receberDesc.value,valor:parseFloat(receberValor.value)})
+
+listaReceber.innerHTML=receber.map(r=>r.desc+" "+r.valor).join("<br>")
+
+salvarDados()
+
+atualizarDashboard()
+
+}
+
+/* fiscal */
 
 function impostos(){
 
@@ -378,30 +623,14 @@ let icms=valor*0.18
 let pis=valor*0.0165
 let cofins=valor*0.076
 
-resultadoFiscal.innerHTML="ICMS:"+icms+"<br>PIS:"+pis+"<br>COFINS:"+cofins
+resultadoFiscal.innerHTML=
+"ICMS:"+icms+"<br>PIS:"+pis+"<br>COFINS:"+cofins
 
 }
 
-function addFluxo(){
-fluxo.push({desc:fluxoDesc.value,valor:fluxoValor.value})
-listaFluxo.innerHTML=fluxo.map(f=>f.desc+" "+f.valor).join("<br>")
-}
-
-function addPagar(){
-pagar.push({desc:pagarDesc.value,valor:pagarValor.value})
-listaPagar.innerHTML=pagar.map(p=>p.desc+" "+p.valor).join("<br>")
-}
-
-function addReceber(){
-receber.push({desc:receberDesc.value,valor:receberValor.value})
-listaReceber.innerHTML=receber.map(r=>r.desc+" "+r.valor).join("<br>")
-}
+/* xml */
 
 function lerXML(){
-
-let arquivos=arquivoXML.files
-
-for(let a=0;a<arquivos.length;a++){
 
 let reader=new FileReader()
 
@@ -413,53 +642,53 @@ let doc=parser.parseFromString(xml,"text/xml")
 
 let total=doc.getElementsByTagName("vNF")[0].textContent
 
-resultadoXML.innerHTML+="Nota importada valor:"+total+"<br>"
+resultadoXML.innerHTML="Valor Nota:"+total
 
 }
 
-reader.readAsText(arquivos[a])
+reader.readAsText(arquivoXML.files[0])
 
 }
 
-}
+/* sped */
 
 function sped(){
 
 let txt="SPED CONTABIL\n"
 
 lancamentos.forEach(l=>{
-txt+=l.data+" "+l.deb+" "+l.cred+" "+l.valor+"\n"
+
+txt+=l.deb+" "+l.cred+" "+l.valor+"\n"
+
 })
 
 let blob=new Blob([txt])
+
 let link=document.createElement("a")
+
 link.href=URL.createObjectURL(blob)
+
 link.download="sped.txt"
+
 link.click()
 
 }
 
+/* relatórios */
+
 function relatorioBalancete(){
+
 resultadoRelatorio.innerHTML="Lançamentos:"+lancamentos.length
+
 }
 
 function relatorioDRE(){
-resultadoRelatorio.innerHTML="Lucro:"+lancamentos.reduce((a,b)=>a+b.valor,0)
-}
 
-new Chart(
-document.getElementById("grafico"),
-{
-type:"bar",
-data:{
-labels:["Receita","Despesa"],
-datasets:[{data:[50000,30000]}]
+resultadoRelatorio.innerHTML="Lucro:"+lancamentos.reduce((a,b)=>a+b.valor,0)
+
 }
-}
-)
 
 </script>
 
 </body>
 </html>
-

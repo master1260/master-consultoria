@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 <meta charset="UTF-8">
 <title>ERP MASTER PRO</title>
 
@@ -64,7 +63,6 @@ padding:6px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -85,29 +83,29 @@ padding:6px;
 
 <button onclick="abrir('planocontas')">Plano de Contas</button>
 <button onclick="abrir('lancamentos')">Lançamentos</button>
+<button onclick="abrir('livrodiario')">Livro Diário</button>
+<button onclick="abrir('livrorazao')">Livro Razão</button>
 <button onclick="abrir('balancete')">Balancete</button>
 <button onclick="abrir('balanco')">Balanço</button>
 <button onclick="abrir('dre')">DRE</button>
 
 <h3>Fiscal</h3>
 
-<button onclick="abrir('fiscal')">Simples Nacional</button>
+<button onclick="abrir('fiscal')">Impostos</button>
 
 <h3>Financeiro</h3>
 
-<button onclick="abrir('fluxo')">Fluxo de Caixa</button>
-<button onclick="abrir('pagar')">Contas a Pagar</button>
-<button onclick="abrir('receber')">Contas a Receber</button>
-<button onclick="abrir('banco')">Banco</button>
+<button onclick="abrir('fluxo')">Fluxo Caixa</button>
+<button onclick="abrir('pagar')">Contas Pagar</button>
+<button onclick="abrir('receber')">Contas Receber</button>
 
-<h3>Documentos</h3>
+<h3>Notas</h3>
 
 <button onclick="abrir('xml')">Importar XML</button>
 
 <h3>SPED</h3>
 
-<button onclick="abrir('spedcontabil')">SPED Contábil</button>
-<button onclick="abrir('spedfiscal')">SPED Fiscal</button>
+<button onclick="abrir('sped')">Gerar SPED</button>
 
 <h3>Relatórios</h3>
 
@@ -118,63 +116,45 @@ padding:6px;
 <div id="conteudo">
 
 <div id="dashboard" class="modulo">
-
-<h2>Dashboard</h2>
-
+<h2>Dashboard BI</h2>
 <canvas id="grafico"></canvas>
-
 </div>
 
 <div id="clientes" class="modulo">
-
 <h2>Clientes</h2>
-
-<input id="clienteNome" placeholder="Nome">
-
+<input id="clienteNome">
 <button onclick="addCliente()">Salvar</button>
-
 <div id="listaClientes"></div>
-
 </div>
 
 <div id="empresas" class="modulo">
-
 <h2>Empresas</h2>
-
-<input id="empresaNome" placeholder="Empresa">
-
+<input id="empresaNome">
 <button onclick="addEmpresa()">Salvar</button>
-
 <div id="listaEmpresas"></div>
-
 </div>
 
 <div id="funcionarios" class="modulo">
-
 <h2>Funcionários</h2>
-
-<input id="funcNome" placeholder="Nome">
-
+<input id="funcNome">
 <button onclick="addFuncionario()">Salvar</button>
-
 <div id="listaFuncionarios"></div>
-
 </div>
 
 <div id="planocontas" class="modulo">
-
 <h2>Plano de Contas</h2>
-
-<input id="contaNome" placeholder="Conta">
-
+<input id="contaNome">
+<select id="tipoConta">
+<option>Ativo</option>
+<option>Passivo</option>
+<option>Receita</option>
+<option>Despesa</option>
+</select>
 <button onclick="addConta()">Adicionar</button>
-
 <div id="listaContas"></div>
-
 </div>
 
 <div id="lancamentos" class="modulo">
-
 <h2>Lançamento Contábil</h2>
 
 <input id="debito" placeholder="Débito">
@@ -185,128 +165,85 @@ padding:6px;
 
 </div>
 
+<div id="livrodiario" class="modulo">
+<h2>Livro Diário</h2>
+<button onclick="livroDiario()">Gerar</button>
+<div id="resultadoDiario"></div>
+</div>
+
+<div id="livrorazao" class="modulo">
+<h2>Livro Razão</h2>
+<input id="contaRazao">
+<button onclick="livroRazao()">Gerar</button>
+<div id="resultadoRazao"></div>
+</div>
+
 <div id="balancete" class="modulo">
-
 <h2>Balancete</h2>
-
-<button onclick="gerarBalancete()">Gerar</button>
-
-<div id="balanceteResultado"></div>
-
+<button onclick="balancete()">Gerar</button>
+<div id="resultadoBalancete"></div>
 </div>
 
 <div id="balanco" class="modulo">
-
 <h2>Balanço</h2>
-
-<button onclick="gerarBalanco()">Gerar</button>
-
-<div id="balancoResultado"></div>
-
+<button onclick="balanco()">Gerar</button>
+<div id="resultadoBalanco"></div>
 </div>
 
 <div id="dre" class="modulo">
-
 <h2>DRE</h2>
-
-<button onclick="gerarDRE()">Gerar</button>
-
-<div id="dreResultado"></div>
-
+<button onclick="dre()">Gerar</button>
+<div id="resultadoDRE"></div>
 </div>
 
 <div id="fiscal" class="modulo">
-
-<h2>Simples Nacional</h2>
-
-<input id="faturamento" placeholder="Faturamento">
-
-<button onclick="simples()">Calcular</button>
-
+<h2>Cálculo de Impostos</h2>
+<input id="valorNota">
+<button onclick="impostos()">Calcular</button>
 <div id="resultadoFiscal"></div>
-
 </div>
 
 <div id="fluxo" class="modulo">
-
 <h2>Fluxo de Caixa</h2>
-
-<input id="fluxoDesc" placeholder="Descrição">
-<input id="fluxoValor" placeholder="Valor">
-
+<input id="fluxoDesc">
+<input id="fluxoValor">
 <button onclick="addFluxo()">Registrar</button>
-
 <div id="listaFluxo"></div>
-
 </div>
 
 <div id="pagar" class="modulo">
-
 <h2>Contas a Pagar</h2>
-
-<input id="pagarDesc" placeholder="Descrição">
-<input id="pagarValor" placeholder="Valor">
-
+<input id="pagarDesc">
+<input id="pagarValor">
 <button onclick="addPagar()">Salvar</button>
-
 <div id="listaPagar"></div>
-
 </div>
 
 <div id="receber" class="modulo">
-
 <h2>Contas a Receber</h2>
-
-<input id="receberDesc" placeholder="Descrição">
-<input id="receberValor" placeholder="Valor">
-
+<input id="receberDesc">
+<input id="receberValor">
 <button onclick="addReceber()">Salvar</button>
-
 <div id="listaReceber"></div>
-
-</div>
-
-<div id="banco" class="modulo">
-
-<h2>Banco</h2>
-
-<input id="bancoDesc" placeholder="Descrição">
-<input id="bancoValor" placeholder="Valor">
-
-<button onclick="addBanco()">Registrar</button>
-
-<div id="listaBanco"></div>
-
 </div>
 
 <div id="xml" class="modulo">
-
-<h2>Importar XML NF-e</h2>
-
-<input type="file" id="arquivoXML">
-
+<h2>Importar XML</h2>
+<input type="file" id="arquivoXML" multiple>
 <button onclick="lerXML()">Importar</button>
-
 <div id="resultadoXML"></div>
+</div>
 
+<div id="sped" class="modulo">
+<h2>SPED</h2>
+<button onclick="sped()">Gerar TXT</button>
 </div>
 
 <div id="relatorios" class="modulo">
-
 <h2>Relatórios</h2>
-
 <button onclick="relatorioBalancete()">Balancete</button>
-
 <button onclick="relatorioDRE()">DRE</button>
-
-<button onclick="relatorioFluxo()">Fluxo de Caixa</button>
-
-<button onclick="relatorioClientes()">Clientes</button>
-
-<button onclick="relatorioEmpresas()">Empresas</button>
-
 <div id="resultadoRelatorio"></div>
-
 </div>
 
 </div>
@@ -314,12 +251,8 @@ padding:6px;
 <script>
 
 function abrir(id){
-
-document.querySelectorAll(".modulo")
-.forEach(m=>m.style.display="none")
-
+document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
 document.getElementById(id).style.display="block"
-
 }
 
 abrir("dashboard")
@@ -332,137 +265,201 @@ let lancamentos=[]
 let fluxo=[]
 let pagar=[]
 let receber=[]
-let banco=[]
 
 function addCliente(){
-let nome=document.getElementById("clienteNome").value
-clientes.push(nome)
-document.getElementById("listaClientes").innerHTML=clientes.join("<br>")
+clientes.push(clienteNome.value)
+listaClientes.innerHTML=clientes.join("<br>")
 }
 
 function addEmpresa(){
-let nome=document.getElementById("empresaNome").value
-empresas.push(nome)
-document.getElementById("listaEmpresas").innerHTML=empresas.join("<br>")
+empresas.push(empresaNome.value)
+listaEmpresas.innerHTML=empresas.join("<br>")
 }
 
 function addFuncionario(){
-let nome=document.getElementById("funcNome").value
-funcionarios.push(nome)
-document.getElementById("listaFuncionarios").innerHTML=funcionarios.join("<br>")
+funcionarios.push(funcNome.value)
+listaFuncionarios.innerHTML=funcionarios.join("<br>")
 }
 
 function addConta(){
-let nome=document.getElementById("contaNome").value
-contas.push(nome)
-document.getElementById("listaContas").innerHTML=contas.join("<br>")
+contas.push({nome:contaNome.value,tipo:tipoConta.value})
+listaContas.innerHTML=contas.map(c=>c.nome+" - "+c.tipo).join("<br>")
 }
 
 function lancar(){
 
-let deb=document.getElementById("debito").value
-let cred=document.getElementById("credito").value
-let valor=parseFloat(document.getElementById("valorLanc").value)
+let deb=debito.value
+let cred=credito.value
+let valor=parseFloat(valorLanc.value)
 
-lancamentos.push({deb,cred,valor})
+lancamentos.push({deb,cred,valor,data:new Date()})
 
 }
 
-function gerarBalancete(){
+function livroDiario(){
 
-let total=0
+let html=""
 
 lancamentos.forEach(l=>{
-total+=l.valor
+html+=l.data+" "+l.deb+" "+l.cred+" "+l.valor+"<br>"
 })
 
-document.getElementById("balanceteResultado").innerHTML="Total movimentado: "+total
+resultadoDiario.innerHTML=html
 
 }
 
-function gerarBalanco(){
+function livroRazao(){
+
+let conta=contaRazao.value
+let saldo=0
+let html=""
+
+lancamentos.forEach(l=>{
+if(l.deb==conta){saldo+=l.valor;html+="D "+l.valor+"<br>"}
+if(l.cred==conta){saldo-=l.valor;html+="C "+l.valor+"<br>"}
+})
+
+resultadoRazao.innerHTML=html+"Saldo:"+saldo
+
+}
+
+function balancete(){
+
+let mapa={}
+
+lancamentos.forEach(l=>{
+mapa[l.deb]=(mapa[l.deb]||0)+l.valor
+mapa[l.cred]=(mapa[l.cred]||0)-l.valor
+})
+
+let html=""
+
+for(let c in mapa){
+html+=c+" : "+mapa[c]+"<br>"
+}
+
+resultadoBalancete.innerHTML=html
+
+}
+
+function balanco(){
 
 let ativo=0
+let passivo=0
 
-lancamentos.forEach(l=>{
-ativo+=l.valor
+contas.forEach(c=>{
+if(c.tipo=="Ativo")ativo++
+if(c.tipo=="Passivo")passivo++
 })
 
-document.getElementById("balancoResultado").innerHTML="Ativo: "+ativo
+resultadoBalanco.innerHTML="Ativo:"+ativo+" Passivo:"+passivo
 
 }
 
-function gerarDRE(){
+function dre(){
 
 let receita=0
+let despesa=0
 
-lancamentos.forEach(l=>{
-receita+=l.valor
+contas.forEach(c=>{
+if(c.tipo=="Receita")receita++
+if(c.tipo=="Despesa")despesa++
 })
 
-document.getElementById("dreResultado").innerHTML="Lucro: "+receita
+resultadoDRE.innerHTML="Lucro:"+ (receita-despesa)
 
 }
 
-function simples(){
+function impostos(){
 
-let fat=parseFloat(document.getElementById("faturamento").value)
+let valor=parseFloat(valorNota.value)
 
-let das=fat*0.06
+let icms=valor*0.18
+let pis=valor*0.0165
+let cofins=valor*0.076
 
-document.getElementById("resultadoFiscal").innerHTML="DAS: "+das
+resultadoFiscal.innerHTML="ICMS:"+icms+"<br>PIS:"+pis+"<br>COFINS:"+cofins
+
+}
+
+function addFluxo(){
+fluxo.push({desc:fluxoDesc.value,valor:fluxoValor.value})
+listaFluxo.innerHTML=fluxo.map(f=>f.desc+" "+f.valor).join("<br>")
+}
+
+function addPagar(){
+pagar.push({desc:pagarDesc.value,valor:pagarValor.value})
+listaPagar.innerHTML=pagar.map(p=>p.desc+" "+p.valor).join("<br>")
+}
+
+function addReceber(){
+receber.push({desc:receberDesc.value,valor:receberValor.value})
+listaReceber.innerHTML=receber.map(r=>r.desc+" "+r.valor).join("<br>")
+}
+
+function lerXML(){
+
+let arquivos=arquivoXML.files
+
+for(let a=0;a<arquivos.length;a++){
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+let xml=e.target.result
+let parser=new DOMParser()
+let doc=parser.parseFromString(xml,"text/xml")
+
+let total=doc.getElementsByTagName("vNF")[0].textContent
+
+resultadoXML.innerHTML+="Nota importada valor:"+total+"<br>"
+
+}
+
+reader.readAsText(arquivos[a])
+
+}
+
+}
+
+function sped(){
+
+let txt="SPED CONTABIL\n"
+
+lancamentos.forEach(l=>{
+txt+=l.data+" "+l.deb+" "+l.cred+" "+l.valor+"\n"
+})
+
+let blob=new Blob([txt])
+let link=document.createElement("a")
+link.href=URL.createObjectURL(blob)
+link.download="sped.txt"
+link.click()
 
 }
 
 function relatorioBalancete(){
-
-let total=0
-
-lancamentos.forEach(l=>{
-total+=l.valor
-})
-
-document.getElementById("resultadoRelatorio").innerHTML="Total movimentado: "+total
-
+resultadoRelatorio.innerHTML="Lançamentos:"+lancamentos.length
 }
 
 function relatorioDRE(){
-
-let receita=0
-
-lancamentos.forEach(l=>{
-receita+=l.valor
-})
-
-document.getElementById("resultadoRelatorio").innerHTML="Lucro: "+receita
-
+resultadoRelatorio.innerHTML="Lucro:"+lancamentos.reduce((a,b)=>a+b.valor,0)
 }
 
-function relatorioFluxo(){
-
-let html=""
-
-fluxo.forEach(f=>{
-html+=f.desc+" - "+f.valor+"<br>"
-})
-
-document.getElementById("resultadoRelatorio").innerHTML=html
-
+new Chart(
+document.getElementById("grafico"),
+{
+type:"bar",
+data:{
+labels:["Receita","Despesa"],
+datasets:[{data:[50000,30000]}]
 }
-
-function relatorioClientes(){
-
-document.getElementById("resultadoRelatorio").innerHTML=clientes.join("<br>")
-
 }
-
-function relatorioEmpresas(){
-
-document.getElementById("resultadoRelatorio").innerHTML=empresas.join("<br>")
-
-}
+)
 
 </script>
 
 </body>
 </html>
+

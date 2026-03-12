@@ -1,11 +1,12 @@
-!DOCTYPE html>
+
+<!DOCTYPE html>
 <html>
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ERP MASTER</title>
+<title>ERP MASTER CONTÁBIL PRO</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -19,12 +20,16 @@ display:flex;
 }
 
 #menu{
-width:260px;
+width:270px;
 background:#1f3c88;
 color:white;
 min-height:100vh;
 padding:10px;
 overflow:auto;
+}
+
+#menu h2{
+text-align:center;
 }
 
 #menu button{
@@ -67,7 +72,7 @@ box-shadow:0 0 6px #ccc;
 width:200px;
 }
 
-#login{
+#loginTela{
 position:fixed;
 top:0;
 left:0;
@@ -75,9 +80,9 @@ right:0;
 bottom:0;
 background:#f4f6f9;
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-flex-direction:column;
 }
 
 input{
@@ -86,22 +91,21 @@ margin:4px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div id="login">
+<div id="loginTela">
 
 <h2>ERP MASTER</h2>
 
-<input placeholder="Usuário">
-
-<input type="password" placeholder="Senha">
+<input id="usuarioLogin" placeholder="Usuário">
+<input id="senhaLogin" type="password" placeholder="Senha">
 
 <button onclick="login()">Entrar</button>
 
 </div>
-
 
 <div id="menu">
 
@@ -116,8 +120,10 @@ margin:4px;
 
 <h3>Contábil</h3>
 
-<button onclick="abrir('contas')">Plano de Contas</button>
+<button onclick="abrir('planocontas')">Plano de Contas</button>
 <button onclick="abrir('lancamentos')">Lançamentos</button>
+<button onclick="abrir('livrodiario')">Livro Diário</button>
+<button onclick="abrir('livrorazao')">Livro Razão</button>
 <button onclick="abrir('balancete')">Balancete</button>
 <button onclick="abrir('balanco')">Balanço</button>
 <button onclick="abrir('dre')">DRE</button>
@@ -158,8 +164,20 @@ margin:4px;
 <button onclick="abrir('ia')">IA Contábil</button>
 <button onclick="abrir('robo')">Robô Contábil</button>
 
-</div>
+<h3>Estoque</h3>
 
+<button onclick="abrir('produtos')">Produtos</button>
+
+<h3>Nota Fiscal</h3>
+
+<button onclick="abrir('nfe')">Emitir NF</button>
+
+<h3>Sistema</h3>
+
+<button onclick="backup()">Backup</button>
+<input type="file" onchange="restaurar(event)">
+
+</div>
 
 <div id="conteudo">
 
@@ -170,42 +188,59 @@ margin:4px;
 <div class="cards">
 
 <div class="card">
+
 Receitas
-<div id="receitas">0</div>
+<div id="biReceita">0</div>
+
 </div>
 
 <div class="card">
+
 Despesas
-<div id="despesas">0</div>
+<div id="biDespesa">0</div>
+
 </div>
 
 <div class="card">
+
 Lucro
-<div id="lucro">0</div>
+<div id="biLucro">0</div>
+
 </div>
 
 </div>
+
+<canvas id="graficoBI"></canvas>
 
 </div>
 
 
 <div id="clientes" class="modulo">
 <h2>Clientes</h2>
-<input id="clienteNome">
-<button onclick="addCliente()">Adicionar</button>
+<input id="clienteNome" placeholder="Nome">
+<input id="clienteCnpj" placeholder="CNPJ">
+<input id="clienteTel" placeholder="Telefone">
+<input id="clienteEnd" placeholder="Endereço">
+<button onclick="addCliente()">Salvar</button>
 <div id="listaClientes"></div>
 </div>
 
 
 <div id="empresas" class="modulo">
 <h2>Empresas</h2>
-<input id="empresaNome">
-<button onclick="addEmpresa()">Adicionar</button>
+<input id="empresaNome" placeholder="Nome">
+<input id="empresaCnpj" placeholder="CNPJ">
+<select id="empresaRegime">
+<option>Simples</option>
+<option>Presumido</option>
+<option>Lucro Real</option>
+</select>
+<button onclick="addEmpresa()">Salvar</button>
 <div id="listaEmpresas"></div>
 </div>
 
 
-<div id="contas" class="modulo">
+<div id="planocontas" class="modulo">
 <h2>Plano de Contas</h2>
 <input id="contaNome">
 <button onclick="addConta()">Adicionar</button>
@@ -214,263 +249,730 @@ Lucro
 
 
 <div id="lancamentos" class="modulo">
-<h2>Lançamentos</h2>
-<input id="valorLanc">
+
+<h2>Lançamentos Contábeis</h2>
+
+<input id="dataLanc" type="date">
+<input id="contaLanc" placeholder="Conta">
+<input id="debitoLanc" placeholder="Débito">
+<input id="creditoLanc" placeholder="Crédito">
+<input id="histLanc" placeholder="Histórico">
+
 <button onclick="addLanc()">Registrar</button>
+
 <div id="listaLanc"></div>
-</div>
 
-
-<div id="fluxo" class="modulo">
-<h2>Fluxo Caixa</h2>
-<button onclick="fluxo()">Calcular</button>
-<div id="resultadoFluxo"></div>
-</div>
-
-
-<div id="pagar" class="modulo">
-<h2>Contas Pagar</h2>
-<input id="pagarValor">
-<button onclick="addPagar()">Adicionar</button>
-<div id="listaPagar"></div>
-</div>
-
-
-<div id="receber" class="modulo">
-<h2>Contas Receber</h2>
-<input id="receberValor">
-<button onclick="addReceber()">Adicionar</button>
-<div id="listaReceber"></div>
-</div>
-
-
-<div id="balancete" class="modulo">
-<h2>Balancete</h2>
-<button onclick="balancete()">Gerar</button>
-<div id="resultadoBalancete"></div>
-</div>
-
-
-<div id="balanco" class="modulo">
-<h2>Balanço</h2>
-<button onclick="balanco()">Gerar</button>
-<div id="resultadoBalanco"></div>
-</div>
-
-
-<div id="dre" class="modulo">
-<h2>DRE</h2>
-<button onclick="dre()">Gerar</button>
-<div id="resultadoDRE"></div>
 </div>
 
 
 <div id="funcionarios" class="modulo">
+
 <h2>Funcionários</h2>
-<input id="nomeFunc">
-<input id="salarioFunc">
-<button onclick="addFuncionario()">Adicionar</button>
+
+<input id="nomeFunc" placeholder="Nome">
+<input id="cargoFunc" placeholder="Cargo">
+<input id="salarioFunc" placeholder="Salário">
+
+<button onclick="addFuncionario()">Salvar</button>
+
 <div id="listaFuncionarios"></div>
+
 </div>
 
 
 <div id="folha" class="modulo">
-<h2>Folha</h2>
-<button onclick="folha()">Calcular</button>
+
+<h2>Folha de Pagamento</h2>
+
+<button onclick="calcularFolha()">Calcular Folha</button>
+
 <div id="resultadoFolha"></div>
+
 </div>
 
 
 <div id="contracheque" class="modulo">
+
 <h2>Contra Cheque</h2>
-<input id="funcContra">
-<button onclick="contra()">Gerar</button>
+
+<input id="funcContra" placeholder="Funcionário">
+
+<button onclick="gerarContra()">Gerar</button>
+
 <div id="resultadoContra"></div>
+
 </div>
 
 
-<div id="simples" class="modulo">
-<h2>Simples Nacional</h2>
-<input id="faturamentoSimples">
-<button onclick="calcSimples()">Calcular</button>
-<div id="resultadoSimples"></div>
+<div id="produtos" class="modulo">
+
+<h2>Estoque</h2>
+
+<input id="produtoNome" placeholder="Produto">
+<input id="produtoQtd" placeholder="Quantidade">
+<input id="produtoCusto" placeholder="Custo">
+
+<button onclick="addProduto()">Salvar</button>
+
+<div id="listaProdutos"></div>
+
 </div>
 
 
-<div id="presumido" class="modulo">
-<h2>Lucro Presumido</h2>
-<input id="faturamentoPresumido">
-<button onclick="calcPresumido()">Calcular</button>
-<div id="resultadoPresumido"></div>
+<div id="nfe" class="modulo">
+
+<h2>Nota Fiscal</h2>
+
+<input id="clienteNF" placeholder="Cliente">
+<input id="valorNF" placeholder="Valor">
+
+<button onclick="emitirNF()">Emitir</button>
+
+<div id="resultadoNF"></div>
+
 </div>
 
-
-<div id="real" class="modulo">
-<h2>Lucro Real</h2>
-<input id="lucroReal">
-<button onclick="calcReal()">Calcular</button>
-<div id="resultadoReal"></div>
-</div>
-
-
-<div id="relatorios" class="modulo">
-<h2>Relatórios</h2>
-<button onclick="balanco()">Balanço</button>
-<button onclick="balancete()">Balancete</button>
-<button onclick="dre()">DRE</button>
-</div>
-
-
-<div id="sped" class="modulo">
-<h2>SPED</h2>
-<button onclick="alert('ECD gerado')">ECD</button>
-<button onclick="alert('ECF gerado')">ECF</button>
-<button onclick="alert('EFD gerado')">EFD</button>
-<button onclick="alert('DCTF gerada')">DCTF</button>
-</div>
-
-
-<div id="xml" class="modulo">
-<h2>XML NF-e</h2>
-<input type="file">
-<button onclick="alert('XML importado')">Importar</button>
-</div>
-
-
-<div id="ofx" class="modulo">
-<h2>OFX Banco</h2>
-<input type="file">
-<button onclick="alert('OFX importado')">Importar</button>
-</div>
-
-
-<div id="ia" class="modulo">
-<h2>IA Contábil</h2>
-<button onclick="alert('IA classificou lançamentos')">Classificar</button>
-</div>
-
-
-<div id="robo" class="modulo">
-<h2>Robô Contábil</h2>
-<button onclick="dre();balanco();balancete()">Executar Fechamento</button>
-</div>
 
 </div>
 
 
 <script>
 
-let db={
-clientes:[],
-empresas:[],
-contas:[],
-lanc:[],
-pagar:[],
-receber:[],
-func:[]
-}
-
 function login(){
-login.style.display="none"
+loginTela.style.display="none"
 }
 
 function abrir(id){
+
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
+
 document.getElementById(id).style.display="block"
-}
 
-function addCliente(){
-db.clientes.push(clienteNome.value)
-listaClientes.innerHTML=db.clientes.join("<br>")
-}
-
-function addEmpresa(){
-db.empresas.push(empresaNome.value)
-listaEmpresas.innerHTML=db.empresas.join("<br>")
-}
-
-function addConta(){
-db.contas.push(contaNome.value)
-listaContas.innerHTML=db.contas.join("<br>")
-}
-
-function addLanc(){
-db.lanc.push(parseFloat(valorLanc.value))
-listaLanc.innerHTML=db.lanc.join("<br>")
-}
-
-function addPagar(){
-db.pagar.push(parseFloat(pagarValor.value))
-listaPagar.innerHTML=db.pagar.join("<br>")
-}
-
-function addReceber(){
-db.receber.push(parseFloat(receberValor.value))
-listaReceber.innerHTML=db.receber.join("<br>")
-}
-
-function fluxo(){
-let r=db.receber.reduce((a,b)=>a+b,0)
-let d=db.pagar.reduce((a,b)=>a+b,0)
-resultadoFluxo.innerHTML="Fluxo "+(r-d)
-}
-
-function balancete(){
-resultadoBalancete.innerHTML="Saldo "+db.lanc.reduce((a,b)=>a+b,0)
-}
-
-function balanco(){
-let a=db.receber.reduce((x,y)=>x+y,0)
-let p=db.pagar.reduce((x,y)=>x+y,0)
-resultadoBalanco.innerHTML="Ativo "+a+" Passivo "+p
-}
-
-function dre(){
-let r=db.receber.reduce((a,b)=>a+b,0)
-let d=db.pagar.reduce((a,b)=>a+b,0)
-resultadoDRE.innerHTML="Lucro "+(r-d)
-}
-
-function addFuncionario(){
-db.func.push({nome:nomeFunc.value,sal:parseFloat(salarioFunc.value)})
-listaFuncionarios.innerHTML=db.func.map(f=>f.nome+" "+f.sal).join("<br>")
-}
-
-function folha(){
-let total=db.func.reduce((a,b)=>a+b.sal,0)
-let inss=total*0.11
-let fgts=total*0.08
-resultadoFolha.innerHTML="Folha "+total+" INSS "+inss+" FGTS "+fgts
-}
-
-function contra(){
-let f=db.func.find(x=>x.nome==funcContra.value)
-if(!f)return
-let inss=f.sal*0.11
-resultadoContra.innerHTML="Líquido "+(f.sal-inss)
-}
-
-function calcSimples(){
-let f=parseFloat(faturamentoSimples.value)
-resultadoSimples.innerHTML="DAS "+(f*0.06)
-}
-
-function calcPresumido(){
-let f=parseFloat(faturamentoPresumido.value)
-let base=f*0.32
-resultadoPresumido.innerHTML="IRPJ "+(base*0.15)
-}
-
-function calcReal(){
-let l=parseFloat(lucroReal.value)
-resultadoReal.innerHTML="IRPJ "+(l*0.15)
-}
-
-window.onload=function(){
-abrir("dashboard")
 }
 
 </script>
 
 </body>
 </html>
+// BANCO DE DADOS LOCAL
+
+let db = JSON.parse(localStorage.getItem("erp")) || {
+clientes:[],
+empresas:[],
+contas:[],
+lancamentos:[],
+pagar:[],
+receber:[],
+funcionarios:[],
+produtos:[]
+}
+
+
+// SALVAR
+
+function salvar(){
+localStorage.setItem("erp",JSON.stringify(db))
+}
+
+
+// CLIENTES
+
+function addCliente(){
+
+let cliente={
+nome:clienteNome.value,
+cnpj:clienteCnpj.value,
+tel:clienteTel.value,
+end:clienteEnd.value
+}
+
+db.clientes.push(cliente)
+
+salvar()
+
+render()
+
+}
+
+
+// EMPRESAS
+
+function addEmpresa(){
+
+let emp={
+nome:empresaNome.value,
+cnpj:empresaCnpj.value,
+regime:empresaRegime.value
+}
+
+db.empresas.push(emp)
+
+salvar()
+
+render()
+
+}
+
+
+// PLANO DE CONTAS
+
+function addConta(){
+
+db.contas.push(contaNome.value)
+
+salvar()
+
+render()
+
+}
+
+
+// LANÇAMENTOS CONTÁBEIS
+
+function addLanc(){
+
+let lanc={
+data:dataLanc.value,
+conta:contaLanc.value,
+debito:parseFloat(debitoLanc.value)||0,
+credito:parseFloat(creditoLanc.value)||0,
+hist:histLanc.value
+}
+
+db.lancamentos.push(lanc)
+
+salvar()
+
+render()
+
+}
+
+
+// LIVRO DIÁRIO
+
+function gerarDiario(){
+
+let html=""
+
+db.lancamentos.forEach(l=>{
+
+html+=l.data+" - "+l.conta+" D:"+l.debito+" C:"+l.credito+" "+l.hist+"<br>"
+
+})
+
+resultadoDiario.innerHTML=html
+
+}
+
+
+// LIVRO RAZÃO
+
+function gerarRazao(){
+
+let html=""
+
+db.contas.forEach(c=>{
+
+let totalD=0
+let totalC=0
+
+db.lancamentos.forEach(l=>{
+
+if(l.conta==c){
+
+totalD+=l.debito
+totalC+=l.credito
+
+}
+
+})
+
+html+=c+" D:"+totalD+" C:"+totalC+"<br>"
+
+})
+
+resultadoRazao.innerHTML=html
+
+}
+
+
+// BALANCETE
+
+function balancete(){
+
+let html=""
+
+db.contas.forEach(c=>{
+
+let saldo=0
+
+db.lancamentos.forEach(l=>{
+
+if(l.conta==c){
+
+saldo+=l.debito-l.credito
+
+}
+
+})
+
+html+=c+" : "+saldo+"<br>"
+
+})
+
+resultadoBalancete.innerHTML=html
+
+}
+
+
+// BALANÇO
+
+function balanco(){
+
+let ativo=0
+let passivo=0
+
+db.lancamentos.forEach(l=>{
+
+ativo+=l.debito
+passivo+=l.credito
+
+})
+
+resultadoBalanco.innerHTML=
+
+"ATIVO: "+ativo+"<br>"+
+"PASSIVO: "+passivo+"<br>"+
+"PATRIMÔNIO: "+(ativo-passivo)
+
+}
+
+
+// DRE
+
+function dre(){
+
+let receita=db.receber.reduce((a,b)=>a+b,0)
+
+let despesa=db.pagar.reduce((a,b)=>a+b,0)
+
+let lucro=receita-despesa
+
+resultadoDRE.innerHTML=
+
+"Receita: "+receita+"<br>"+
+"Despesa: "+despesa+"<br>"+
+"Lucro: "+lucro
+
+}
+
+
+// CONTAS A PAGAR
+
+function addPagar(){
+
+db.pagar.push(parseFloat(pagarValor.value))
+
+salvar()
+
+render()
+
+}
+
+
+// CONTAS A RECEBER
+
+function addReceber(){
+
+db.receber.push(parseFloat(receberValor.value))
+
+salvar()
+
+render()
+
+}
+
+
+// FLUXO DE CAIXA
+
+function fluxo(){
+
+let r=db.receber.reduce((a,b)=>a+b,0)
+
+let d=db.pagar.reduce((a,b)=>a+b,0)
+
+resultadoFluxo.innerHTML="Fluxo: "+(r-d)
+
+}
+
+
+// FUNCIONÁRIOS
+
+function addFuncionario(){
+
+let f={
+nome:nomeFunc.value,
+cargo:cargoFunc.value,
+sal:parseFloat(salarioFunc.value)
+}
+
+db.funcionarios.push(f)
+
+salvar()
+
+render()
+
+}
+
+
+// FOLHA
+
+function calcularFolha(){
+
+let total=0
+
+db.funcionarios.forEach(f=>{
+
+total+=f.sal
+
+})
+
+let inss=total*0.11
+let fgts=total*0.08
+
+resultadoFolha.innerHTML=
+
+"Folha: "+total+"<br>"+
+"INSS: "+inss+"<br>"+
+"FGTS: "+fgts
+
+}
+
+
+// CONTRA CHEQUE
+
+function gerarContra(){
+
+let f=db.funcionarios.find(x=>x.nome==funcContra.value)
+
+if(!f)return
+
+let inss=f.sal*0.11
+
+resultadoContra.innerHTML=
+
+"Funcionário: "+f.nome+"<br>"+
+"Salário: "+f.sal+"<br>"+
+"INSS: "+inss+"<br>"+
+"Líquido: "+(f.sal-inss)
+
+}
+
+
+// SIMPLES
+
+function calcularSimples(){
+
+let f=parseFloat(faturamentoSimples.value)
+
+resultadoSimples.innerHTML="DAS: "+(f*0.06)
+
+}
+
+
+// PRESUMIDO
+
+function calcularPresumido(){
+
+let f=parseFloat(faturamentoPresumido.value)
+
+let base=f*0.32
+
+let irpj=base*0.15
+let csll=base*0.09
+
+resultadoPresumido.innerHTML=
+
+"Base: "+base+"<br>"+
+"IRPJ: "+irpj+"<br>"+
+"CSLL: "+csll
+
+}
+
+
+// LUCRO REAL
+
+function calcularReal(){
+
+let lucro=parseFloat(lucroRealValor.value)
+
+let irpj=lucro*0.15
+let csll=lucro*0.09
+
+resultadoReal.innerHTML=
+
+"IRPJ: "+irpj+"<br>"+
+"CSLL: "+csll
+
+}
+
+
+// RENDER
+
+function render(){
+
+listaClientes.innerHTML=db.clientes.map(c=>c.nome).join("<br>")
+
+listaEmpresas.innerHTML=db.empresas.map(e=>e.nome).join("<br>")
+
+listaContas.innerHTML=db.contas.join("<br>")
+
+listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
+
+listaFuncionarios.innerHTML=db.funcionarios.map(f=>f.nome+" "+f.sal).join("<br>")
+
+}
+// =============================
+// BI CONTÁBIL
+// =============================
+
+function gerarBI(){
+
+let receitas=db.receber.reduce((a,b)=>a+b,0)
+let despesas=db.pagar.reduce((a,b)=>a+b,0)
+let lucro=receitas-despesas
+let impostos=lucro*0.15
+
+document.getElementById("biReceita").innerHTML=receitas
+document.getElementById("biDespesa").innerHTML=despesas
+document.getElementById("biLucro").innerHTML=lucro
+
+new Chart(document.getElementById("graficoBI"),{
+
+type:"bar",
+
+data:{
+labels:["Receitas","Despesas","Lucro","Impostos"],
+datasets:[{
+label:"Financeiro",
+data:[receitas,despesas,lucro,impostos]
+}]
+}
+
+})
+
+}
+
+
+// =============================
+// SPED
+// =============================
+
+function gerarECD(){
+
+let txt="|0000|ECD|\n"
+
+db.lancamentos.forEach(l=>{
+
+txt+="|LANC|"+l.conta+"|"+l.debito+"|"+l.credito+"|\n"
+
+})
+
+alert("ECD gerado com "+db.lancamentos.length+" lançamentos")
+
+}
+
+
+function gerarECF(){
+
+alert("ECF gerada")
+
+}
+
+
+function gerarEFD(){
+
+alert("EFD Contribuições gerada")
+
+}
+
+
+function gerarDCTF(){
+
+alert("DCTF gerada")
+
+}
+
+
+// =============================
+// IMPORTAÇÃO XML NF-e
+// =============================
+
+function importarXML(){
+
+alert("XML NF-e importado")
+
+}
+
+
+// =============================
+// IMPORTAÇÃO OFX BANCO
+// =============================
+
+function importarOFX(){
+
+alert("Extrato OFX importado")
+
+}
+
+
+// =============================
+// IA CONTÁBIL
+// =============================
+
+function classificarIA(){
+
+let classificados=[]
+
+db.lancamentos.forEach(l=>{
+
+if(l.debito>0){
+
+classificados.push("Despesa: "+l.conta)
+
+}else{
+
+classificados.push("Receita: "+l.conta)
+
+}
+
+})
+
+document.getElementById("resultadoIA").innerHTML=classificados.join("<br>")
+
+}
+
+
+// =============================
+// ROBÔ CONTÁBIL
+// =============================
+
+function executarRobo(){
+
+dre()
+
+balanco()
+
+balancete()
+
+gerarRazao()
+
+alert("Fechamento contábil executado")
+
+}
+
+
+// =============================
+// ESTOQUE
+// =============================
+
+function addProduto(){
+
+let p={
+nome:produtoNome.value,
+qtd:parseFloat(produtoQtd.value),
+custo:parseFloat(produtoCusto.value)
+}
+
+db.produtos.push(p)
+
+salvar()
+
+render()
+
+}
+
+
+// =============================
+// NOTA FISCAL
+// =============================
+
+function emitirNF(){
+
+let cliente=clienteNF.value
+let valor=parseFloat(valorNF.value)
+
+db.receber.push(valor)
+
+resultadoNF.innerHTML=
+
+"NF emitida<br>"+
+"Cliente: "+cliente+"<br>"+
+"Valor: "+valor
+
+salvar()
+
+render()
+
+}
+
+
+// =============================
+// BACKUP
+// =============================
+
+function backup(){
+
+let dados=JSON.stringify(db)
+
+let blob=new Blob([dados],{type:"application/json"})
+
+let a=document.createElement("a")
+
+a.href=URL.createObjectURL(blob)
+
+a.download="backup_erp.json"
+
+a.click()
+
+}
+
+
+// =============================
+// RESTAURAR
+// =============================
+
+function restaurar(e){
+
+let file=e.target.files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(){
+
+db=JSON.parse(reader.result)
+
+salvar()
+
+render()
+
+}
+
+reader.readAsText(file)
+
+}
+
+
+// =============================
+// INICIAR
+// =============================
+
+window.onload=function(){
+
+abrir("dashboard")
+
+render()
+
+gerarBI()
+
+}

@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ERP MASTER CONTÁBIL PRO</title>
+<title>MASTER DAYTHI ERP</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -20,7 +20,7 @@ display:flex;
 }
 
 #menu{
-width:270px;
+width:260px;
 background:#1f3c88;
 color:white;
 min-height:100vh;
@@ -98,7 +98,7 @@ margin:4px;
 
 <div id="loginTela">
 
-<h2>ERP MASTER</h2>
+<h2>MASTER DAYTHI ERP</h2>
 
 <input id="usuarioLogin" placeholder="Usuário">
 <input id="senhaLogin" type="password" placeholder="Senha">
@@ -109,103 +109,50 @@ margin:4px;
 
 <div id="menu">
 
-<h2>ERP MASTER</h2>
+<h2>ERP DAYTHI</h2>
 
 <button onclick="abrir('dashboard')">Dashboard</button>
 
 <h3>Cadastros</h3>
-
 <button onclick="abrir('clientes')">Clientes</button>
 <button onclick="abrir('empresas')">Empresas</button>
 
 <h3>Contábil</h3>
-
 <button onclick="abrir('planocontas')">Plano de Contas</button>
 <button onclick="abrir('lancamentos')">Lançamentos</button>
-<button onclick="abrir('livrodiario')">Livro Diário</button>
-<button onclick="abrir('livrorazao')">Livro Razão</button>
-<button onclick="abrir('balancete')">Balancete</button>
 <button onclick="abrir('balanco')">Balanço</button>
 <button onclick="abrir('dre')">DRE</button>
 
-<h3>Financeiro</h3>
-
-<button onclick="abrir('fluxo')">Fluxo Caixa</button>
-<button onclick="abrir('pagar')">Contas Pagar</button>
-<button onclick="abrir('receber')">Contas Receber</button>
-
-<h3>Fiscal</h3>
-
-<button onclick="abrir('simples')">Simples</button>
-<button onclick="abrir('presumido')">Presumido</button>
-<button onclick="abrir('real')">Lucro Real</button>
-
 <h3>RH</h3>
-
 <button onclick="abrir('funcionarios')">Funcionários</button>
 <button onclick="abrir('folha')">Folha</button>
-<button onclick="abrir('contracheque')">Contra Cheque</button>
+<button onclick="abrir('contracheque')">Contra-cheque</button>
 
-<h3>Relatórios</h3>
-
-<button onclick="abrir('relatorios')">Relatórios</button>
-
-<h3>SPED</h3>
-
-<button onclick="abrir('sped')">SPED</button>
-
-<h3>Integrações</h3>
-
-<button onclick="abrir('xml')">XML NF-e</button>
-<button onclick="abrir('ofx')">OFX Banco</button>
-
-<h3>Automação</h3>
-
-<button onclick="abrir('ia')">IA Contábil</button>
-<button onclick="abrir('robo')">Robô Contábil</button>
-
-<h3>Estoque</h3>
-
-<button onclick="abrir('produtos')">Produtos</button>
-
-<h3>Nota Fiscal</h3>
-
-<button onclick="abrir('nfe')">Emitir NF</button>
-
-<h3>Sistema</h3>
-
-<button onclick="backup()">Backup</button>
-<input type="file" onchange="restaurar(event)">
+<h3>Fiscal</h3>
+<button onclick="abrir('fiscal')">Impostos</button>
 
 </div>
 
 <div id="conteudo">
+ <div id="dashboard" class="modulo">
 
-<div id="dashboard" class="modulo">
-
-<h2>Dashboard BI</h2>
+<h2>Dashboard</h2>
 
 <div class="cards">
 
 <div class="card">
-
 Receitas
 <div id="biReceita">0</div>
-
 </div>
 
 <div class="card">
-
 Despesas
 <div id="biDespesa">0</div>
-
 </div>
 
 <div class="card">
-
 Lucro
 <div id="biLucro">0</div>
-
 </div>
 
 </div>
@@ -216,130 +163,82 @@ Lucro
 
 
 <div id="clientes" class="modulo">
+
 <h2>Clientes</h2>
-<input id="clienteNome" placeholder="Nome">
-<input id="clienteCnpj" placeholder="CNPJ">
-<input id="clienteTel" placeholder="Telefone">
-<input id="clienteEnd" placeholder="Endereço">
+
+<input id="clienteNome">
 <button onclick="addCliente()">Salvar</button>
+
 <div id="listaClientes"></div>
+
 </div>
 
 
 <div id="empresas" class="modulo">
+
 <h2>Empresas</h2>
-<input id="empresaNome" placeholder="Nome">
-<input id="empresaCnpj" placeholder="CNPJ">
-<select id="empresaRegime">
-<option>Simples</option>
-<option>Presumido</option>
-<option>Lucro Real</option>
-</select>
+
+<input id="empresaNome">
 <button onclick="addEmpresa()">Salvar</button>
+
 <div id="listaEmpresas"></div>
+
 </div>
 
 
 <div id="planocontas" class="modulo">
+
 <h2>Plano de Contas</h2>
+
 <input id="contaNome">
 <button onclick="addConta()">Adicionar</button>
+
 <div id="listaContas"></div>
+
 </div>
 
 
 <div id="lancamentos" class="modulo">
 
-<h2>Lançamentos Contábeis</h2>
+<h2>Lançamentos</h2>
 
-<input id="dataLanc" type="date">
 <input id="contaLanc" placeholder="Conta">
 <input id="debitoLanc" placeholder="Débito">
 <input id="creditoLanc" placeholder="Crédito">
-<input id="histLanc" placeholder="Histórico">
 
 <button onclick="addLanc()">Registrar</button>
 
 <div id="listaLanc"></div>
 
-</div>
-
-
-<div id="funcionarios" class="modulo">
-
-<h2>Funcionários</h2>
-
-<input id="nomeFunc" placeholder="Nome">
-<input id="cargoFunc" placeholder="Cargo">
-<input id="salarioFunc" placeholder="Salário">
-
-<button onclick="addFuncionario()">Salvar</button>
-
-<div id="listaFuncionarios"></div>
-
-</div>
-
-
-<div id="folha" class="modulo">
-
-<h2>Folha de Pagamento</h2>
-
-<button onclick="calcularFolha()">Calcular Folha</button>
-
-<div id="resultadoFolha"></div>
-
-</div>
-
-
-<div id="contracheque" class="modulo">
-
-<h2>Contra Cheque</h2>
-
-<input id="funcContra" placeholder="Funcionário">
-
-<button onclick="gerarContra()">Gerar</button>
-
-<div id="resultadoContra"></div>
-
-</div>
-
-
-<div id="produtos" class="modulo">
-
-<h2>Estoque</h2>
-
-<input id="produtoNome" placeholder="Produto">
-<input id="produtoQtd" placeholder="Quantidade">
-<input id="produtoCusto" placeholder="Custo">
-
-<button onclick="addProduto()">Salvar</button>
-
-<div id="listaProdutos"></div>
-
-</div>
-
-
-<div id="nfe" class="modulo">
-
-<h2>Nota Fiscal</h2>
-
-<input id="clienteNF" placeholder="Cliente">
-<input id="valorNF" placeholder="Valor">
-
-<button onclick="emitirNF()">Emitir</button>
-
-<div id="resultadoNF"></div>
-
-</div>
-
-
-</div>
-
+</div> 
+  </div>
 
 <script>
 
+let db = JSON.parse(localStorage.getItem("erp")) || {
+clientes:[],
+empresas:[],
+contas:[],
+lancamentos:[],
+funcionarios:[]
+}
+
+function salvar(){
+localStorage.setItem("erp",JSON.stringify(db))
+}
+
 function login(){
+
+if(usuarioLogin.value==="admin" && senhaLogin.value==="1234"){
+
 loginTela.style.display="none"
+
+}else{
+
+alert("Usuário ou senha inválidos")
+
+}
+
 }
 
 function abrir(id){
@@ -350,71 +249,25 @@ document.getElementById(id).style.display="block"
 
 }
 
-</script>
-
-</body>
-</html>
-// BANCO DE DADOS LOCAL
-
-let db = JSON.parse(localStorage.getItem("erp")) || {
-clientes:[],
-empresas:[],
-contas:[],
-lancamentos:[],
-pagar:[],
-receber:[],
-funcionarios:[],
-produtos:[]
-}
-
-
-// SALVAR
-
-function salvar(){
-localStorage.setItem("erp",JSON.stringify(db))
-}
-
-
-// CLIENTES
-
 function addCliente(){
 
-let cliente={
-nome:clienteNome.value,
-cnpj:clienteCnpj.value,
-tel:clienteTel.value,
-end:clienteEnd.value
-}
-
-db.clientes.push(cliente)
+db.clientes.push(clienteNome.value)
 
 salvar()
 
 render()
 
 }
-
-
-// EMPRESAS
 
 function addEmpresa(){
 
-let emp={
-nome:empresaNome.value,
-cnpj:empresaCnpj.value,
-regime:empresaRegime.value
-}
-
-db.empresas.push(emp)
+db.empresas.push(empresaNome.value)
 
 salvar()
 
 render()
 
 }
-
-
-// PLANO DE CONTAS
 
 function addConta(){
 
@@ -426,20 +279,15 @@ render()
 
 }
 
-
-// LANÇAMENTOS CONTÁBEIS
-
 function addLanc(){
 
-let lanc={
-data:dataLanc.value,
+db.lancamentos.push({
+
 conta:contaLanc.value,
 debito:parseFloat(debitoLanc.value)||0,
-credito:parseFloat(creditoLanc.value)||0,
-hist:histLanc.value
-}
+credito:parseFloat(creditoLanc.value)||0
 
-db.lancamentos.push(lanc)
+})
 
 salvar()
 
@@ -447,194 +295,53 @@ render()
 
 }
 
+function render(){
 
-// LIVRO DIÁRIO
-
-function gerarDiario(){
-
-let html=""
-
-db.lancamentos.forEach(l=>{
-
-html+=l.data+" - "+l.conta+" D:"+l.debito+" C:"+l.credito+" "+l.hist+"<br>"
-
-})
-
-resultadoDiario.innerHTML=html
+listaClientes.innerHTML=db.clientes.join("<br>")
+listaEmpresas.innerHTML=db.empresas.join("<br>")
+listaContas.innerHTML=db.contas.join("<br>")
+listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
 
 }
 
+document.addEventListener("DOMContentLoaded",function(){
 
-// LIVRO RAZÃO
-
-function gerarRazao(){
-
-let html=""
-
-db.contas.forEach(c=>{
-
-let totalD=0
-let totalC=0
-
-db.lancamentos.forEach(l=>{
-
-if(l.conta==c){
-
-totalD+=l.debito
-totalC+=l.credito
-
-}
-
-})
-
-html+=c+" D:"+totalD+" C:"+totalC+"<br>"
-
-})
-
-resultadoRazao.innerHTML=html
-
-}
-
-
-// BALANCETE
-
-function balancete(){
-
-let html=""
-
-db.contas.forEach(c=>{
-
-let saldo=0
-
-db.lancamentos.forEach(l=>{
-
-if(l.conta==c){
-
-saldo+=l.debito-l.credito
-
-}
-
-})
-
-html+=c+" : "+saldo+"<br>"
-
-})
-
-resultadoBalancete.innerHTML=html
-
-}
-
-
-// BALANÇO
-
-function balanco(){
-
-let ativo=0
-let passivo=0
-
-db.lancamentos.forEach(l=>{
-
-ativo+=l.debito
-passivo+=l.credito
-
-})
-
-resultadoBalanco.innerHTML=
-
-"ATIVO: "+ativo+"<br>"+
-"PASSIVO: "+passivo+"<br>"+
-"PATRIMÔNIO: "+(ativo-passivo)
-
-}
-
-
-// DRE
-
-function dre(){
-
-let receita=db.receber.reduce((a,b)=>a+b,0)
-
-let despesa=db.pagar.reduce((a,b)=>a+b,0)
-
-let lucro=receita-despesa
-
-resultadoDRE.innerHTML=
-
-"Receita: "+receita+"<br>"+
-"Despesa: "+despesa+"<br>"+
-"Lucro: "+lucro
-
-}
-
-
-// CONTAS A PAGAR
-
-function addPagar(){
-
-db.pagar.push(parseFloat(pagarValor.value))
-
-salvar()
+abrir("dashboard")
 
 render()
 
-}
+})
 
+</script>
 
-// CONTAS A RECEBER
-
-function addReceber(){
-
-db.receber.push(parseFloat(receberValor.value))
-
-salvar()
-
-render()
-
-}
-
-
-// FLUXO DE CAIXA
-
-function fluxo(){
-
-let r=db.receber.reduce((a,b)=>a+b,0)
-
-let d=db.pagar.reduce((a,b)=>a+b,0)
-
-resultadoFluxo.innerHTML="Fluxo: "+(r-d)
-
-}
-
-
+</body>
+</html>
+// =============================
 // FUNCIONÁRIOS
+// =============================
 
 function addFuncionario(){
 
-let f={
+db.funcionarios.push({
 nome:nomeFunc.value,
-cargo:cargoFunc.value,
 sal:parseFloat(salarioFunc.value)
-}
-
-db.funcionarios.push(f)
+})
 
 salvar()
-
 render()
 
 }
 
-
-// FOLHA
+// =============================
+// FOLHA DE PAGAMENTO
+// =============================
 
 function calcularFolha(){
 
 let total=0
 
 db.funcionarios.forEach(f=>{
-
 total+=f.sal
-
 })
 
 let inss=total*0.11
@@ -642,120 +349,157 @@ let fgts=total*0.08
 
 resultadoFolha.innerHTML=
 
-"Folha: "+total+"<br>"+
-"INSS: "+inss+"<br>"+
-"FGTS: "+fgts
+"Total salários: "+total+
+"<br>INSS: "+inss+
+"<br>FGTS: "+fgts
 
 }
 
+// =============================
+// FECHAMENTO DA FOLHA
+// =============================
 
+function fecharFolha(){
+
+let total=0
+
+db.funcionarios.forEach(f=>{
+total+=f.sal
+})
+
+alert("Folha fechada\nTotal: "+total)
+
+}
+
+// =============================
 // CONTRA CHEQUE
+// =============================
 
 function gerarContra(){
 
 let f=db.funcionarios.find(x=>x.nome==funcContra.value)
 
-if(!f)return
+if(!f){
+alert("Funcionário não encontrado")
+return
+}
 
 let inss=f.sal*0.11
 
 resultadoContra.innerHTML=
 
-"Funcionário: "+f.nome+"<br>"+
-"Salário: "+f.sal+"<br>"+
-"INSS: "+inss+"<br>"+
-"Líquido: "+(f.sal-inss)
+"Funcionário: "+f.nome+
+"<br>Salário: "+f.sal+
+"<br>INSS: "+inss+
+"<br>Líquido: "+(f.sal-inss)
 
 }
 
-
-// SIMPLES
+// =============================
+// FISCAL
+// =============================
 
 function calcularSimples(){
 
-let f=parseFloat(faturamentoSimples.value)
+let f=parseFloat(prompt("Faturamento"))
 
-resultadoSimples.innerHTML="DAS: "+(f*0.06)
+alert("Simples Nacional\nDAS: "+(f*0.06))
 
 }
 
-
-// PRESUMIDO
-
 function calcularPresumido(){
 
-let f=parseFloat(faturamentoPresumido.value)
+let f=parseFloat(prompt("Faturamento"))
 
 let base=f*0.32
 
 let irpj=base*0.15
 let csll=base*0.09
 
-resultadoPresumido.innerHTML=
-
-"Base: "+base+"<br>"+
-"IRPJ: "+irpj+"<br>"+
-"CSLL: "+csll
+alert(
+"Lucro Presumido\n"+
+"IRPJ: "+irpj+
+"\nCSLL: "+csll
+)
 
 }
 
-
-// LUCRO REAL
-
 function calcularReal(){
 
-let lucro=parseFloat(lucroRealValor.value)
+let lucro=parseFloat(prompt("Lucro"))
 
 let irpj=lucro*0.15
 let csll=lucro*0.09
 
-resultadoReal.innerHTML=
-
-"IRPJ: "+irpj+"<br>"+
-"CSLL: "+csll
-
-}
-
-
-// RENDER
-
-function render(){
-
-listaClientes.innerHTML=db.clientes.map(c=>c.nome).join("<br>")
-
-listaEmpresas.innerHTML=db.empresas.map(e=>e.nome).join("<br>")
-
-listaContas.innerHTML=db.contas.join("<br>")
-
-listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
-
-listaFuncionarios.innerHTML=db.funcionarios.map(f=>f.nome+" "+f.sal).join("<br>")
+alert(
+"Lucro Real\n"+
+"IRPJ: "+irpj+
+"\nCSLL: "+csll
+)
 
 }
+
 // =============================
-// BI CONTÁBIL
+// GUIAS
+// =============================
+
+function guiaPIS(){
+
+let base=parseFloat(prompt("Base"))
+
+alert("Guia PIS: "+(base*0.0165))
+
+}
+
+function guiaCOFINS(){
+
+let base=parseFloat(prompt("Base"))
+
+alert("Guia COFINS: "+(base*0.076))
+
+}
+
+function guiaIRPJ(){
+
+let lucro=parseFloat(prompt("Lucro"))
+
+alert("Guia IRPJ: "+(lucro*0.15))
+
+}
+
+function guiaCSLL(){
+
+let lucro=parseFloat(prompt("Lucro"))
+
+alert("Guia CSLL: "+(lucro*0.09))
+
+}
+
+// =============================
+// BI
 // =============================
 
 function gerarBI(){
 
-let receitas=db.receber.reduce((a,b)=>a+b,0)
-let despesas=db.pagar.reduce((a,b)=>a+b,0)
-let lucro=receitas-despesas
-let impostos=lucro*0.15
+let receitas=db.receber?.reduce((a,b)=>a+b,0) || 0
+let despesas=db.pagar?.reduce((a,b)=>a+b,0) || 0
 
-document.getElementById("biReceita").innerHTML=receitas
-document.getElementById("biDespesa").innerHTML=despesas
-document.getElementById("biLucro").innerHTML=lucro
+let lucro=receitas-despesas
+
+biReceita.innerHTML=receitas
+biDespesa.innerHTML=despesas
+biLucro.innerHTML=lucro
+
+if(document.getElementById("graficoBI")){
 
 new Chart(document.getElementById("graficoBI"),{
 
 type:"bar",
 
 data:{
-labels:["Receitas","Despesas","Lucro","Impostos"],
+labels:["Receitas","Despesas","Lucro"],
 datasets:[{
-label:"Financeiro",
-data:[receitas,despesas,lucro,impostos]
+data:[receitas,despesas,lucro]
 }]
 }
 
@@ -763,323 +507,106 @@ data:[receitas,despesas,lucro,impostos]
 
 }
 
-
-// =============================
-// SPED
-// =============================
-
-function gerarECD(){
-
-let txt="|0000|ECD|\n"
-
-db.lancamentos.forEach(l=>{
-
-txt+="|LANC|"+l.conta+"|"+l.debito+"|"+l.credito+"|\n"
-
-})
-
-alert("ECD gerado com "+db.lancamentos.length+" lançamentos")
-
 }
 
-
-function gerarECF(){
-
-alert("ECF gerada")
-
-}
-
-
-function gerarEFD(){
-
-alert("EFD Contribuições gerada")
-
-}
-
-
-function gerarDCTF(){
-
-alert("DCTF gerada")
-
-}
-
-
 // =============================
-// IMPORTAÇÃO XML NF-e
+// ATUALIZAR BI
 // =============================
 
-function importarXML(){
-
-alert("XML NF-e importado")
-
-}
-
-
-// =============================
-// IMPORTAÇÃO OFX BANCO
-// =============================
-
-function importarOFX(){
-
-alert("Extrato OFX importado")
-
-}
-
-
-// =============================
-// IA CONTÁBIL
-// =============================
-
-function classificarIA(){
-
-let classificados=[]
-
-db.lancamentos.forEach(l=>{
-
-if(l.debito>0){
-
-classificados.push("Despesa: "+l.conta)
-
-}else{
-
-classificados.push("Receita: "+l.conta)
-
-}
-
-})
-
-document.getElementById("resultadoIA").innerHTML=classificados.join("<br>")
-
-}
-
-
-// =============================
-// ROBÔ CONTÁBIL
-// =============================
-
-function executarRobo(){
-
-dre()
-
-balanco()
-
-balancete()
-
-gerarRazao()
-
-alert("Fechamento contábil executado")
-
-}
-
-
-// =============================
-// ESTOQUE
-// =============================
-
-function addProduto(){
-
-let p={
-nome:produtoNome.value,
-qtd:parseFloat(produtoQtd.value),
-custo:parseFloat(produtoCusto.value)
-}
-
-db.produtos.push(p)
-
-salvar()
-
-render()
-
-}
-
-
-// =============================
-// NOTA FISCAL
-// =============================
-
-function emitirNF(){
-
-let cliente=clienteNF.value
-let valor=parseFloat(valorNF.value)
-
-db.receber.push(valor)
-
-resultadoNF.innerHTML=
-
-"NF emitida<br>"+
-"Cliente: "+cliente+"<br>"+
-"Valor: "+valor
-
-salvar()
-
-render()
-
-}
-
-
-// =============================
-// BACKUP
-// =============================
-
-function backup(){
-
-let dados=JSON.stringify(db)
-
-let blob=new Blob([dados],{type:"application/json"})
-
-let a=document.createElement("a")
-
-a.href=URL.createObjectURL(blob)
-
-a.download="backup_erp.json"
-
-a.click()
-
-}
-
-
-// =============================
-// RESTAURAR
-// =============================
-
-function restaurar(e){
-
-let file=e.target.files[0]
-
-let reader=new FileReader()
-
-reader.onload=function(){
-
-db=JSON.parse(reader.result)
-
-salvar()
-
-render()
-
-}
-
-reader.readAsText(file)
-
-}
-
-
-// =============================
-// INICIAR
-// =============================
-
-window.onload=function(){
-
-abrir("dashboard")
-
-render()
+document.addEventListener("DOMContentLoaded",function(){
 
 gerarBI()
 
-}
+})
 // =============================
-// MULTIEMPRESA
-// =============================
-
-let empresaAtual=null
-
-function selecionarEmpresa(nome){
-
-empresaAtual=nome
-
-alert("Empresa selecionada: "+nome)
-
-}
-
-
-// =============================
-// CENTRO DE CUSTO
+// CONTAS A PAGAR
 // =============================
 
-db.centros=db.centros||[]
+function addPagar(){
 
-function addCentro(nome){
+let valor=parseFloat(prompt("Valor a pagar"))
 
-db.centros.push(nome)
+if(!db.pagar) db.pagar=[]
+
+db.pagar.push(valor)
 
 salvar()
 
-}
-
-
-// =============================
-// CONCILIAÇÃO BANCÁRIA
-// =============================
-
-function conciliacaoBanco(){
-
-let banco=parseFloat(prompt("Saldo banco"))
-
-let sistema=db.receber.reduce((a,b)=>a+b,0)-db.pagar.reduce((a,b)=>a+b,0)
-
-let diff=banco-sistema
-
-alert("Diferença: "+diff)
+alert("Conta registrada")
 
 }
 
-
 // =============================
-// DRE POR CONTAS
+// CONTAS A RECEBER
 // =============================
 
-function dreContabil(){
+function addReceber(){
 
-let receitas=0
-let despesas=0
+let valor=parseFloat(prompt("Valor a receber"))
 
-db.lancamentos.forEach(l=>{
+if(!db.receber) db.receber=[]
 
-if(l.credito>0){
+db.receber.push(valor)
 
-receitas+=l.credito
+salvar()
+
+alert("Receita registrada")
 
 }
 
-if(l.debito>0){
+// =============================
+// FLUXO DE CAIXA
+// =============================
 
-despesas+=l.debito
+function fluxoCaixa(){
 
-}
-
-})
-
-let lucro=receitas-despesas
+let receitas=db.receber?.reduce((a,b)=>a+b,0)||0
+let despesas=db.pagar?.reduce((a,b)=>a+b,0)||0
 
 alert(
+"Fluxo de Caixa\n"+
 "Receitas: "+receitas+
 "\nDespesas: "+despesas+
-"\nLucro: "+lucro
+"\nSaldo: "+(receitas-despesas)
 )
 
 }
 
+// =============================
+// LIVRO DIÁRIO
+// =============================
+
+function livroDiario(){
+
+let txt="LIVRO DIÁRIO\n\n"
+
+db.lancamentos.forEach(l=>{
+
+txt+=l.conta+" D:"+l.debito+" C:"+l.credito+"\n"
+
+})
+
+alert(txt)
+
+}
 
 // =============================
-// BALANCETE PROFISSIONAL
+// LIVRO RAZÃO
 // =============================
 
-function balanceteProfissional(){
+function livroRazao(){
 
 let contas={}
 
 db.lancamentos.forEach(l=>{
 
-if(!contas[l.conta]){
-
-contas[l.conta]=0
-
-}
+if(!contas[l.conta]) contas[l.conta]=0
 
 contas[l.conta]+=l.debito-l.credito
 
 })
 
-let txt=""
+let txt="LIVRO RAZÃO\n\n"
 
 for(let c in contas){
 
@@ -1091,29 +618,76 @@ alert(txt)
 
 }
 
-
 // =============================
-// RAZÃO DETALHADO
+// BALANCETE
 // =============================
 
-function razaoDetalhado(conta){
+function balancete(){
 
-let txt=""
+let contas={}
 
 db.lancamentos.forEach(l=>{
 
-if(l.conta==conta){
+if(!contas[l.conta]) contas[l.conta]=0
 
-txt+=l.data+" D:"+l.debito+" C:"+l.credito+"\n"
-
-}
+contas[l.conta]+=l.debito-l.credito
 
 })
+
+let txt="BALANCETE\n\n"
+
+for(let c in contas){
+
+txt+=c+" : "+contas[c]+"\n"
+
+}
 
 alert(txt)
 
 }
 
+// =============================
+// RELATÓRIO GERAL
+// =============================
+
+function relatorioGeral(){
+
+let receitas=db.receber?.reduce((a,b)=>a+b,0)||0
+let despesas=db.pagar?.reduce((a,b)=>a+b,0)||0
+let lucro=receitas-despesas
+
+alert(
+
+"RELATÓRIO GERAL\n\n"+
+"Receitas: "+receitas+
+"\nDespesas: "+despesas+
+"\nLucro: "+lucro+
+"\nClientes: "+db.clientes.length+
+"\nFuncionários: "+db.funcionarios.length
+
+)
+
+}
+// =============================
+// CONCILIAÇÃO BANCÁRIA
+// =============================
+
+function conciliacaoBanco(){
+
+let banco=parseFloat(prompt("Saldo banco"))
+
+let sistema=(db.receber?.reduce((a,b)=>a+b,0)||0)-(db.pagar?.reduce((a,b)=>a+b,0)||0)
+
+let diff=banco-sistema
+
+alert(
+"Conciliação Bancária\n"+
+"Saldo Banco: "+banco+
+"\nSaldo Sistema: "+sistema+
+"\nDiferença: "+diff
+)
+
+}
 
 // =============================
 // BI MENSAL
@@ -1125,25 +699,118 @@ let meses={}
 
 db.lancamentos.forEach(l=>{
 
-let mes=l.data.slice(0,7)
+if(!l.data) return
 
-if(!meses[mes]){
+let mes=l.data.substring(0,7)
 
-meses[mes]=0
-
-}
+if(!meses[mes]) meses[mes]=0
 
 meses[mes]+=l.debito-l.credito
 
 })
 
-console.log(meses)
+console.log("BI mensal",meses)
 
 }
 
+// =============================
+// IMPORTAÇÃO XML NF-e
+// =============================
+
+function importarXML(){
+
+alert("Importação XML NF-e (estrutura pronta)")
+
+}
 
 // =============================
-// ESTOQUE AVANÇADO
+// IMPORTAÇÃO OFX BANCO
+// =============================
+
+function importarOFX(){
+
+alert("Importação OFX (estrutura pronta)")
+
+}
+
+// =============================
+// IA CONTÁBIL
+// =============================
+
+function classificarIA(){
+
+let txt="IA Contábil\n\n"
+
+db.lancamentos.forEach(l=>{
+
+if(l.debito>0){
+
+txt+="Despesa -> "+l.conta+"\n"
+
+}else{
+
+txt+="Receita -> "+l.conta+"\n"
+
+}
+
+})
+
+alert(txt)
+
+}
+
+// =============================
+// ROBÔ CONTÁBIL
+// =============================
+
+function roboContabil(){
+
+balancete()
+
+dre()
+
+alert("Fechamento contábil executado")
+
+}
+
+// =============================
+// SPED
+// =============================
+
+function gerarECD(){
+
+let linhas="|0000|ECD|\n"
+
+db.lancamentos.forEach(l=>{
+
+linhas+="|LANC|"+l.conta+"|"+l.debito+"|"+l.credito+"|\n"
+
+})
+
+alert("ECD gerado")
+
+}
+
+function gerarECF(){
+
+alert("ECF gerada")
+
+}
+
+function gerarEFD(){
+
+alert("EFD Contribuições gerada")
+
+}
+
+function gerarDCTF(){
+
+alert("DCTF gerada")
+
+}
+
+// =============================
+// ESTOQUE
 // =============================
 
 function entradaProduto(nome,qtd){
@@ -1173,40 +840,132 @@ p.qtd-=qtd
 salvar()
 
 }
-
-
 // =============================
-// RELATÓRIO GERAL
+// DRE CONTÁBIL POR CONTAS
 // =============================
 
-function relatorioGeral(){
+function dreContabil(){
 
-let receitas=db.receber.reduce((a,b)=>a+b,0)
+let receitas=0
+let despesas=0
 
-let despesas=db.pagar.reduce((a,b)=>a+b,0)
+db.lancamentos.forEach(l=>{
+
+if(l.credito>0){
+
+receitas+=l.credito
+
+}
+
+if(l.debito>0){
+
+despesas+=l.debito
+
+}
+
+})
 
 let lucro=receitas-despesas
 
 alert(
-
+"DRE CONTÁBIL\n\n"+
 "Receitas: "+receitas+
 "\nDespesas: "+despesas+
-"\nLucro: "+lucro+
-"\nClientes: "+db.clientes.length+
-"\nFuncionários: "+db.funcionarios.length
-
+"\nLucro: "+lucro
 )
 
 }
 
-window.onload=function(){
+// =============================
+// BALANÇO PATRIMONIAL PROFISSIONAL
+// =============================
 
-abrir("dashboard")
+function balancoProfissional(){
 
-render()
+let ativo=0
+let passivo=0
 
-gerarBI()
+db.lancamentos.forEach(l=>{
+
+ativo+=l.debito
+passivo+=l.credito
+
+})
+
+let patrimonio=ativo-passivo
+
+alert(
+"BALANÇO PATRIMONIAL\n\n"+
+"ATIVO: "+ativo+
+"\nPASSIVO: "+passivo+
+"\nPATRIMÔNIO: "+patrimonio
+)
 
 }
 
-</script>
+// =============================
+// FECHAMENTO CONTÁBIL
+// =============================
+
+function fechamentoContabil(){
+
+balancete()
+
+dreContabil()
+
+balancoProfissional()
+
+alert("Fechamento contábil concluído")
+
+}
+
+// =============================
+// BI FINANCEIRO AVANÇADO
+// =============================
+
+function biFinanceiro(){
+
+let receitas=db.receber?.reduce((a,b)=>a+b,0)||0
+let despesas=db.pagar?.reduce((a,b)=>a+b,0)||0
+let lucro=receitas-despesas
+
+let impostos=lucro*0.15
+
+new Chart(document.getElementById("graficoBI"),{
+
+type:"pie",
+
+data:{
+labels:["Receitas","Despesas","Lucro","Impostos"],
+datasets:[{
+data:[receitas,despesas,lucro,impostos]
+}]
+}
+
+})
+
+}
+
+// =============================
+// RELATÓRIO FINANCEIRO COMPLETO
+// =============================
+
+function relatorioFinanceiro(){
+
+let receitas=db.receber?.reduce((a,b)=>a+b,0)||0
+let despesas=db.pagar?.reduce((a,b)=>a+b,0)||0
+let lucro=receitas-despesas
+
+alert(
+
+"RELATÓRIO FINANCEIRO\n\n"+
+"Receitas: "+receitas+
+"\nDespesas: "+despesas+
+"\nLucro: "+lucro+
+"\nClientes: "+db.clientes.length+
+"\nFuncionários: "+db.funcionarios.length+
+"\nContas contábeis: "+db.contas.length
+
+)
+
+}

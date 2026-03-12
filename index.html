@@ -976,3 +976,237 @@ render()
 gerarBI()
 
 }
+// =============================
+// MULTIEMPRESA
+// =============================
+
+let empresaAtual=null
+
+function selecionarEmpresa(nome){
+
+empresaAtual=nome
+
+alert("Empresa selecionada: "+nome)
+
+}
+
+
+// =============================
+// CENTRO DE CUSTO
+// =============================
+
+db.centros=db.centros||[]
+
+function addCentro(nome){
+
+db.centros.push(nome)
+
+salvar()
+
+}
+
+
+// =============================
+// CONCILIAÇÃO BANCÁRIA
+// =============================
+
+function conciliacaoBanco(){
+
+let banco=parseFloat(prompt("Saldo banco"))
+
+let sistema=db.receber.reduce((a,b)=>a+b,0)-db.pagar.reduce((a,b)=>a+b,0)
+
+let diff=banco-sistema
+
+alert("Diferença: "+diff)
+
+}
+
+
+// =============================
+// DRE POR CONTAS
+// =============================
+
+function dreContabil(){
+
+let receitas=0
+let despesas=0
+
+db.lancamentos.forEach(l=>{
+
+if(l.credito>0){
+
+receitas+=l.credito
+
+}
+
+if(l.debito>0){
+
+despesas+=l.debito
+
+}
+
+})
+
+let lucro=receitas-despesas
+
+alert(
+"Receitas: "+receitas+
+"\nDespesas: "+despesas+
+"\nLucro: "+lucro
+)
+
+}
+
+
+// =============================
+// BALANCETE PROFISSIONAL
+// =============================
+
+function balanceteProfissional(){
+
+let contas={}
+
+db.lancamentos.forEach(l=>{
+
+if(!contas[l.conta]){
+
+contas[l.conta]=0
+
+}
+
+contas[l.conta]+=l.debito-l.credito
+
+})
+
+let txt=""
+
+for(let c in contas){
+
+txt+=c+" : "+contas[c]+"\n"
+
+}
+
+alert(txt)
+
+}
+
+
+// =============================
+// RAZÃO DETALHADO
+// =============================
+
+function razaoDetalhado(conta){
+
+let txt=""
+
+db.lancamentos.forEach(l=>{
+
+if(l.conta==conta){
+
+txt+=l.data+" D:"+l.debito+" C:"+l.credito+"\n"
+
+}
+
+})
+
+alert(txt)
+
+}
+
+
+// =============================
+// BI MENSAL
+// =============================
+
+function biMensal(){
+
+let meses={}
+
+db.lancamentos.forEach(l=>{
+
+let mes=l.data.slice(0,7)
+
+if(!meses[mes]){
+
+meses[mes]=0
+
+}
+
+meses[mes]+=l.debito-l.credito
+
+})
+
+console.log(meses)
+
+}
+
+
+// =============================
+// ESTOQUE AVANÇADO
+// =============================
+
+function entradaProduto(nome,qtd){
+
+let p=db.produtos.find(x=>x.nome==nome)
+
+if(p){
+
+p.qtd+=qtd
+
+}
+
+salvar()
+
+}
+
+function saidaProduto(nome,qtd){
+
+let p=db.produtos.find(x=>x.nome==nome)
+
+if(p){
+
+p.qtd-=qtd
+
+}
+
+salvar()
+
+}
+
+
+// =============================
+// RELATÓRIO GERAL
+// =============================
+
+function relatorioGeral(){
+
+let receitas=db.receber.reduce((a,b)=>a+b,0)
+
+let despesas=db.pagar.reduce((a,b)=>a+b,0)
+
+let lucro=receitas-despesas
+
+alert(
+
+"Receitas: "+receitas+
+"\nDespesas: "+despesas+
+"\nLucro: "+lucro+
+"\nClientes: "+db.clientes.length+
+"\nFuncionários: "+db.funcionarios.length
+
+)
+
+}
+
+window.onload=function(){
+
+abrir("dashboard")
+
+render()
+
+gerarBI()
+
+}
+
+</script>

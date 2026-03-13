@@ -113,6 +113,8 @@ margin:4px
 <h3>Contábil</h3>
 <button onclick="abrir('contas')">Plano de Contas</button>
 <button onclick="abrir('lancamentos')">Lançamentos</button>
+<button onclick="abrir('diario')">Livro Diário</button>
+<button onclick="abrir('razao')">Livro Razão</button>
 <button onclick="abrir('balancete')">Balancete</button>
 <button onclick="abrir('balanco')">Balanço</button>
 <button onclick="abrir('dre')">DRE</button>
@@ -150,147 +152,104 @@ margin:4px
 </div>
 
 <div id="clientes" class="modulo">
-
 <h2>Clientes</h2>
-
 <input id="clienteNome">
 <button onclick="addCliente()">Salvar</button>
-
 <div id="listaClientes"></div>
-
 </div>
 
 <div id="empresas" class="modulo">
-
 <h2>Empresas</h2>
-
 <input id="empresaNome">
 <button onclick="addEmpresa()">Salvar</button>
-
 <div id="listaEmpresas"></div>
-
 </div>
 
 <div id="contas" class="modulo">
-
 <h2>Plano de Contas</h2>
-
 <input id="contaNome">
 <button onclick="addConta()">Adicionar</button>
-
 <div id="listaContas"></div>
-
 </div>
 
 <div id="lancamentos" class="modulo">
-
 <h2>Lançamentos</h2>
-
-Conta<input id="contaLanc">
-Débito<input id="debitoLanc">
-Crédito<input id="creditoLanc">
-
+Conta <input id="contaLanc">
+Débito <input id="debitoLanc">
+Crédito <input id="creditoLanc">
 <button onclick="addLanc()">Registrar</button>
-
 <div id="listaLanc"></div>
+</div>
 
+<div id="diario" class="modulo">
+<h2>Livro Diário</h2>
+<button onclick="livroDiario()">Gerar</button>
+<div id="resultadoDiario"></div>
+</div>
+
+<div id="razao" class="modulo">
+<h2>Livro Razão</h2>
+<button onclick="livroRazao()">Gerar</button>
+<div id="resultadoRazao"></div>
 </div>
 
 <div id="balancete" class="modulo">
-
 <h2>Balancete</h2>
-
 <button onclick="balancete()">Gerar</button>
-
 <div id="resultadoBalancete"></div>
-
 </div>
 
 <div id="balanco" class="modulo">
-
 <h2>Balanço</h2>
-
 <button onclick="balanco()">Gerar</button>
-
 <div id="resultadoBalanco"></div>
-
 </div>
 
 <div id="dre" class="modulo">
-
 <h2>DRE</h2>
-
 <button onclick="dre()">Gerar</button>
-
 <div id="resultadoDRE"></div>
-
 </div>
 
 <div id="pagar" class="modulo">
-
 <h2>Contas Pagar</h2>
-
 <input id="pagarValor">
 <button onclick="addPagar()">Adicionar</button>
-
 <div id="listaPagar"></div>
-
 </div>
 
 <div id="receber" class="modulo">
-
 <h2>Contas Receber</h2>
-
 <input id="receberValor">
 <button onclick="addReceber()">Adicionar</button>
-
 <div id="listaReceber"></div>
-
 </div>
 
 <div id="fluxo" class="modulo">
-
 <h2>Fluxo Caixa</h2>
-
 <button onclick="fluxo()">Calcular</button>
-
 <div id="resultadoFluxo"></div>
-
 </div>
 
 <div id="funcionarios" class="modulo">
-
 <h2>Funcionários</h2>
-
 <input id="nomeFunc">
 <input id="salarioFunc">
-
 <button onclick="addFuncionario()">Salvar</button>
-
 <div id="listaFuncionarios"></div>
-
 </div>
 
 <div id="folha" class="modulo">
-
 <h2>Folha</h2>
-
 <button onclick="calcularFolha()">Calcular</button>
-
 <div id="resultadoFolha"></div>
-
 </div>
 
 <div id="impostos" class="modulo">
-
 <h2>Impostos</h2>
-
 <input id="valorImposto">
-
 <button onclick="calcularImpostos()">Calcular</button>
-
 <div id="resultadoImpostos"></div>
-
 </div>
 
 </div>
@@ -312,212 +271,154 @@ localStorage.setItem("erp_daythi",JSON.stringify(db))
 }
 
 function login(){
-
 if(usuarioLogin.value=="admin" && senhaLogin.value=="1234"){
 loginTela.style.display="none"
 }
-
 }
 
 function abrir(id){
-
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
-
 document.getElementById(id).style.display="block"
-
 renderDashboard()
-
 }
 
 function addCliente(){
-
 db.clientes.push(clienteNome.value)
-
 clienteNome.value=""
-
 salvar()
-
 render()
-
 }
 
 function addEmpresa(){
-
 db.empresas.push(empresaNome.value)
-
 empresaNome.value=""
-
 salvar()
-
 render()
-
 }
 
 function addConta(){
-
 db.contas.push(contaNome.value)
-
 contaNome.value=""
-
 salvar()
-
 render()
-
 }
 
 function addLanc(){
-
 let l={
 conta:contaLanc.value,
 debito:parseFloat(debitoLanc.value)||0,
 credito:parseFloat(creditoLanc.value)||0
 }
-
 db.lancamentos.push(l)
-
 salvar()
-
 render()
-
 }
 
 function addFuncionario(){
-
 let f={
 nome:nomeFunc.value,
 sal:parseFloat(salarioFunc.value)||0
 }
-
 db.funcionarios.push(f)
-
 salvar()
-
 render()
-
 }
 
 function addPagar(){
-
 db.pagar.push(parseFloat(pagarValor.value)||0)
-
 salvar()
-
 render()
-
 }
 
 function addReceber(){
-
 db.receber.push(parseFloat(receberValor.value)||0)
-
 salvar()
-
 render()
-
 }
 
 function fluxo(){
-
 let r=db.receber.reduce((a,b)=>a+b,0)
-
 let d=db.pagar.reduce((a,b)=>a+b,0)
-
 resultadoFluxo.innerHTML="Saldo: "+(r-d)
-
 }
 
 function calcularFolha(){
-
 let total=0
-
 db.funcionarios.forEach(f=>total+=f.sal)
-
 let inss=total*0.11
 let fgts=total*0.08
-
 resultadoFolha.innerHTML="Folha:"+total+" INSS:"+inss+" FGTS:"+fgts
+}
 
+function livroDiario(){
+let html=""
+db.lancamentos.forEach(l=>{
+html+="Conta:"+l.conta+" D:"+l.debito+" C:"+l.credito+"<br>"
+})
+resultadoDiario.innerHTML=html
+}
+
+function livroRazao(){
+let contas={}
+db.lancamentos.forEach(l=>{
+if(!contas[l.conta]) contas[l.conta]=0
+contas[l.conta]+=l.debito-l.credito
+})
+let html=""
+for(let c in contas){
+html+=c+" : "+contas[c]+"<br>"
+}
+resultadoRazao.innerHTML=html
 }
 
 function balancete(){
-
 let saldo=0
-
 db.lancamentos.forEach(l=>saldo+=l.debito-l.credito)
-
 resultadoBalancete.innerHTML="Saldo:"+saldo
-
 }
 
 function balanco(){
-
 let ativo=0
 let passivo=0
-
 db.lancamentos.forEach(l=>{
 ativo+=l.debito
 passivo+=l.credito
 })
-
 resultadoBalanco.innerHTML="Ativo:"+ativo+" Passivo:"+passivo
-
 }
 
 function dre(){
-
 let receitas=db.receber.reduce((a,b)=>a+b,0)
-
 let despesas=db.pagar.reduce((a,b)=>a+b,0)
-
 resultadoDRE.innerHTML="Lucro:"+(receitas-despesas)
-
 }
 
 function calcularImpostos(){
-
 let v=parseFloat(valorImposto.value)||0
-
 let pis=v*0.0165
 let cofins=v*0.076
 let irpj=v*0.15
 let csll=v*0.09
-
 resultadoImpostos.innerHTML=
 "PIS:"+pis+"<br>"+
 "COFINS:"+cofins+"<br>"+
 "IRPJ:"+irpj+"<br>"+
 "CSLL:"+csll
-
 }
 
 function render(){
-
 listaClientes.innerHTML=db.clientes.join("<br>")
-
 listaEmpresas.innerHTML=db.empresas.join("<br>")
-
 listaContas.innerHTML=db.contas.join("<br>")
-
-listaLanc.innerHTML=db.lancamentos
-.map(l=>l.conta+" "+l.debito+"/"+l.credito)
-.join("<br>")
-
-listaFuncionarios.innerHTML=db.funcionarios
-.map(f=>f.nome+" "+f.sal)
-.join("<br>")
-
+listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
+listaFuncionarios.innerHTML=db.funcionarios.map(f=>f.nome+" "+f.sal).join("<br>")
 listaPagar.innerHTML=db.pagar.join("<br>")
-
 listaReceber.innerHTML=db.receber.join("<br>")
-
 }
 
 function renderDashboard(){
-
 let receitas=db.receber.reduce((a,b)=>a+b,0)
-
 let despesas=db.pagar.reduce((a,b)=>a+b,0)
-
 let lucro=receitas-despesas
 
 biReceita.innerHTML=receitas
@@ -528,20 +429,14 @@ new Chart(document.getElementById("grafico"),{
 type:"bar",
 data:{
 labels:["Receitas","Despesas","Lucro"],
-datasets:[{
-data:[receitas,despesas,lucro]
-}]
+datasets:[{data:[receitas,despesas,lucro]}]
 }
 })
-
 }
 
 window.onload=function(){
-
 abrir("dashboard")
-
 render()
-
 }
 
 </script>

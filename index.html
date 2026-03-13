@@ -6,80 +6,33 @@
 <title>ERP MASTER DAYTHI</title>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-display:flex;
-background:#f4f6f9;
-}
+body{margin:0;font-family:Arial;display:flex;background:#f4f6f9}
 
 #menu{
-width:260px;
-background:#1f3c88;
-color:white;
-min-height:100vh;
-padding:10px;
+width:260px;background:#1f3c88;color:white;min-height:100vh;padding:10px
 }
 
 #menu button{
-width:100%;
-padding:10px;
-margin:4px 0;
-border:none;
-background:#2f54eb;
-color:white;
-cursor:pointer;
-text-align:left;
-border-radius:4px;
+width:100%;padding:10px;margin:4px 0;border:none;background:#2f54eb;color:white;cursor:pointer;text-align:left;border-radius:4px
 }
 
-#conteudo{
-flex:1;
-padding:20px;
-}
+#conteudo{flex:1;padding:20px}
 
 .modulo{
-display:none;
-background:white;
-padding:20px;
-border-radius:8px;
-box-shadow:0 0 5px #ccc;
-margin-bottom:10px;
+display:none;background:white;padding:20px;border-radius:8px;box-shadow:0 0 5px #ccc;margin-bottom:10px
 }
 
-.cards{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-}
+.cards{display:flex;gap:20px;flex-wrap:wrap}
 
 .card{
-background:white;
-padding:15px;
-border-radius:8px;
-box-shadow:0 0 5px #ccc;
-width:200px;
+background:white;padding:15px;border-radius:8px;box-shadow:0 0 5px #ccc;width:200px
 }
 
 #loginTela{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#f4f6f9;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+position:fixed;top:0;left:0;right:0;bottom:0;background:#f4f6f9;display:flex;flex-direction:column;align-items:center;justify-content:center
 }
 
-input{
-padding:6px;
-margin:4px;
-}
-
+input{padding:6px;margin:4px}
 </style>
 </head>
 
@@ -87,13 +40,10 @@ margin:4px;
 
 <div id="loginTela">
 <h2>ERP MASTER DAYTHI</h2>
-
 <input id="usuarioLogin" placeholder="Usuário">
 <input id="senhaLogin" type="password" placeholder="Senha">
-
 <button onclick="login()">Entrar</button>
 </div>
-
 
 <div id="menu">
 
@@ -131,20 +81,16 @@ margin:4px;
 
 </div>
 
-
 <div id="conteudo">
 
 <div id="dashboard" class="modulo">
 <h2>Dashboard</h2>
-
 <div class="cards">
 <div class="card">Receitas<div id="biReceita">0</div></div>
 <div class="card">Despesas<div id="biDespesa">0</div></div>
 <div class="card">Lucro<div id="biLucro">0</div></div>
 </div>
-
 </div>
-
 
 <div id="clientes" class="modulo">
 <h2>Clientes</h2>
@@ -153,14 +99,12 @@ margin:4px;
 <div id="listaClientes"></div>
 </div>
 
-
 <div id="empresas" class="modulo">
 <h2>Empresas</h2>
 <input id="empresaNome">
 <button onclick="addEmpresa()">Salvar</button>
 <div id="listaEmpresas"></div>
 </div>
-
 
 <div id="contas" class="modulo">
 <h2>Plano de Contas</h2>
@@ -169,25 +113,14 @@ margin:4px;
 <div id="listaContas"></div>
 </div>
 
-
 <div id="lancamentos" class="modulo">
 <h2>Lançamentos</h2>
-
-Conta
-<input id="contaLanc">
-
-Débito
-<input id="debitoLanc">
-
-Crédito
-<input id="creditoLanc">
-
+Conta<input id="contaLanc">
+Débito<input id="debitoLanc">
+Crédito<input id="creditoLanc">
 <button onclick="addLanc()">Registrar</button>
-
 <div id="listaLanc"></div>
-
 </div>
-
 
 <div id="balancete" class="modulo">
 <h2>Balancete</h2>
@@ -195,20 +128,17 @@ Crédito
 <div id="resultadoBalancete"></div>
 </div>
 
-
 <div id="balanco" class="modulo">
 <h2>Balanço</h2>
 <button onclick="balanco()">Gerar</button>
 <div id="resultadoBalanco"></div>
 </div>
 
-
 <div id="dre" class="modulo">
 <h2>DRE</h2>
 <button onclick="dre()">Gerar</button>
 <div id="resultadoDRE"></div>
 </div>
-
 
 <div id="pagar" class="modulo">
 <h2>Contas a Pagar</h2>
@@ -217,7 +147,6 @@ Crédito
 <div id="listaPagar"></div>
 </div>
 
-
 <div id="receber" class="modulo">
 <h2>Contas a Receber</h2>
 <input id="receberValor">
@@ -225,33 +154,25 @@ Crédito
 <div id="listaReceber"></div>
 </div>
 
-
 <div id="fluxo" class="modulo">
 <h2>Fluxo de Caixa</h2>
 <button onclick="fluxo()">Calcular</button>
 <div id="resultadoFluxo"></div>
 </div>
 
-
 <div id="funcionarios" class="modulo">
 <h2>Funcionários</h2>
-
 <input id="nomeFunc">
 <input id="salarioFunc">
-
 <button onclick="addFuncionario()">Salvar</button>
-
 <div id="listaFuncionarios"></div>
-
 </div>
-
 
 <div id="folha" class="modulo">
 <h2>Folha</h2>
 <button onclick="calcularFolha()">Calcular</button>
 <div id="resultadoFolha"></div>
 </div>
-
 
 <div id="contracheque" class="modulo">
 <h2>Contra Cheque</h2>
@@ -260,20 +181,14 @@ Crédito
 <div id="resultadoContra"></div>
 </div>
 
-
 <div id="impostos" class="modulo">
 <h2>Impostos</h2>
-
 <input id="valorImposto">
-
 <button onclick="calcularImpostos()">Calcular</button>
-
 <div id="resultadoImpostos"></div>
-
 </div>
 
 </div>
-
 
 <script>
 
@@ -292,7 +207,7 @@ localStorage.setItem("erp_daythi",JSON.stringify(db))
 }
 
 function login(){
-if(usuarioLogin.value=="admin" && senhaLogin.value=="1234"){
+if(usuarioLogin.value==="admin" && senhaLogin.value==="1234"){
 loginTela.style.display="none"
 }
 }
@@ -331,114 +246,83 @@ render()
 }
 
 function addPagar(){
-db.pagar.push(parseFloat(pagarValor.value))
+db.pagar.push(parseFloat(pagarValor.value)||0)
 salvar()
 render()
 }
 
 function addReceber(){
-db.receber.push(parseFloat(receberValor.value))
+db.receber.push(parseFloat(receberValor.value)||0)
 salvar()
 render()
 }
 
 function fluxo(){
-
 let receitas=db.receber.reduce((a,b)=>a+b,0)
 let despesas=db.pagar.reduce((a,b)=>a+b,0)
-
-resultadoFluxo.innerHTML="Saldo:"+(receitas-despesas)
-
+resultadoFluxo.innerHTML="Saldo: "+(receitas-despesas)
 }
 
 function addFuncionario(){
-
 db.funcionarios.push({
 nome:nomeFunc.value,
-sal:parseFloat(salarioFunc.value)
+sal:parseFloat(salarioFunc.value)||0
 })
-
 salvar()
 render()
-
 }
 
 function calcularFolha(){
-
 let total=0
 db.funcionarios.forEach(f=>total+=f.sal)
-
 let inss=total*0.11
 let fgts=total*0.08
-
-resultadoFolha.innerHTML="Folha:"+total+" INSS:"+inss+" FGTS:"+fgts
-
+resultadoFolha.innerHTML="Folha: "+total+" | INSS: "+inss+" | FGTS: "+fgts
 }
 
 function gerarContra(){
-
-let f=db.funcionarios.find(x=>x.nome==funcContra.value)
-
+let f=db.funcionarios.find(x=>x.nome===funcContra.value)
 if(!f)return
-
 let inss=f.sal*0.11
-
-resultadoContra.innerHTML="Liquido:"+(f.sal-inss)
-
+resultadoContra.innerHTML="Líquido: "+(f.sal-inss)
 }
 
 function balancete(){
-
 let saldo=0
-
 db.lancamentos.forEach(l=>saldo+=l.debito-l.credito)
-
-resultadoBalancete.innerHTML="Saldo:"+saldo
-
+resultadoBalancete.innerHTML="Saldo: "+saldo
 }
 
 function balanco(){
-
 let ativo=0
 let passivo=0
-
 db.lancamentos.forEach(l=>{
 ativo+=l.debito
 passivo+=l.credito
 })
-
-resultadoBalanco.innerHTML="Ativo:"+ativo+" Passivo:"+passivo
-
+resultadoBalanco.innerHTML="Ativo: "+ativo+" | Passivo: "+passivo
 }
 
 function dre(){
-
 let receitas=db.receber.reduce((a,b)=>a+b,0)
 let despesas=db.pagar.reduce((a,b)=>a+b,0)
-
-resultadoDRE.innerHTML="Lucro:"+(receitas-despesas)
-
+resultadoDRE.innerHTML="Lucro: "+(receitas-despesas)
 }
 
 function calcularImpostos(){
-
-let v=parseFloat(valorImposto.value)
-
+let v=parseFloat(valorImposto.value)||0
 let pis=v*0.0165
 let cofins=v*0.076
 let irpj=v*0.15
 let csll=v*0.09
-
 resultadoImpostos.innerHTML=
-"PIS:"+pis+"<br>"+
-"COFINS:"+cofins+"<br>"+
-"IRPJ:"+irpj+"<br>"+
-"CSLL:"+csll
-
+"PIS: "+pis+"<br>"+
+"COFINS: "+cofins+"<br>"+
+"IRPJ: "+irpj+"<br>"+
+"CSLL: "+csll
 }
 
 function render(){
-
 listaClientes.innerHTML=db.clientes.join("<br>")
 listaEmpresas.innerHTML=db.empresas.join("<br>")
 listaContas.innerHTML=db.contas.join("<br>")
@@ -453,39 +337,26 @@ let despesas=db.pagar.reduce((a,b)=>a+b,0)
 biReceita.innerHTML=receitas
 biDespesa.innerHTML=despesas
 biLucro.innerHTML=receitas-despesas
-
 }
 
 function backup(){
-
 let data=JSON.stringify(db)
-
 let blob=new Blob([data],{type:"application/json"})
-
 let a=document.createElement("a")
-
 a.href=URL.createObjectURL(blob)
-
 a.download="backup_erp_daythi.json"
-
 a.click()
-
 }
 
 function restaurar(e){
-
 let file=e.target.files[0]
-
 let reader=new FileReader()
-
 reader.onload=function(){
 db=JSON.parse(reader.result)
 salvar()
 render()
 }
-
 reader.readAsText(file)
-
 }
 
 window.onload=function(){
@@ -497,4 +368,3 @@ render()
 
 </body>
 </html>
-

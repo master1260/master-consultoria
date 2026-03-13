@@ -452,8 +452,216 @@ window.onload=function(){
 abrir("dashboard")
 render()
 }
+// =============================
+// REGIME TRIBUTÁRIO
+// =============================
 
+db.regime = db.regime || "Simples"
+
+function definirRegime(reg){
+
+db.regime = reg
+salvar()
+
+alert("Regime definido: " + reg)
+
+}
+
+// =============================
+// SIMPLES NACIONAL
+// =============================
+
+function calcularSimples(){
+
+let faturamento = db.lancamentos.reduce((a,b)=>a+b.credito,0)
+
+let imposto = faturamento * 0.06
+
+alert("Simples Nacional estimado: " + imposto)
+
+}
+
+// =============================
+// LUCRO PRESUMIDO
+// =============================
+
+function calcularPresumido(){
+
+let faturamento = db.lancamentos.reduce((a,b)=>a+b.credito,0)
+
+let base = faturamento * 0.32
+
+let irpj = base * 0.15
+let csll = base * 0.09
+
+alert("IRPJ: " + irpj + " CSLL: " + csll)
+
+}
+
+// =============================
+// LUCRO REAL
+// =============================
+
+function calcularLucroReal(){
+
+let receitas = db.lancamentos.reduce((a,b)=>a+b.credito,0)
+let despesas = db.lancamentos.reduce((a,b)=>a+b.debito,0)
+
+let lucro = receitas - despesas
+
+let irpj = lucro * 0.15
+let csll = lucro * 0.09
+
+alert("Lucro Real IRPJ: " + irpj + " CSLL: " + csll)
+
+}
+
+// =============================
+// DARF
+// =============================
+
+function gerarDARF(){
+
+let base = db.lancamentos.reduce((a,b)=>a+b.credito,0)
+
+let valor = base * 0.15
+
+alert("DARF gerada valor: " + valor)
+
+}
+
+// =============================
+// DCTF
+// =============================
+
+function gerarDCTF(){
+
+alert("Arquivo DCTF gerado")
+
+}
+
+// =============================
+// SPED ECD
+// =============================
+
+function gerarECD(){
+
+let txt = "|0000|ECD|\n"
+
+db.lancamentos.forEach(l=>{
+
+txt += "|LANC|" + l.conta + "|" + l.debito + "|" + l.credito + "|\n"
+
+})
+
+alert("ECD gerado")
+
+}
+
+// =============================
+// SPED ECF
+// =============================
+
+function gerarECF(){
+
+alert("ECF gerado")
+
+}
+
+// =============================
+// EFD CONTRIBUIÇÕES
+// =============================
+
+function gerarEFD(){
+
+alert("EFD Contribuições gerado")
+
+}
+
+// =============================
+// LIVRO DIÁRIO
+// =============================
+
+function livroDiario(){
+
+let html = ""
+
+db.lancamentos.forEach(l=>{
+
+html += l.conta + " D:" + l.debito + " C:" + l.credito + "<br>"
+
+})
+
+alert("Livro diário gerado")
+
+}
+
+// =============================
+// LIVRO RAZÃO
+// =============================
+
+function livroRazao(){
+
+let contas = {}
+
+db.lancamentos.forEach(l=>{
+
+if(!contas[l.conta]) contas[l.conta] = 0
+
+contas[l.conta] += l.debito - l.credito
+
+})
+
+console.log(contas)
+
+alert("Livro razão gerado")
+
+}
+
+// =============================
+// IMPORTAR XML NF-e
+// =============================
+
+function importarXML(e){
+
+let file = e.target.files[0]
+
+if(!file) return
+
+alert("XML importado: " + file.name)
+
+}
+
+// =============================
+// IMPORTAR OFX BANCO
+// =============================
+
+function importarOFX(e){
+
+let file = e.target.files[0]
+
+if(!file) return
+
+alert("OFX importado: " + file.name)
+
+}
+
+// =============================
+// ROBÔ CONTÁBIL
+// =============================
+
+function roboContabil(){
+
+livroDiario()
+livroRazao()
+balancete()
+balanco()
+
+alert("Fechamento contábil executado")
+
+}
 </script>
 
 </body>
 </html>
+

@@ -396,6 +396,7 @@ function gerarDCTF(){alert("DCTF gerado")}
 
 function render(){
 listaEmpresas.innerHTML=db.empresas.map(e=>e.nome+" "+e.cnpj).join("<br>")
+carregarEmpresas()
 listaClientes.innerHTML=db.clientes.join("<br>")
 listaContas.innerHTML=db.contas.join("<br>")
 listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")

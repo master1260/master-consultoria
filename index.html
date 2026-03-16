@@ -272,6 +272,7 @@ loginTela.style.display="none"
 abrir("dashboard")
 render()
 dashboard()
+carregarEmpresas()
 }
 }
 
@@ -410,7 +411,37 @@ biReceita.innerHTML=r
 biDespesa.innerHTML=d
 biLucro.innerHTML=r-d
 }
+function carregarEmpresas(){
 
+let select = document.getElementById("empresaAtiva")
+
+if(!select) return
+
+select.innerHTML=""
+
+db.empresas.forEach((e,i)=>{
+
+let opt=document.createElement("option")
+
+opt.value=i
+opt.text=e.nome+" - "+e.cnpj
+
+select.appendChild(opt)
+
+})
+
+}
+
+function selecionarEmpresa(){
+
+let i=document.getElementById("empresaAtiva").value
+
+let empresa=db.empresas[i]
+
+document.getElementById("empresaSelecionada").innerHTML =
+"Empresa ativa: "+empresa.nome+" ("+empresa.cnpj+")"
+
+}
 </script>
 
 </body>

@@ -412,6 +412,10 @@ biReceita.innerHTML=r
 biDespesa.innerHTML=d
 biLucro.innerHTML=r-d
 }
+window.onload = function(){
+render()
+carregarEmpresas()
+}
 function carregarEmpresas(){
 
 let select = document.getElementById("empresaAtiva")

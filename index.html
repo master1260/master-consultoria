@@ -492,17 +492,24 @@ select.appendChild(opt)
 function selecionarEmpresa(){
 
 let i=document.getElementById("empresaAtiva").value
-localStorage.setItem("empresa_ativa" , i)
+
+localStorage.setItem("empresa_ativa", i)
+
 let empresa=db.empresas[i]
-if(!empresa.lancamentos)
-  empresa.lancamentos=[]
-if)!empresa.contas) empresa.contas=[]
-if(!empresa.pagar) emoresa.pagar=[]
+
+if(!empresa.lancamentos) empresa.lancamentos=[]
+if(!empresa.contas) empresa.contas=[]
+if(!empresa.pagar) empresa.pagar=[]
 if(!empresa.receber) empresa.receber=[]
+
 document.getElementById("empresaSelecionada").innerHTML =
 "Empresa ativa: "+empresa.nome+" ("+empresa.cnpj+")"
+
 }
-  function painelEmpresas(){
+
+
+
+function painelEmpresas(){
 
 let txt="PAINEL DO ESCRITÓRIO\n\n"
 
@@ -515,6 +522,9 @@ txt += e.nome+" - "+e.cnpj+"\n"
 alert(txt)
 
 }
+
+
+
 function relatorioBalancete(){
 
 let i = localStorage.getItem("empresa_ativa")
@@ -549,6 +559,9 @@ alert(
 )
 
 }
+
+
+
 function relatorioBalanco(){
 
 let i = localStorage.getItem("empresa_ativa")
@@ -582,6 +595,9 @@ alert(
 )
 
 }
+
+
+
 function agendaFiscal(){
 
 alert(
@@ -594,21 +610,25 @@ alert(
 )
 
 }
+
+
+
 function alertaDAS(){
 
-alert(
-"Empresas do SIMPLES devem pagar DAS dia 20"
-)
+alert("Empresas do SIMPLES devem pagar DAS dia 20")
 
 }
+
+
+
 function alertaDARF(){
 
-alert(
-"Empresas PRESUMIDO/REAL\n"+
-"verificar DARF IRPJ e CSLL"
-)
+alert("Empresas PRESUMIDO/REAL devem verificar DARF IRPJ e CSLL")
 
 }
+
+
+
 function pendenciasClientes(){
 
 alert(
@@ -619,6 +639,9 @@ alert(
 )
 
 }
+
+
+
 function notasFiscais(){
 
 alert(
@@ -629,7 +652,9 @@ alert(
 )
 
 }
-}
+
+
+
 </script>
 
 </body>

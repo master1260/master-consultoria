@@ -88,6 +88,15 @@ input{padding:6px;margin:4px}
 <button onclick="balancete()">Balancete</button>
 <button onclick="balanco()">Balanço</button>
 <button onclick="empresasSemMovimento()">Sem Movimento</button>
+  
+<h3>Fiscal</h3>
+<button onclick="calcularImpostos()">Calcular Impostos</button>
+<button onclick="gerarDRE()">DRE</button>
+<button onclick="listaDAS()">Empresas DAS</button>
+<button onclick="alertaFiscal()">Alertas</button>
+
+<h3>Relatórios</h3>
+<button onclick="relatorioGeral()">Relatório Geral</button>
 </div>
 
 <div id="conteudo">
@@ -358,43 +367,39 @@ alert(lista)
 // =========================
 function calcularImpostos(){
 
-let i = localStorage.getItem("empresa_ativa")
+let i = parseInt(localStorage.getItem("empresa_ativa"))
 
-if(i==null){
+if(isNaN(i)){
 alert("Selecione empresa")
 return
 }
 
 let emp = db.empresas[i]
 
-let faturamento = (emp.receber||[]).reduce((a,b)=>a+b,0)
+if(!emp){
+alert("Erro na empresa")
+return
+}
+
+let faturamento = (emp.receber || []).reduce((a,b)=>a+b,0)
 
 let imposto = 0
 let detalhe = ""
 
 if(emp.regime == "SIMPLES"){
-
 imposto = faturamento * 0.06
-detalhe = "DAS (estimado 6%)"
-
+detalhe = "DAS"
 }
-
 else if(emp.regime == "PRESUMIDO"){
-
 imposto = faturamento * 0.1333
-detalhe = "IRPJ + CSLL + PIS + COFINS"
-
+detalhe = "IRPJ + CSLL"
 }
-
 else if(emp.regime == "REAL"){
-
 imposto = faturamento * 0.15
-detalhe = "Lucro Real (estimado)"
-
+detalhe = "Lucro Real"
 }
 
 alert(
-"IMPOSTOS\n\n"+
 "Empresa: "+emp.nome+"\n"+
 "Faturamento: "+faturamento+"\n"+
 "Imposto: "+imposto+"\n"+

@@ -81,7 +81,7 @@ input{padding:6px;margin:4px}
 <h2>ERP</h2>
 
 <button onclick="abrir('dashboard')">Dashboard</button>
-
+<button onclick="painelEmpresas()">PainelEmpresas</button>
 <h3>Cadastros</h3>
 <button onclick="abrir('empresas')">Empresas</button>
 <button onclick="abrir('clientes')">Clientes</button>
@@ -115,7 +115,26 @@ input{padding:6px;margin:4px}
 <button onclick="gerarECF()">ECF</button>
 <button onclick="gerarEFD()">EFD</button>
 <button onclick="gerarDCTF()">DCTF</button>
+<button onclick="gerarDCTF()">DCTF</button>
 
+<h3>Relatórios</h3>
+
+<button onclick="relatorioBalancete()">Balancete</button>
+<button onclick="relatorioBalanco()">Balanço</button>
+<button onclick="painelEmpresas()">Empresas</button>
+
+<h3>Fiscal</h3>
+
+<button onclick="agendaFiscal()">Agenda Fiscal</button>
+<button onclick="alertaDAS()">Alerta DAS</button>
+<button onclick="alertaDARF()">Alerta DARF</button>
+
+<h3>Controle</h3>
+
+<button onclick="pendenciasClientes()">Pendências</button>
+<button onclick="notasFiscais()">Notas Fiscais</button>
+
+</div>
 </div>
 
 <div id="conteudo">
@@ -297,13 +316,33 @@ db.contas.push(contaNome.value)
 salvar();render()
 }
 
+
+IADG Diretoria <iadgdiretoria@gmail.com>
+22:09 (há 0 minuto)
+para mim
+
 function addLanc(){
-db.lancamentos.push({
+
+let i = localStorage.getItem("empresa_ativa")
+
+if(i==null){
+alert("Selecione uma empresa primeiro")
+return
+}
+
+let emp = db.empresas[i]
+
+if(!emp.lancamentos) emp.lancamentos=[]
+
+emp.lancamentos.push({
 conta:contaLanc.value,
 debito:parseFloat(debitoLanc.value)||0,
 credito:parseFloat(creditoLanc.value)||0
 })
-salvar();render()
+
+salvar()
+render()
+
 }
 
 function addPagar(){
@@ -399,7 +438,20 @@ listaEmpresas.innerHTML=db.empresas.map(e=>e.nome+" "+e.cnpj).join("<br>")
 carregarEmpresas()
 listaClientes.innerHTML=db.clientes.join("<br>")
 listaContas.innerHTML=db.contas.join("<br>")
-listaLanc.innerHTML=db.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
+
+let i = localStorage.getItem("empresa_ativa")
+
+if(i!=null){
+
+let emp=db.empresas[i]
+
+if(emp.lancamentos){
+
+listaLanc.innerHTML = emp.lancamentos
+.map(l=>l.conta+" "+l.debito+"/"+l.credito)
+.join("<br>")
+
+}
 listaPagar.innerHTML=db.pagar.join("<br>")
 listaReceber.innerHTML=db.receber.join("<br>")
 listaFuncionarios.innerHTML=db.funcionarios.map(f=>f.nome+" "+f.sal).join("<br>")
@@ -440,11 +492,154 @@ select.appendChild(opt)
 function selecionarEmpresa(){
 
 let i=document.getElementById("empresaAtiva").value
-
+localStorage.setItem("empresa_ativa" , i)
 let empresa=db.empresas[i]
-
+if(!empresa.lancamentos)
+  emoresa.lancamentos=[]
+if)!empresa.contas) empresa.contas=[]
+if(!empresa.pagar) emoresa.pagar=[]
+if(!empresa.receber) empresa.receber=[]
 document.getElementById("empresaSelecionada").innerHTML =
 "Empresa ativa: "+empresa.nome+" ("+empresa.cnpj+")"
+  function painelEmpresas(){
+
+let txt="PAINEL DO ESCRITÓRIO\n\n"
+
+db.empresas.forEach(e=>{
+
+txt += e.nome+" - "+e.cnpj+"\n"
+
+})
+
+alert(txt)
+
+}
+function relatorioBalancete(){
+
+let i = localStorage.getItem("empresa_ativa")
+
+if(i==null){
+alert("Selecione uma empresa")
+return
+}
+
+let emp = db.empresas[i]
+
+if(!emp.lancamentos){
+alert("Sem lançamentos")
+return
+}
+
+let deb=0
+let cred=0
+
+emp.lancamentos.forEach(l=>{
+
+deb += l.debito
+cred += l.credito
+
+})
+
+alert(
+"BALANCETE\n\n"+
+"Débitos: "+deb+"\n"+
+"Créditos: "+cred+"\n"+
+"Resultado: "+(deb-cred)
+)
+
+}
+function relatorioBalanco(){
+
+let i = localStorage.getItem("empresa_ativa")
+
+if(i==null){
+alert("Selecione empresa")
+return
+}
+
+let emp=db.empresas[i]
+
+let ativo=0
+let passivo=0
+
+if(emp.lancamentos){
+
+emp.lancamentos.forEach(l=>{
+
+ativo += l.debito
+passivo += l.credito
+
+})
+
+}
+
+alert(
+"BALANÇO\n\n"+
+"ATIVO: "+ativo+"\n"+
+"PASSIVO: "+passivo+"\n"+
+"PATRIMÔNIO: "+(ativo-passivo)
+)
+
+}
+function agendaFiscal(){
+
+alert(
+"AGENDA FISCAL\n\n"+
+"10 - INSS\n"+
+"15 - EFD Contribuições\n"+
+"20 - DAS Simples\n"+
+"25 - ICMS\n"+
+"30 - DCTF"
+)
+
+}
+function alertaDAS(){
+
+alert(
+"Empresas do SIMPLES devem pagar DAS dia 20"
+)
+
+}
+function alertaDARF(){
+
+alert(
+"Empresas PRESUMIDO/REAL\n"+
+"verificar DARF IRPJ e CSLL"
+)
+
+}
+function pendenciasClientes(){
+
+alert(
+"PENDÊNCIAS\n\n"+
+"Cliente sem extrato\n"+
+"Cliente sem nota fiscal\n"+
+"Cliente sem documentos"
+)
+
+}
+function notasFiscais(){
+
+alert(
+"Módulo NF-e\n\n"+
+"Importar XML\n"+
+"Registrar nota\n"+
+"Gerar relatório"
+)
+
+}
+
+function painelEmpresas(){
+
+let txt="PAINEL DO ESCRITÓRIO\n\n"
+
+db.empresas.forEach(e=>{
+
+txt += e.nome+" - "+e.cnpj+"\n"
+
+})
+
+alert(txt)
 
 }
 </script>

@@ -450,7 +450,7 @@ if(emp.lancamentos){
 listaLanc.innerHTML = emp.lancamentos
 .map(l=>l.conta+" "+l.debito+"/"+l.credito)
 .join("<br>")
-
+}
 }
 listaPagar.innerHTML=db.pagar.join("<br>")
 listaReceber.innerHTML=db.receber.join("<br>")
@@ -495,12 +495,13 @@ let i=document.getElementById("empresaAtiva").value
 localStorage.setItem("empresa_ativa" , i)
 let empresa=db.empresas[i]
 if(!empresa.lancamentos)
-  emoresa.lancamentos=[]
+  empresa.lancamentos=[]
 if)!empresa.contas) empresa.contas=[]
 if(!empresa.pagar) emoresa.pagar=[]
 if(!empresa.receber) empresa.receber=[]
 document.getElementById("empresaSelecionada").innerHTML =
 "Empresa ativa: "+empresa.nome+" ("+empresa.cnpj+")"
+}
   function painelEmpresas(){
 
 let txt="PAINEL DO ESCRITÓRIO\n\n"
@@ -628,19 +629,6 @@ alert(
 )
 
 }
-
-function painelEmpresas(){
-
-let txt="PAINEL DO ESCRITÓRIO\n\n"
-
-db.empresas.forEach(e=>{
-
-txt += e.nome+" - "+e.cnpj+"\n"
-
-})
-
-alert(txt)
-
 }
 </script>
 

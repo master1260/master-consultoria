@@ -1,524 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>ERP MASTER DAYTHI PRO</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>ERP CONTÁBIL PRO</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f6f9;display:flex}
-
-#menu{
-width:260px;
-background:#1f3c88;
-color:white;
-padding:10px;
-min-height:100vh
-}
-
-#menu button{
-width:100%;
-padding:10px;
-margin:4px 0;
-border:none;
-background:#2f54eb;
-color:white;
-border-radius:4px;
-cursor:pointer;
-text-align:left
-}
-
+body{font-family:Arial;display:flex;margin:0}
+.menu{width:260px;background:#0b2c5a;color:#fff;height:100vh;padding:10px}
+.menu button{width:100%;margin:5px 0;padding:10px;background:#1e88e5;color:#fff;border:none;border-radius:5px}
 #conteudo{flex:1;padding:20px}
-
-.modulo{
-display:none;
-background:white;
-padding:20px;
-border-radius:6px;
-margin-bottom:10px
-}
-
-.cards{display:flex;gap:20px;flex-wrap:wrap}
-
-.card{
-background:white;
-padding:15px;
-border-radius:8px;
-box-shadow:0 0 5px #ccc;
-width:200px
-}
-
-#loginTela{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#f4f6f9;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center
-}
-
-input{padding:6px;margin:4px}
 </style>
 </head>
 
 <body>
 
-<div id="loginTela">
-<h2>ERP MASTER DAYTHI</h2>
-<input id="usuarioLogin" placeholder="Usuário">
-<input id="senhaLogin" type="password" placeholder="Senha">
-<button onclick="login()">Entrar</button>
-</div>
+<div class="menu">
+<h2>ERP CONTÁBIL</h2>
 
-<div id="menu">
-<h2>ERP DAYTHI PRO</h2>
-
-<button onclick="abrir('dashboard')">Dashboard</button>
-<button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('contas')">Plano de Contas</button>
-<button onclick="abrir('lancamentos')">Lançamentos</button>
-<button onclick="abrir('pagar')">Financeiro</button>
-
-<button onclick="fluxo()">Fluxo Caixa</button>
-<button onclick="balancete()">Balancete</button>
-<button onclick="balanco()">Balanço</button>
-<button onclick="empresasSemMovimento()">Sem Movimento</button>
-  
-<h3>Fiscal</h3>
-<button onclick="calcularImpostos()">Calcular Impostos</button>
+<button onclick="abrirEmpresas()">Empresas</button>
+<button onclick="importarXML()">Importar XML NF-e</button>
+<button onclick="gerarSPED()">SPED (.txt)</button>
 <button onclick="gerarDRE()">DRE</button>
-<button onclick="listaDAS()">Empresas DAS</button>
-<button onclick="alertaFiscal()">Alertas</button>
+<button onclick="calcularDAS()">DAS</button>
+<button onclick="dashboard()">Dashboard</button>
+<button onclick="carregarFirebase()">Sincronizar</button>
 
-<h3>Relatórios</h3>
-<button onclick="relatorioGeral()">Relatório Geral</button>
 </div>
 
-<div id="conteudo">
+<div id="conteudo"></div>
 
-<div id="dashboard" class="modulo">
-<h2>Dashboard</h2>
+<script type="module">
 
-<div class="cards">
-<div class="card">Receitas<div id="biReceita">0</div></div>
-<div class="card">Despesas<div id="biDespesa">0</div></div>
-<div class="card">Lucro<div id="biLucro">0</div></div>
-</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-<canvas id="grafico"></canvas>
-</div>
+const firebaseConfig = {
+apiKey:"AIzaSyClzgqmuiz6I8j7arw1Eqrd5uWpnPiABpI",
+authDomain:"erp-daythi.firebaseapp.com",
+projectId:"erp-daythi"
+};
 
-<div id="empresas" class="modulo">
+const app = initializeApp(firebaseConfig);
+const dbFirebase = getFirestore(app);
 
+let db = JSON.parse(localStorage.getItem("db")) || {empresas:[]}
+
+function salvarDB(){localStorage.setItem("db", JSON.stringify(db))}
+
+// ================= EMPRESAS =================
+window.abrirEmpresas = function(){
+conteudo.innerHTML=`
 <h2>Empresas</h2>
 
 <textarea id="importador" placeholder="Nome;CNPJ;REGIME"></textarea><br>
-<button onclick="importarEmpresas()">IMPORTAR TODAS</button>
-<input id="empresaNome" placeholder="Nome">
-<input id="empresaCnpj" placeholder="CNPJ">
-<button onclick="addEmpresa()">Salvar Empresa</button>
-<h3>Selecionar Empresa</h3>
-<select id="empresaAtiva"></select>
-<button onclick="selecionarEmpresa()">Selecionar</button>
+<button onclick="importarLista()">IMPORTAR LISTA</button>
 
-<div id="empresaSelecionada"></div>
-
-<div id="listaEmpresas"></div>
-</div>
-
-<div id="contas" class="modulo">
-<h2>Plano de Contas</h2>
-<input id="contaNome">
-<button onclick="addConta()">Adicionar</button>
-<div id="listaContas"></div>
-</div>
-
-<div id="lancamentos" class="modulo">
-<h2>Lançamentos</h2>
-Conta <input id="contaLanc">
-Débito <input id="debitoLanc">
-Crédito <input id="creditoLanc">
-<button onclick="addLanc()">Registrar</button>
-<div id="listaLanc"></div>
-</div>
-
-<div id="pagar" class="modulo">
-<h2>Financeiro</h2>
-<input id="valor">
-<button onclick="addReceber()">Receita</button>
-<button onclick="addPagar()">Despesa</button>
-<div id="listaPagar"></div>
-<div id="listaReceber"></div>
-</div>
-
-</div>
-
-<script>
-
-let db = JSON.parse(localStorage.getItem("db")) || {empresas:[]}
-function salvarDB(){
-localStorage.setItem("db", JSON.stringify(db))
-}
-// LOGIN
-function login(){
-if(usuarioLogin.value=="admin" && senhaLogin.value=="1234"){
-loginTela.style.display="none"
-abrir("dashboard")
-}
-}
-
-// ABRIR TELA
-function abrir(id){
-document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
-document.getElementById(id).style.display="block"
+<div id="lista"></div>
+`
 render()
 }
 
-// IMPORTAR EMPRESAS
-function importarEmpresas(){
-let texto=document.getElementById("importador").value
-let linhas=texto.split("\n")
+window.importarLista = function(){
+
+let linhas=document.getElementById("importador").value.split("\n")
 
 linhas.forEach(l=>{
-let p=l.split(";")
+let [nome,cnpj,regime]=l.split(";")
 
-if(p.length>=3){
-db.empresas.push({
-nome:p[0],
-cnpj:p[1],
-regime:p[2],
-contas:[],
-lancamentos:[],
-pagar:[],
-receber:[]
-})
+if(nome){
+let emp={nome,cnpj,regime,receber:[],pagar:[]}
+db.empresas.push(emp)
+salvarEmpresaFirebase(emp)
 }
 })
 
-carregarEmpresas()
+salvarDB()
 render()
-alert("Importado!")
 }
 
-// CARREGAR SELECT
-function carregarEmpresas(){
-let select=document.getElementById("empresaAtiva")
-select.innerHTML=""
+// ================= XML NF-e =================
+window.importarXML = function(){
 
-db.empresas.forEach((e,i)=>{
-let opt=document.createElement("option")
-opt.value=i
-opt.text=e.nome+" - "+e.cnpj+" ("+e.regime+")"
-select.appendChild(opt)
+conteudo.innerHTML=`
+<h2>Importar XML NF-e</h2>
+<input type="file" id="xmlfile">
+<button onclick="lerXML()">Ler XML</button>
+`
+}
+
+window.lerXML = function(){
+
+let file=document.getElementById("xmlfile").files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(){
+let xml=reader.result
+
+let valor=xml.match(/<vNF>(.*?)<\/vNF>/)
+
+alert("Valor NF-e: "+valor[1])
+}
+
+reader.readAsText(file)
+}
+
+// ================= SPED =================
+window.gerarSPED = function(){
+
+let txt="|0000|SPED|\n"
+
+db.empresas.forEach(e=>{
+txt+=`|0100|${e.nome}|${e.cnpj}|\n`
 })
+
+download(txt,"sped.txt")
 }
 
-// SELECIONAR EMPRESA (CORRIGIDO)
-function selecionarEmpresa(){
+// ================= DRE =================
+window.gerarDRE = function(){
 
-let i=document.getElementById("empresaAtiva").value
-
-if(i===""){
-alert("Selecione uma empresa")
-return
-}
-
+let i=0
 let emp=db.empresas[i]
 
-if(!emp){
-alert("Erro")
-return
+let receita=(emp.receber||[]).reduce((a,b)=>a+b,0)
+let despesa=(emp.pagar||[]).reduce((a,b)=>a+b,0)
+
+alert("DRE:\nLucro: "+(receita-despesa))
 }
 
-localStorage.setItem("empresa_ativa",i)
+// ================= DAS =================
+window.calcularDAS = function(){
 
-document.getElementById("empresaSelecionada").innerHTML=
-"Empresa: "+emp.nome+" | "+emp.cnpj+" | "+emp.regime
+db.empresas.forEach(e=>{
+let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
+let das=fat*0.06
 
+console.log(e.nome+" DAS: "+das)
+})
+
+alert("DAS calculado (ver console)")
+}
+
+// ================= DASHBOARD =================
+window.dashboard = function(){
+
+conteudo.innerHTML="<h2>Painel</h2>"+db.empresas.length+" empresas"
+}
+
+// ================= FIREBASE =================
+window.salvarEmpresaFirebase = async function(emp){
+await addDoc(collection(dbFirebase,"empresas"),emp)
+}
+
+window.carregarFirebase = async function(){
+
+const querySnapshot = await getDocs(collection(dbFirebase,"empresas"))
+
+db.empresas=[]
+
+querySnapshot.forEach(doc=>{
+db.empresas.push(doc.data())
+})
+
+salvarDB()
 render()
+
 }
 
-// RENDER
+// ================= UTILS =================
 function render(){
 
-listaEmpresas.innerHTML=db.empresas.map(e=>e.nome).join("<br>")
-
-let i=localStorage.getItem("empresa_ativa")
-
-if(i!=null){
-let emp=db.empresas[i]
-
-listaContas.innerHTML=(emp.contas||[]).join("<br>")
-listaLanc.innerHTML=(emp.lancamentos||[]).map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
-listaPagar.innerHTML=(emp.pagar||[]).join("<br>")
-listaReceber.innerHTML=(emp.receber||[]).join("<br>")
-}
-
-dashboard()
-}
-
-// ADD
-function addConta(){
-let i=localStorage.getItem("empresa_ativa")
-db.empresas[i].contas.push(contaNome.value)
-render()
-}
-
-function addLanc(){
-let i=localStorage.getItem("empresa_ativa")
-db.empresas[i].lancamentos.push({
-conta:contaLanc.value,
-debito:parseFloat(debitoLanc.value)||0,
-credito:parseFloat(creditoLanc.value)||0
-})
-render()
-}
-
-function addPagar(){
-let i=localStorage.getItem("empresa_ativa")
-db.empresas[i].pagar.push(parseFloat(valor.value)||0)
-render()
-}
-
-function addReceber(){
-let i=localStorage.getItem("empresa_ativa")
-db.empresas[i].receber.push(parseFloat(valor.value)||0)
-render()
-}
-
-// FLUXO
-function fluxo(){
-let i=localStorage.getItem("empresa_ativa")
-let emp=db.empresas[i]
-
-let r=(emp.receber||[]).reduce((a,b)=>a+b,0)
-let d=(emp.pagar||[]).reduce((a,b)=>a+b,0)
-
-alert("Saldo: "+(r-d))
-}
-
-// BALANCETE
-function balancete(){
-let i=localStorage.getItem("empresa_ativa")
-let emp=db.empresas[i]
-
-let deb=0,cred=0
-
-(emp.lancamentos||[]).forEach(l=>{
-deb+=l.debito
-cred+=l.credito
-})
-
-alert("Balancete\nDébitos:"+deb+"\nCréditos:"+cred)
-}
-
-// BALANÇO
-function balanco(){
-let i=localStorage.getItem("empresa_ativa")
-let emp=db.empresas[i]
-
-let ativo=0,passivo=0
-
-(emp.lancamentos||[]).forEach(l=>{
-ativo+=l.debito
-passivo+=l.credito
-})
-
-alert("Balanço\nAtivo:"+ativo+"\nPassivo:"+passivo)
-}
-
-// DASHBOARD
-function dashboard(){
-
-let receitas=0
-let despesas=0
+let html=""
 
 db.empresas.forEach(e=>{
-(e.receber||[]).forEach(v=>receitas+=v)
-(e.pagar||[]).forEach(v=>despesas+=v)
+html+=`<div>${e.nome} - ${e.regime}</div>`
 })
 
-biReceita.innerHTML=receitas
-biDespesa.innerHTML=despesas
-biLucro.innerHTML=receitas-despesas
+if(document.getElementById("lista"))
+document.getElementById("lista").innerHTML=html
 
 }
 
-// SEM MOVIMENTO (CORRIGIDO)
-function empresasSemMovimento(){
-
-let lista="EMPRESAS SEM MOVIMENTO\n\n"
-
-db.empresas.forEach(e=>{
-
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-if(fat === 0){
-lista+=e.nome+"\n"
+function download(text,name){
+let a=document.createElement("a")
+a.href=URL.createObjectURL(new Blob([text]))
+a.download=name
+a.click()
 }
 
-})
-
-alert(lista)
-}
-// =========================
-// CALCULAR IMPOSTOS
-// =========================
-function calcularImpostos(){
-
-let i = parseInt(localStorage.getItem("empresa_ativa"))
-
-if(isNaN(i)){
-alert("Selecione empresa")
-return
-}
-
-let emp = db.empresas[i]
-
-if(!emp){
-alert("Erro na empresa")
-return
-}
-
-let faturamento = (emp.receber || []).reduce((a,b)=>a+b,0)
-
-let imposto = 0
-let detalhe = ""
-
-if(emp.regime == "SIMPLES"){
-imposto = faturamento * 0.06
-detalhe = "DAS"
-}
-else if(emp.regime == "PRESUMIDO"){
-imposto = faturamento * 0.1333
-detalhe = "IRPJ + CSLL"
-}
-else if(emp.regime == "REAL"){
-imposto = faturamento * 0.15
-detalhe = "Lucro Real"
-}
-
-alert(
-"Empresa: "+emp.nome+"\n"+
-"Faturamento: "+faturamento+"\n"+
-"Imposto: "+imposto+"\n"+
-detalhe
-)
-
-}
-
-// =========================
-// DRE AUTOMÁTICA
-// =========================
-function gerarDRE(){
-
-let i = localStorage.getItem("empresa_ativa")
-
-if(i==null){
-alert("Selecione empresa")
-return
-}
-
-let emp = db.empresas[i]
-
-let receita = (emp.receber||[]).reduce((a,b)=>a+b,0)
-let despesa = (emp.pagar||[]).reduce((a,b)=>a+b,0)
-
-let lucro = receita - despesa
-
-alert(
-"DRE\n\n"+
-"Receita: "+receita+"\n"+
-"Despesa: "+despesa+"\n"+
-"Lucro: "+lucro
-)
-
-}
-
-// =========================
-// RELATÓRIO GERAL ESCRITÓRIO
-// =========================
-function relatorioGeral(){
-
-let txt = "RELATÓRIO DO ESCRITÓRIO\n\n"
-
-db.empresas.forEach(e=>{
-
-let receita = (e.receber||[]).reduce((a,b)=>a+b,0)
-let despesa = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-txt += e.nome+"\n"
-txt += "Receita: "+receita+"\n"
-txt += "Despesa: "+despesa+"\n"
-txt += "Resultado: "+(receita-despesa)+"\n\n"
-
-})
-
-alert(txt)
-
-}
-
-// =========================
-// DAS AUTOMÁTICO LISTA
-// =========================
-function listaDAS(){
-
-let txt="EMPRESAS SIMPLES (DAS)\n\n"
-
-db.empresas.forEach(e=>{
-if(e.regime=="SIMPLES"){
-txt+=e.nome+"\n"
-}
-})
-
-alert(txt)
-
-}
-
-// =========================
-// ALERTA ATRASOS
-// =========================
-function alertaFiscal(){
-
-alert(
-"ALERTA FISCAL\n\n"+
-"DAS: dia 20\n"+
-"DCTF: dia 30\n"+
-"SPED: mensal\n"+
-"ECD/ECF: anual"
-)
-function addEmpresa(){
-
-let nome = document.getElementById("empresaNome").value
-let cnpj = document.getElementById("empresaCnpj").value
-
-if(!nome || !cnpj){
-alert("Preencha nome e CNPJ")
-return
-}
-
-db.empresas.push({
-nome:nome,
-cnpj:cnpj,
-contas:[],
-lancamentos:[],
-pagar:[],
-receber:[]
-})
-
-salvarDB() // 👈 ESSENCIAL
-
-carregarEmpresas()
-render()
-
-alert("Empresa cadastrada com sucesso")
-
-}
+// INICIO
+abrirEmpresas()
+carregarFirebase()
 
 </script>
 

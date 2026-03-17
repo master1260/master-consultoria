@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>ERP MASTER DAYTHI</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -81,60 +82,32 @@ input{padding:6px;margin:4px}
 <h2>ERP</h2>
 
 <button onclick="abrir('dashboard')">Dashboard</button>
-<button onclick="painelEmpresas()">PainelEmpresas</button>
-<h3>Cadastros</h3>
+
+<h3>Empresas</h3>
 <button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('clientes')">Clientes</button>
 
 <h3>Contábil</h3>
 <button onclick="abrir('contas')">Plano de Contas</button>
 <button onclick="abrir('lancamentos')">Lançamentos</button>
 <button onclick="balancete()">Balancete</button>
 <button onclick="balanco()">Balanço</button>
-<button onclick="dre()">DRE</button>
-<button onclick="livroDiario()">Livro Diário</button>
-<button onclick="livroRazao()">Livro Razão</button>
 
 <h3>Financeiro</h3>
 <button onclick="abrir('pagar')">Contas Pagar</button>
 <button onclick="abrir('receber')">Contas Receber</button>
 <button onclick="fluxo()">Fluxo Caixa</button>
 
-<h3>RH</h3>
-<button onclick="abrir('funcionarios')">Funcionários</button>
-<button onclick="calcularFolha()">Folha</button>
-
 <h3>Fiscal</h3>
-<button onclick="calcularSimples()">Simples</button>
-<button onclick="calcularPresumido()">Lucro Presumido</button>
-<button onclick="calcularLucroReal()">Lucro Real</button>
-<button onclick="gerarDARF()">DARF</button>
-
-<h3>SPED</h3>
-<button onclick="gerarECD()">ECD</button>
-<button onclick="gerarECF()">ECF</button>
-<button onclick="gerarEFD()">EFD</button>
-<button onclick="gerarDCTF()">DCTF</button>
-<button onclick="gerarDCTF()">DCTF</button>
-
-<h3>Relatórios</h3>
-
-<button onclick="relatorioBalancete()">Balancete</button>
-<button onclick="relatorioBalanco()">Balanço</button>
-<button onclick="painelEmpresas()">Empresas</button>
-
-<h3>Fiscal</h3>
-
 <button onclick="agendaFiscal()">Agenda Fiscal</button>
-<button onclick="alertaDAS()">Alerta DAS</button>
-<button onclick="alertaDARF()">Alerta DARF</button>
+<button onclick="alertaImpostos()">Alertas Impostos</button>
 
 <h3>Controle</h3>
+<button onclick="novaTarefa()">Nova Tarefa</button>
+<button onclick="listarTarefas()">Tarefas</button>
 
-<button onclick="pendenciasClientes()">Pendências</button>
-<button onclick="notasFiscais()">Notas Fiscais</button>
+<h3>Sistema</h3>
+<button onclick="backupSistema()">Backup</button>
 
-</div>
 </div>
 
 <div id="conteudo">
@@ -154,325 +127,144 @@ input{padding:6px;margin:4px}
 </div>
 
 <div id="empresas" class="modulo">
+
 <h2>Empresas</h2>
+
 <input id="empresaNome" placeholder="Nome">
 <input id="empresaCnpj" placeholder="CNPJ">
+
 <button onclick="addEmpresa()">Salvar</button>
+
 <div id="listaEmpresas"></div>
-  <h3>Selecionar Empresa</h3>
+
+<h3>Selecionar Empresa</h3>
 
 <select id="empresaAtiva"></select>
 
 <button onclick="selecionarEmpresa()">Usar Empresa</button>
 
 <div id="empresaSelecionada"></div>
-</div>
 
-<div id="clientes" class="modulo">
-<h2>Clientes</h2>
-<input id="clienteNome">
-<button onclick="addCliente()">Salvar</button>
-<div id="listaClientes"></div>
 </div>
 
 <div id="contas" class="modulo">
+
 <h2>Plano de Contas</h2>
+
 <input id="contaNome">
+
 <button onclick="addConta()">Adicionar</button>
+
 <div id="listaContas"></div>
+
 </div>
 
 <div id="lancamentos" class="modulo">
+
 <h2>Lançamentos</h2>
-Conta<input id="contaLanc">
-Débito<input id="debitoLanc">
-Crédito<input id="creditoLanc">
+
+Conta <input id="contaLanc">
+Débito <input id="debitoLanc">
+Crédito <input id="creditoLanc">
+
 <button onclick="addLanc()">Registrar</button>
+
 <div id="listaLanc"></div>
+
 </div>
 
 <div id="pagar" class="modulo">
+
 <h2>Contas Pagar</h2>
+
 <input id="pagarValor">
+
 <button onclick="addPagar()">Salvar</button>
+
 <div id="listaPagar"></div>
+
 </div>
 
 <div id="receber" class="modulo">
-<h2>Contas Receber</h2>
-<input id="receberValor">
-<button onclick="addReceber()">Salvar</button>
-<div id="listaReceber"></div>
-</div>
 
-<div id="funcionarios" class="modulo">
-<h2>Funcionários</h2>
-<input id="nomeFunc">
-<input id="salarioFunc">
-<button onclick="addFuncionario()">Salvar</button>
-<div id="listaFuncionarios"></div>
+<h2>Contas Receber</h2>
+
+<input id="receberValor">
+
+<button onclick="addReceber()">Salvar</button>
+
+<div id="listaReceber"></div>
+
 </div>
 
 </div>
 
 <script>
 
-let db = {
+let db={
 empresas:[
-
-{nome:"SIMPLES COMERCIO M.A DE S. MENDES",cnpj:"05.402.379/0001-80",regime:"Simples"},
-{nome:"LRS FERRAGENS",cnpj:"15.871.688/0001-52",regime:"Simples"},
-{nome:"TRACTORTECH DIST. PEÇAS",cnpj:"44.294.083/0001-44",regime:"Simples"},
-{nome:"VELOTRACK PESQUISA",cnpj:"44.753.658/0001-40",regime:"Simples"},
-{nome:"PEÇAS AUTO LTDA",cnpj:"44.270.724/0001-20",regime:"Simples"},
-{nome:"PEÇAS AUTO FILIAL MG",cnpj:"44.270.724/0002-01",regime:"Simples"},
-{nome:"DIOMA BOTINHAS",cnpj:"40.179.359/0001-92",regime:"Simples"},
-{nome:"SINTESIS PROJETOS",cnpj:"01.647.377/0001-08",regime:"Simples"},
-{nome:"GRA DISTRIB PEÇAS",cnpj:"27.367.193/0001-70",regime:"Simples"},
-{nome:"TUCAN ESPORTES MATRIZ",cnpj:"47.619.583/0001-05",regime:"Simples"},
-{nome:"TUCAN ESPORTES FILIAL",cnpj:"47.619.583/0002-88",regime:"Simples"},
-{nome:"TUCAN BAR",cnpj:"48.174.727/0001-11",regime:"Simples"},
-{nome:"CIRCUITO GOIANO BEACH TENNIS",cnpj:"45.493.235/0001-09",regime:"Simples"},
-{nome:"ENVPLAY LTDA",cnpj:"48.465.529/0001-07",regime:"Simples"},
-{nome:"ELETRIWATTS ENGENHARIA",cnpj:"26.742.605/0001-41",regime:"Simples"},
-{nome:"INTEGRA ASSESSORIA",cnpj:"46.976.255/0001-95",regime:"Simples"},
-{nome:"HYPER IDEIA COWORKING",cnpj:"54.082.047/0001-70",regime:"Simples"},
-{nome:"HYPER IDEIA PRODUCOES",cnpj:"55.611.680/0001-71",regime:"Simples"},
-{nome:"CARDIOPHYSIO INTENSIVE",cnpj:"54.841.828/0001-00",regime:"Simples"},
-{nome:"IP CONECTA CONSULTORIA",cnpj:"34.859.781/0001-96",regime:"Simples"},
-{nome:"CLM SERVICOS MEDICOS",cnpj:"53.404.725/0001-01",regime:"Simples"},
-{nome:"RAFAEL VITOR ADVOCACIA",cnpj:"51.153.446/0001-97",regime:"Simples"},
-{nome:"VIPER SOLUCOES",cnpj:"58.349.625/0001-43",regime:"Simples"},
-{nome:"NGXV MAQUINAS PESADAS",cnpj:"55.297.712/0001-06",regime:"Simples"},
-{nome:"4 ZAMP PET SHOP",cnpj:"49.818.811/0001-93",regime:"Simples"},
-{nome:"PONTO CERTO FERRAGENS",cnpj:"09.042.947/0001-30",regime:"Simples"},
-{nome:"DORITAS RESTAURANTE",cnpj:"44.352.859/0001-35",regime:"Simples"},
-{nome:"F CORDEIRO DE SOUSA",cnpj:"27.467.375/0001-12",regime:"Simples"},
-{nome:"GUSTAVO PAZ ENGENHARIA",cnpj:"53.195.864/0001-72",regime:"Simples"},
-{nome:"GTS CAR AUTO",cnpj:"59.623.354/0001-35",regime:"Simples"},
-{nome:"GE TELECOMUNICACOES",cnpj:"58.514.271/0001-45",regime:"Simples"},
-{nome:"POOL CONSULTORIA",cnpj:"47.029.918/0001-27",regime:"Simples"},
-{nome:"HANUSCH E HENRICH",cnpj:"56.040.669/0001-61",regime:"Simples"},
-{nome:"CHAVEIRO MARTINS ADV",cnpj:"29.018.946/0001-67",regime:"Simples"},
-{nome:"QUEIROZ PALADAR FINO",cnpj:"60.276.910/0001-23",regime:"Simples"},
-{nome:"REINO DAS PECAS",cnpj:"37.537.488/0001-19",regime:"Simples"},
-
-{nome:"JOANLE REPRESENTACOES",cnpj:"00.470.343/0001-10",regime:"Presumido"},
-{nome:"PEREIRA REPRESENTACOES",cnpj:"48.319.540/0001-69",regime:"Presumido"},
-{nome:"NUCLEO DICA INTERVENCOES",cnpj:"33.746.671/0001-55",regime:"Presumido"},
-{nome:"KYRIOS TREINAMENTO",cnpj:"45.240.854/0001-83",regime:"Presumido"},
-{nome:"RODRIGUES BARBOSA REP",cnpj:"02.544.607/0001-68",regime:"Presumido"},
-{nome:"RVS SERVICOS",cnpj:"24.958.301/0001-90",regime:"Presumido"},
-{nome:"SICURE SEGURANCA",cnpj:"35.567.983/0001-00",regime:"Presumido"},
-
-{nome:"MGBA TRANSPORTES MATRIZ",cnpj:"32.648.241/0001-38",regime:"Lucro Real"},
-{nome:"MGBA FILIAL MARANHAO",cnpj:"32.648.241/0002-19",regime:"Lucro Real"},
-{nome:"MGBA FILIAL SAO PAULO",cnpj:"32.648.241/0003-08",regime:"Lucro Real"},
-{nome:"MGBA FILIAL BRASILIA",cnpj:"32.648.241/0005-61",regime:"Lucro Real"},
-{nome:"MGBA FILIAL PERNAMBUCO",cnpj:"32.648.241/0006-42",regime:"Lucro Real"},
-{nome:"MGBA FILIAL MINAS",cnpj:"32.648.241/0007-23",regime:"Lucro Real"}
-
-],
-clientes:[],
-contas:[],
-lancamentos:[],
-pagar:[],
-receber:[],
-funcionarios:[]
+{nome:"SIMPLES COMERCIO M.A DE S. MENDES",cnpj:"05.402.379/0001-80"},
+{nome:"LRS FERRAGENS",cnpj:"15.871.688/0001-52"}
+]
 }
 
-function salvar(){
-localStorage.setItem("erp_daythi",JSON.stringify(db))
-}
+let tarefas=[]
 
 function login(){
+
 if(usuarioLogin.value=="admin" && senhaLogin.value=="1234"){
+
 loginTela.style.display="none"
+
 abrir("dashboard")
+
 render()
-dashboard()
+
 carregarEmpresas()
+
+dashboard()
+
 }
+
 }
 
 function abrir(id){
+
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
-let el=document.getElementById(id)
-if(el) el.style.display="block"
-}
 
-function addEmpresa(){
-db.empresas.push({nome:empresaNome.value,cnpj:empresaCnpj.value})
-salvar();render()
-}
-
-function addCliente(){
-db.clientes.push(clienteNome.value)
-salvar();render()
-}
-
-function addConta(){
-db.contas.push(contaNome.value)
-salvar();render()
-}
-
-
-IADG Diretoria <iadgdiretoria@gmail.com>
-22:09 (há 0 minuto)
-para mim
-
-function addLanc(){
-
-let i = localStorage.getItem("empresa_ativa")
-
-if(i==null){
-alert("Selecione uma empresa primeiro")
-return
-}
-
-let emp = db.empresas[i]
-
-if(!emp.lancamentos) emp.lancamentos=[]
-
-emp.lancamentos.push({
-conta:contaLanc.value,
-debito:parseFloat(debitoLanc.value)||0,
-credito:parseFloat(creditoLanc.value)||0
-})
-
-salvar()
-render()
+document.getElementById(id).style.display="block"
 
 }
-
-function addPagar(){
-db.pagar.push(parseFloat(pagarValor.value)||0)
-salvar();render();dashboard()
-}
-
-function addReceber(){
-db.receber.push(parseFloat(receberValor.value)||0)
-salvar();render();dashboard()
-}
-
-function addFuncionario(){
-db.funcionarios.push({
-nome:nomeFunc.value,
-sal:parseFloat(salarioFunc.value)||0
-})
-salvar();render()
-}
-
-function calcularFolha(){
-let total=db.funcionarios.reduce((a,b)=>a+b.sal,0)
-alert("Folha total: "+total)
-}
-
-function fluxo(){
-let r=db.receber.reduce((a,b)=>a+b,0)
-let d=db.pagar.reduce((a,b)=>a+b,0)
-alert("Saldo: "+(r-d))
-}
-
-function balancete(){
-let saldo=0
-db.lancamentos.forEach(l=>saldo+=l.debito-l.credito)
-alert("Balancete: "+saldo)
-}
-
-function balanco(){
-let ativo=0
-let passivo=0
-db.lancamentos.forEach(l=>{ativo+=l.debito;passivo+=l.credito})
-alert("Ativo:"+ativo+" Passivo:"+passivo)
-}
-
-function dre(){
-let receitas=db.receber.reduce((a,b)=>a+b,0)
-let despesas=db.pagar.reduce((a,b)=>a+b,0)
-alert("Lucro:"+(receitas-despesas))
-}
-
-function livroDiario(){
-let txt=""
-db.lancamentos.forEach(l=>{
-txt+=l.conta+" D:"+l.debito+" C:"+l.credito+"\n"
-})
-alert(txt)
-}
-
-function livroRazao(){
-let contas={}
-db.lancamentos.forEach(l=>{
-if(!contas[l.conta]) contas[l.conta]=0
-contas[l.conta]+=l.debito-l.credito
-})
-alert(JSON.stringify(contas,null,2))
-}
-
-function calcularSimples(){
-let fat=db.lancamentos.reduce((a,b)=>a+b.credito,0)
-alert("Simples:"+fat*0.06)
-}
-
-function calcularPresumido(){
-let fat=db.lancamentos.reduce((a,b)=>a+b.credito,0)
-alert("Presumido IRPJ:"+fat*0.32*0.15)
-}
-
-function calcularLucroReal(){
-let rec=db.lancamentos.reduce((a,b)=>a+b.credito,0)
-let des=db.lancamentos.reduce((a,b)=>a+b.debito,0)
-let lucro=rec-des
-alert("Lucro Real IRPJ:"+lucro*0.15)
-}
-
-function gerarDARF(){alert("DARF gerada")}
-function gerarECD(){alert("ECD gerado")}
-function gerarECF(){alert("ECF gerado")}
-function gerarEFD(){alert("EFD gerado")}
-function gerarDCTF(){alert("DCTF gerado")}
 
 function render(){
-listaEmpresas.innerHTML=db.empresas.map(e=>e.nome+" "+e.cnpj).join("<br>")
-carregarEmpresas()
-listaClientes.innerHTML=db.clientes.join("<br>")
-listaContas.innerHTML=db.contas.join("<br>")
 
-let i = localStorage.getItem("empresa_ativa")
+listaEmpresas.innerHTML=db.empresas.map(e=>e.nome+" "+e.cnpj).join("<br>")
+
+let i=localStorage.getItem("empresa_ativa")
 
 if(i!=null){
 
 let emp=db.empresas[i]
 
-if(emp.lancamentos){
+if(emp.contas)
+listaContas.innerHTML=emp.contas.join("<br>")
 
-listaLanc.innerHTML = emp.lancamentos
-.map(l=>l.conta+" "+l.debito+"/"+l.credito)
-.join("<br>")
-}
-}
-listaPagar.innerHTML=db.pagar.join("<br>")
-listaReceber.innerHTML=db.receber.join("<br>")
-listaFuncionarios.innerHTML=db.funcionarios.map(f=>f.nome+" "+f.sal).join("<br>")
+if(emp.lancamentos)
+listaLanc.innerHTML=emp.lancamentos.map(l=>l.conta+" "+l.debito+"/"+l.credito).join("<br>")
+
+if(emp.pagar)
+listaPagar.innerHTML=emp.pagar.join("<br>")
+
+if(emp.receber)
+listaReceber.innerHTML=emp.receber.join("<br>")
+
 }
 
-function dashboard(){
-let r=db.receber.reduce((a,b)=>a+b,0)
-let d=db.pagar.reduce((a,b)=>a+b,0)
-biReceita.innerHTML=r
-biDespesa.innerHTML=d
-biLucro.innerHTML=r-d
 }
-window.onload = function(){
-render()
-carregarEmpresas()
-}
+
 function carregarEmpresas(){
 
-let select = document.getElementById("empresaAtiva")
-
-if(!select) return
+let select=document.getElementById("empresaAtiva")
 
 select.innerHTML=""
 
@@ -493,167 +285,208 @@ function selecionarEmpresa(){
 
 let i=document.getElementById("empresaAtiva").value
 
-localStorage.setItem("empresa_ativa", i)
+localStorage.setItem("empresa_ativa",i)
 
-let empresa=db.empresas[i]
+let emp=db.empresas[i]
 
-if(!empresa.lancamentos) empresa.lancamentos=[]
-if(!empresa.contas) empresa.contas=[]
-if(!empresa.pagar) empresa.pagar=[]
-if(!empresa.receber) empresa.receber=[]
+if(!emp.lancamentos)emp.lancamentos=[]
+if(!emp.contas)emp.contas=[]
+if(!emp.pagar)emp.pagar=[]
+if(!emp.receber)emp.receber=[]
 
-document.getElementById("empresaSelecionada").innerHTML =
-"Empresa ativa: "+empresa.nome+" ("+empresa.cnpj+")"
+empresaSelecionada.innerHTML="Empresa ativa: "+emp.nome
+
+render()
 
 }
 
+function addEmpresa(){
 
-
-function painelEmpresas(){
-
-let txt="PAINEL DO ESCRITÓRIO\n\n"
-
-db.empresas.forEach(e=>{
-
-txt += e.nome+" - "+e.cnpj+"\n"
-
+db.empresas.push({
+nome:empresaNome.value,
+cnpj:empresaCnpj.value
 })
 
-alert(txt)
+carregarEmpresas()
+render()
 
 }
 
+function addConta(){
 
+let i=localStorage.getItem("empresa_ativa")
 
-function relatorioBalancete(){
+db.empresas[i].contas.push(contaNome.value)
 
-let i = localStorage.getItem("empresa_ativa")
+render()
 
-if(i==null){
-alert("Selecione uma empresa")
-return
 }
 
-let emp = db.empresas[i]
+function addLanc(){
 
-if(!emp.lancamentos){
-alert("Sem lançamentos")
-return
+let i=localStorage.getItem("empresa_ativa")
+
+db.empresas[i].lancamentos.push({
+conta:contaLanc.value,
+debito:parseFloat(debitoLanc.value)||0,
+credito:parseFloat(creditoLanc.value)||0
+})
+
+render()
+
 }
+
+function addPagar(){
+
+let i=localStorage.getItem("empresa_ativa")
+
+db.empresas[i].pagar.push(parseFloat(pagarValor.value)||0)
+
+render()
+dashboard()
+
+}
+
+function addReceber(){
+
+let i=localStorage.getItem("empresa_ativa")
+
+db.empresas[i].receber.push(parseFloat(receberValor.value)||0)
+
+render()
+dashboard()
+
+}
+
+function fluxo(){
+
+let i=localStorage.getItem("empresa_ativa")
+
+let emp=db.empresas[i]
+
+let r=0
+let d=0
+
+emp.receber.forEach(v=>r+=v)
+emp.pagar.forEach(v=>d+=v)
+
+alert("Saldo: "+(r-d))
+
+}
+
+function balancete(){
+
+let i=localStorage.getItem("empresa_ativa")
+let emp=db.empresas[i]
 
 let deb=0
 let cred=0
 
 emp.lancamentos.forEach(l=>{
-
-deb += l.debito
-cred += l.credito
-
+deb+=l.debito
+cred+=l.credito
 })
 
-alert(
-"BALANCETE\n\n"+
-"Débitos: "+deb+"\n"+
-"Créditos: "+cred+"\n"+
-"Resultado: "+(deb-cred)
-)
+alert("Balancete\nDébitos:"+deb+"\nCréditos:"+cred)
 
 }
 
+function balanco(){
 
-
-function relatorioBalanco(){
-
-let i = localStorage.getItem("empresa_ativa")
-
-if(i==null){
-alert("Selecione empresa")
-return
-}
-
+let i=localStorage.getItem("empresa_ativa")
 let emp=db.empresas[i]
 
 let ativo=0
 let passivo=0
 
-if(emp.lancamentos){
-
 emp.lancamentos.forEach(l=>{
+ativo+=l.debito
+passivo+=l.credito
+})
 
-ativo += l.debito
-passivo += l.credito
+alert("Balanço\nAtivo:"+ativo+"\nPassivo:"+passivo)
 
+}
+
+function dashboard(){
+
+let receitas=0
+let despesas=0
+
+db.empresas.forEach(e=>{
+
+if(e.receber)
+e.receber.forEach(v=>receitas+=v)
+
+if(e.pagar)
+e.pagar.forEach(v=>despesas+=v)
+
+})
+
+biReceita.innerHTML=receitas
+biDespesa.innerHTML=despesas
+biLucro.innerHTML=receitas-despesas
+
+let ctx=document.getElementById("grafico").getContext("2d")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Receitas","Despesas"],
+datasets:[{
+label:"Financeiro",
+data:[receitas,despesas],
+backgroundColor:["green","red"]
+}]
+}
 })
 
 }
 
-alert(
-"BALANÇO\n\n"+
-"ATIVO: "+ativo+"\n"+
-"PASSIVO: "+passivo+"\n"+
-"PATRIMÔNIO: "+(ativo-passivo)
-)
-
-}
-
-
-
 function agendaFiscal(){
 
 alert(
-"AGENDA FISCAL\n\n"+
-"10 - INSS\n"+
-"15 - EFD Contribuições\n"+
-"20 - DAS Simples\n"+
-"25 - ICMS\n"+
-"30 - DCTF"
+"Agenda Fiscal\n\n"+
+"10 INSS\n"+
+"15 EFD\n"+
+"20 DAS\n"+
+"25 ICMS\n"+
+"30 DCTF"
 )
 
 }
 
-
-
-function alertaDAS(){
-
-alert("Empresas do SIMPLES devem pagar DAS dia 20")
-
-}
-
-
-
-function alertaDARF(){
-
-alert("Empresas PRESUMIDO/REAL devem verificar DARF IRPJ e CSLL")
-
-}
-
-
-
-function pendenciasClientes(){
+function alertaImpostos(){
 
 alert(
-"PENDÊNCIAS\n\n"+
-"Cliente sem extrato\n"+
-"Cliente sem nota fiscal\n"+
-"Cliente sem documentos"
+"Alertas\n\n"+
+"Verificar IRPJ\n"+
+"CSLL\n"+
+"PIS\n"+
+"COFINS"
 )
 
 }
 
+function novaTarefa(){
 
+let t=prompt("Digite tarefa")
 
-function notasFiscais(){
-
-alert(
-"Módulo NF-e\n\n"+
-"Importar XML\n"+
-"Registrar nota\n"+
-"Gerar relatório"
-)
+if(t) tarefas.push(t)
 
 }
 
+function listarTarefas(){
 
+alert(tarefas.join("\n"))
+
+}
+
+function backupSistema(){
+
+alert(JSON.stringify(db))
+
+}
 
 </script>
 

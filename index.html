@@ -2,22 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ERP MASTER DAYTHI PRO FINAL</title>
+<title>ERP DAYTHI PRO - ESCRITÓRIO</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f6f9;display:flex}
-
-#menu{width:260px;background:#1f3c88;color:white;padding:10px;min-height:100vh}
-
-#menu button{
-width:100%;padding:10px;margin:4px 0;border:none;background:#2f54eb;color:white;border-radius:4px
-}
-
+body{margin:0;font-family:Arial;display:flex;background:#f4f6f9}
+#menu{width:260px;background:#1f3c88;color:white;padding:10px}
+#menu button{width:100%;padding:10px;margin:4px 0;border:none;background:#2f54eb;color:white}
 #conteudo{flex:1;padding:20px}
-
-.modulo{display:none;background:white;padding:20px;border-radius:6px}
-
-input{padding:6px;margin:4px}
+.modulo{display:none;background:white;padding:15px;border-radius:6px}
+.card{background:white;margin:6px;padding:8px;border-left:5px solid green}
+input,textarea{margin:4px;padding:6px;width:90%}
 </style>
 </head>
 
@@ -25,64 +21,41 @@ input{padding:6px;margin:4px}
 
 <div id="menu">
 
-<h2>ERP DAYTHI PRO</h2>
+<h2>ERP DAYTHI</h2>
 
-<button onclick="abrir('dashboard')">Dashboard</button>
 <button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('contas')">Plano Contas</button>
-<button onclick="abrir('lancamentos')">Lançamentos</button>
 <button onclick="abrir('financeiro')">Financeiro</button>
+
+<h3>Relatórios</h3>
+<button onclick="balancete()">Balancete</button>
+<button onclick="balanco()">Balanço</button>
+<button onclick="dre()">DRE</button>
+
+<h3>Fiscal</h3>
+<button onclick="impostos()">Impostos</button>
+<button onclick="sped()">SPED</button>
+
+<h3>Painel</h3>
+<button onclick="painel()">Painel Escritório</button>
+
+<h3>PDF</h3>
+<button onclick="pdf()">Gerar PDF</button>
 
 </div>
 
 <div id="conteudo">
 
-<div id="dashboard" class="modulo">
-<h2>Dashboard</h2>
-<div id="painel"></div>
-</div>
-
 <div id="empresas" class="modulo">
 
 <h2>Empresas</h2>
 
-<input id="empresaNome" placeholder="Nome">
-<input id="empresaCnpj" placeholder="CNPJ">
+<textarea id="importar" placeholder="Nome;CNPJ;REGIME"></textarea>
+<button onclick="importarEmpresas()">IMPORTAR TODAS</button>
 
-<button onclick="addEmpresa()">Salvar</button>
+<select id="sel"></select>
+<button onclick="usar()">Selecionar</button>
 
-<div id="listaEmpresas"></div>
-
-<select id="empresaAtiva"></select>
-
-<button onclick="selecionarEmpresa()">Selecionar</button>
-
-<div id="empresaSelecionada"></div>
-
-</div>
-
-<div id="contas" class="modulo">
-
-<h2>Plano de Contas</h2>
-
-<input id="contaNome">
-<button onclick="addConta()">Adicionar</button>
-
-<div id="listaContas"></div>
-
-</div>
-
-<div id="lancamentos" class="modulo">
-
-<h2>Lançamentos</h2>
-
-Conta <input id="contaLanc">
-Débito <input id="debitoLanc">
-Crédito <input id="creditoLanc">
-
-<button onclick="addLanc()">Registrar</button>
-
-<div id="listaLanc"></div>
+<div id="ativa"></div>
 
 </div>
 
@@ -90,167 +63,195 @@ Crédito <input id="creditoLanc">
 
 <h2>Financeiro</h2>
 
-Receber <input id="receberValor">
-<button onclick="addReceber()">Salvar</button><br>
+<input id="rec" placeholder="Receita">
+<button onclick="addRec()">Adicionar Receita</button>
 
-Pagar <input id="pagarValor">
-<button onclick="addPagar()">Salvar</button>
+<input id="pag" placeholder="Despesa">
+<button onclick="addPag()">Adicionar Despesa</button>
 
-<div id="financeiroLista"></div>
+<div id="fin"></div>
 
+</div>
+
+<div id="painelTela" class="modulo">
+<h2>Painel do Escritório</h2>
+<div id="painel"></div>
 </div>
 
 </div>
 
 <script>
 
-// 🔥 BANCO COM SUAS EMPRESAS + SALVAMENTO
-let db = JSON.parse(localStorage.getItem("erp")) || {
-empresas:[
-{nome:"SIMPLES COMERCIO M.A DE S. MENDES",cnpj:"05.402.379/0001-80"},
-{nome:"LRS FERRAGENS",cnpj:"15.871.688/0001-52"},
-{nome:"TRACTORTECH DIST. PEÇAS",cnpj:"44.294.083/0001-44"},
-{nome:"VELOTRACK PESQUISA",cnpj:"44.753.658/0001-40"},
-{nome:"PEÇAS AUTO LTDA",cnpj:"44.270.724/0001-20"},
-{nome:"PEÇAS AUTO FILIAL MG",cnpj:"44.270.724/0002-01"},
-{nome:"DIOMA BOTINHAS",cnpj:"40.179.359/0001-92"},
-{nome:"SINTESIS PROJETOS",cnpj:"01.647.377/0001-08"},
-{nome:"GRA DISTRIB PEÇAS",cnpj:"27.367.193/0001-70"},
-{nome:"TUCAN ESPORTES MATRIZ",cnpj:"47.619.583/0001-05"},
-{nome:"TUCAN ESPORTES FILIAL",cnpj:"47.619.583/0002-88"},
-{nome:"TUCAN BAR",cnpj:"48.174.727/0001-11"},
-{nome:"CIRCUITO GOIANO BEACH TENNIS",cnpj:"45.493.235/0001-09"},
-{nome:"ENVPLAY LTDA",cnpj:"48.465.529/0001-07"},
-{nome:"ELETRIWATTS ENGENHARIA",cnpj:"26.742.605/0001-41"},
-{nome:"INTEGRA ASSESSORIA",cnpj:"46.976.255/0001-95"},
-{nome:"HYPER IDEIA COWORKING",cnpj:"54.082.047/0001-70"},
-{nome:"HYPER IDEIA PRODUCOES",cnpj:"55.611.680/0001-71"},
-{nome:"CARDIOPHYSIO INTENSIVE",cnpj:"54.841.828/0001-00"},
-{nome:"IP CONECTA CONSULTORIA",cnpj:"34.859.781/0001-96"},
-{nome:"CLM SERVICOS MEDICOS",cnpj:"53.404.725/0001-01"}
-]
-}
+let db = JSON.parse(localStorage.getItem("erp")) || {empresas:[]}
 
 function salvar(){
-localStorage.setItem("erp", JSON.stringify(db))
+localStorage.setItem("erp",JSON.stringify(db))
 }
 
-// ================= RENDER =================
+// ================= IMPORTAR EMPRESAS =================
+function importarEmpresas(){
+
+let linhas = importar.value.split("\n")
+
+linhas.forEach(l=>{
+let p=l.split(";")
+if(p.length>=3){
+db.empresas.push({
+nome:p[0],
+cnpj:p[1],
+regime:p[2],
+rec:[],
+pag:[]
+})
+}
+})
+
+salvar()
+render()
+
+alert("EMPRESAS IMPORTADAS!")
+
+}
+
+// ================= EMPRESA =================
+function usar(){
+localStorage.setItem("emp",sel.value)
+render()
+}
+
 function render(){
 
-listaEmpresas.innerHTML=db.empresas.map(e=>e.nome+" "+e.cnpj).join("<br>")
+sel.innerHTML=db.empresas.map((e,i)=>`<option value="${i}">${e.nome}</option>`)
 
-empresaAtiva.innerHTML=db.empresas.map((e,i)=>
-`<option value="${i}">${e.nome}</option>`
-)
-
-let i=localStorage.getItem("empresa")
+let i=localStorage.getItem("emp")
 
 if(i!=null){
 
 let e=db.empresas[i]
 
-e.contas=e.contas||[]
-e.lanc=e.lanc||[]
-e.receber=e.receber||[]
-e.pagar=e.pagar||[]
+ativa.innerHTML="Empresa: "+e.nome+" ("+e.regime+")"
 
-listaContas.innerHTML=e.contas.join("<br>")
-listaLanc.innerHTML=e.lanc.map(l=>l.conta+" "+l.d+"/"+l.c).join("<br>")
+let r=(e.rec||[]).reduce((a,b)=>a+b,0)
+let d=(e.pag||[]).reduce((a,b)=>a+b,0)
 
-financeiroLista.innerHTML=
-"Receber: "+e.receber+"<br>Pagar: "+e.pagar
-
-empresaSelecionada.innerHTML="Empresa ativa: "+e.nome
+fin.innerHTML="Receita:"+r+"<br>Despesa:"+d
 
 }
-
-}
-
-// ================= EMPRESAS =================
-function addEmpresa(){
-
-db.empresas.push({
-nome:empresaNome.value,
-cnpj:empresaCnpj.value
-})
-
-salvar()
-render()
-
-}
-
-function selecionarEmpresa(){
-
-localStorage.setItem("empresa", empresaAtiva.value)
-
-salvar()
-render()
-
-}
-
-// ================= CONTAS =================
-function addConta(){
-
-let e=db.empresas[localStorage.getItem("empresa")]
-
-e.contas.push(contaNome.value)
-
-salvar()
-render()
-
-}
-
-// ================= LANÇAMENTOS =================
-function addLanc(){
-
-let e=db.empresas[localStorage.getItem("empresa")]
-
-e.lanc.push({
-conta:contaLanc.value,
-d:+debitoLanc.value||0,
-c:+creditoLanc.value||0
-})
-
-salvar()
-render()
 
 }
 
 // ================= FINANCEIRO =================
-function addReceber(){
+function addRec(){
+let e=db.empresas[localStorage.getItem("emp")]
+e.rec.push(+rec.value||0)
+salvar();render()
+}
 
-let e=db.empresas[localStorage.getItem("empresa")]
+function addPag(){
+let e=db.empresas[localStorage.getItem("emp")]
+e.pag.push(+pag.value||0)
+salvar();render()
+}
 
-e.receber.push(+receberValor.value||0)
+// ================= RELATÓRIOS =================
+function balancete(){
+let e=db.empresas[localStorage.getItem("emp")]
+let r=e.rec.reduce((a,b)=>a+b,0)
+let d=e.pag.reduce((a,b)=>a+b,0)
+alert("Balancete\nReceita:"+r+"\nDespesa:"+d)
+}
 
-salvar()
-render()
+function balanco(){
+let e=db.empresas[localStorage.getItem("emp")]
+let r=e.rec.reduce((a,b)=>a+b,0)
+alert("Balanço\nAtivo:"+r)
+}
+
+function dre(){
+let e=db.empresas[localStorage.getItem("emp")]
+let r=e.rec.reduce((a,b)=>a+b,0)
+let d=e.pag.reduce((a,b)=>a+b,0)
+alert("DRE\nLucro:"+(r-d))
+}
+
+// ================= IMPOSTOS =================
+function impostos(){
+
+let e=db.empresas[localStorage.getItem("emp")]
+let fat=e.rec.reduce((a,b)=>a+b,0)
+
+if(e.regime=="SIMPLES"){
+alert("DAS:"+fat*0.06)
+}
+
+if(e.regime=="PRESUMIDO"){
+alert("PIS:"+fat*0.0065+"\nCOFINS:"+fat*0.03)
+}
+
+if(e.regime=="REAL"){
+alert("IRPJ:"+fat*0.15+"\nCSLL:"+fat*0.09)
+}
 
 }
 
-function addPagar(){
+// ================= SPED =================
+function sped(){
 
-let e=db.empresas[localStorage.getItem("empresa")]
+let txt="|0000|SPED|\n"
 
-e.pagar.push(+pagarValor.value||0)
+db.empresas.forEach(e=>{
+txt+=`|EMP|${e.nome}|${e.cnpj}|${e.regime}|\n`
+})
 
-salvar()
-render()
+alert(txt)
 
 }
 
-// ================= NAVEGAÇÃO =================
+// ================= PAINEL =================
+function painel(){
+
+abrir("painelTela")
+
+let html=""
+
+db.empresas.forEach(e=>{
+
+let fat=(e.rec||[]).reduce((a,b)=>a+b,0)
+
+let cor=fat>0?"green":"red"
+
+html+=`<div class="card" style="border-left-color:${cor}">
+${e.nome}<br>Regime: ${e.regime}<br>Faturamento: ${fat}
+</div>`
+
+})
+
+painel.innerHTML=html
+
+}
+
+// ================= PDF =================
+function pdf(){
+
+let { jsPDF } = window.jspdf
+let doc = new jsPDF()
+
+db.empresas.forEach((e,i)=>{
+doc.text(e.nome+" - "+e.cnpj,10,10+(i*10))
+})
+
+doc.save("relatorio.pdf")
+
+}
+
+// ================= NAV =================
 function abrir(id){
-
 document.querySelectorAll(".modulo").forEach(m=>m.style.display="none")
-
 document.getElementById(id).style.display="block"
-
 }
 
 render()
-abrir("dashboard")
+abrir("empresas")
 
 </script>
 

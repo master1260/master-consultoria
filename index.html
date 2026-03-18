@@ -13,6 +13,34 @@ body{margin:0;font-family:Arial;display:flex}
 input,select{padding:6px;margin:4px}
 textarea{width:100%;height:80px}
 </style>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyClzgqmuiz6I8j7arw1Eqrd5uWpnPiABpI",
+authDomain: "erp-daythi.firebaseapp.com",
+projectId: "erp-daythi"
+};
+
+const app = initializeApp(firebaseConfig);
+const dbOnline = getFirestore(app);
+
+window.salvarFirebase = async function(emp){
+await addDoc(collection(dbOnline,"empresas"), emp);
+}
+
+window.carregarFirebase = async function(){
+const querySnapshot = await getDocs(collection(dbOnline,"empresas"))
+db.empresas = []
+querySnapshot.forEach(doc=>db.empresas.push(doc.data()))
+salvar()
+renderEmpresas()
+}
+</script>
+
 </head>
 
 <body>
@@ -24,34 +52,26 @@ textarea{width:100%;height:80px}
 <button onclick="abrir('financeiro')">Financeiro</button>
 <button onclick="abrir('contabil')">Contábil</button>
 <button onclick="abrir('fiscal')">Fiscal</button>
-<button onclick="abrir('rh')">RH</button>
-<button onclick="abrir('relatorios')">Relatórios</button>
-<button onclick="abrir('sped')">SPED</button>
-<button onclick="abrir('xml')">NF-e XML</button>
 <button onclick="abrir('dashboard')">Dashboard</button>
 
 <button onclick="painelEscritorio()">Painel Escritório</button>
 <button onclick="calcularImpostos()">Calcular Impostos</button>
-<button onclick="gerarDREProfissional()">DRE Profissional</button>
-<button onclick="gerarAlertas()">Atualizar Alertas</button>
 
 <button onclick="backup()">Backup</button>
-<button onclick="backup()">Backup</button>
-
 </div>
 
 <div id="conteudo"></div>
 
 <script>
 
-// ================= BANCO =================
+// BANCO
 let db = JSON.parse(localStorage.getItem("erp")) || {empresas:[]}
 
 function salvar(){
 localStorage.setItem("erp", JSON.stringify(db))
 }
 
-// ================= EMPRESAS =================
+// EMPRESAS
 function abrir(t){
 
 if(t=="empresas"){
@@ -61,9 +81,9 @@ conteudo.innerHTML=`
 <textarea id="listaImportar" placeholder="Nome;CNPJ;REGIME"></textarea>
 <button onclick="importar()">IMPORTAR</button>
 
-<h3>Nova Empresa</h3>
 <input id="nome">
 <input id="cnpj">
+
 <select id="regime">
 <option>SIMPLES</option>
 <option>PRESUMIDO</option>
@@ -77,351 +97,142 @@ conteudo.innerHTML=`
 renderEmpresas()
 }
 
-// ================= FINANCEIRO =================
 if(t=="financeiro"){
 conteudo.innerHTML=`
 <h2>Financeiro</h2>
 
-<input id="valorReceber" placeholder="Receber">
-<button onclick="receber()">Adicionar</button>
+<input id="valorReceber">
+<button onclick="receber()">Receber</button>
 
-<input id="valorPagar" placeholder="Pagar">
-<button onclick="pagar()">Adicionar</button>
-
-<button onclick="fluxo()">Fluxo de Caixa</button>
+<input id="valorPagar">
+<button onclick="pagar()">Pagar</button>
 `
 }
 
-// ================= CONTÁBIL =================
-if(t=="contabil"){
-conteudo.innerHTML=`
-<h2>Contábil</h2>
-<button onclick="balancete()">Balancete</button>
-<button onclick="balanco()">Balanço</button>
-<button onclick="dre()">DRE</button>
-`
-}
-
-// ================= FISCAL =================
 if(t=="fiscal"){
 conteudo.innerHTML=`
 <h2>Fiscal</h2>
-<button onclick="das()">DAS</button>
-<button onclick="impostos()">Impostos</button>
-<button onclick="alertas()">Alertas</button>
+<button onclick="calcularImpostos()">Calcular</button>
 `
 }
 
-// ================= RH =================
-if(t=="rh"){
-conteudo.innerHTML=`
-<h2>RH</h2>
-<input id="salario">
-<button onclick="folha()">Calcular Folha</button>
-`
-}
-
-// ================= RELATÓRIOS =================
-if(t=="relatorios"){
-conteudo.innerHTML=`
-<h2>Relatórios</h2>
-<button onclick="relatorio()">Gerar PDF</button>
-`
-}
-
-// ================= SPED =================
-if(t=="sped"){
-conteudo.innerHTML=`
-<h2>SPED</h2>
-<button onclick="gerarSPED()">Gerar SPED</button>
-`
-}
-
-// ================= XML =================
-if(t=="xml"){
-conteudo.innerHTML=`
-<h2>Importar XML</h2>
-<input type="file" id="xmlfile">
-<button onclick="lerXML()">Ler XML</button>
-`
-}
-
-// ================= DASHBOARD =================
 if(t=="dashboard"){
-conteudo.innerHTML=`<h2>Painel</h2>
+conteudo.innerHTML=`
+<h2>Painel</h2>
 Total empresas: ${db.empresas.length}
 `
 }
 
 }
 
-// ================= IMPORTAR =================
+// IMPORTAR
 function importar(){
 let linhas=listaImportar.value.split("\n")
+
 linhas.forEach(l=>{
 let [nome,cnpj,regime]=l.split(";")
+
 if(nome){
-db.empresas.push({
-nome,cnpj,regime,
-receber:[],pagar:[],func:[]
-})
+let emp={nome,cnpj,regime,receber:[],pagar:[]}
+db.empresas.push(emp)
+salvar()
+salvarFirebase(emp)
 }
 })
-salvar()
+
 renderEmpresas()
 }
 
-// ================= EMPRESA =================
+// ADD EMPRESA
 function addEmpresa(){
-db.empresas.push({
+let emp={
 nome:nome.value,
 cnpj:cnpj.value,
 regime:regime.value,
-receber:[],pagar:[],func:[]
-})
+receber:[],
+pagar:[]
+}
+
+db.empresas.push(emp)
 salvar()
+salvarFirebase(emp)
+
 renderEmpresas()
 }
 
+// LISTA
 function renderEmpresas(){
 let html=""
 db.empresas.forEach((e,i)=>{
-html+=`<div class="card">${e.nome} (${e.regime})
-<button onclick="selecionar(${i})">Selecionar</button></div>`
+html+=`<div class="card">
+${e.nome}
+<button onclick="selecionar(${i})">Selecionar</button>
+</div>`
 })
 lista.innerHTML=html
 }
 
+// SELECIONAR
 function selecionar(i){
 localStorage.setItem("empresa",i)
-alert("Empresa selecionada")
+alert("Selecionado")
 }
 
-// ================= FINANCEIRO =================
+// FINANCEIRO
+function getEmpresa(){
+return db.empresas[localStorage.getItem("empresa")]
+}
+
 function receber(){
-let e=db.empresas[localStorage.getItem("empresa")]
+let e=getEmpresa()
 e.receber.push(parseFloat(valorReceber.value)||0)
 salvar()
 }
 
 function pagar(){
-let e=db.empresas[localStorage.getItem("empresa")]
+let e=getEmpresa()
 e.pagar.push(parseFloat(valorPagar.value)||0)
 salvar()
 }
 
-function fluxo(){
-let e=db.empresas[localStorage.getItem("empresa")]
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
-alert("Saldo: "+(r-d))
-}
+// FISCAL
+function calcularImpostos(){
 
-// ================= CONTÁBIL =================
-function balancete(){
-let e=db.empresas[localStorage.getItem("empresa")]
-let total=e.receber.reduce((a,b)=>a+b,0)-e.pagar.reduce((a,b)=>a+b,0)
-alert("Balancete: "+total)
-}
+let e=getEmpresa()
 
-function balanco(){alert("Balanço estruturado")}
-
-function dre(){
-let e=db.empresas[localStorage.getItem("empresa")]
-let lucro=e.receber.reduce((a,b)=>a+b,0)-e.pagar.reduce((a,b)=>a+b,0)
-alert("DRE: "+lucro)
-}
-
-// ================= FISCAL =================
-function das(){
-let e=db.empresas[localStorage.getItem("empresa")]
 let fat=e.receber.reduce((a,b)=>a+b,0)
-alert("DAS: "+(fat*0.06))
+
+let imposto=fat*0.06
+
+conteudo.innerHTML=`
+<h2>Fiscal</h2>
+Faturamento: ${fat}<br>
+Imposto: ${imposto}
+`
 }
 
-function impostos(){
-alert("IRPJ, CSLL, PIS, COFINS calculados")
-}
+// PAINEL
+function painelEscritorio(){
 
-function alertas(){
-alert("DCTF, SPED, ECF pendentes")
-}
+let html="<h2>Painel</h2>"
 
-// ================= RH =================
-function folha(){alert("Folha calculada")}
-
-// ================= RELATÓRIO =================
-function relatorio(){
-let blob=new Blob(["Relatório Empresa"])
-let a=document.createElement("a")
-a.href=URL.createObjectURL(blob)
-a.download="relatorio.pdf"
-a.click()
-}
-
-// ================= SPED =================
-function gerarSPED(){
-let txt="|0000|SPED|\n"
 db.empresas.forEach(e=>{
-txt+=`|0100|${e.nome}|${e.cnpj}|\n`
+let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
+
+html+=`<div class="card">${e.nome} - ${fat}</div>`
 })
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([txt]))
-a.download="sped.txt"
-a.click()
+
+conteudo.innerHTML=html
 }
 
-// ================= XML =================
-function lerXML(){
-let file=xmlfile.files[0]
-let reader=new FileReader()
-reader.onload=function(){
-let xml=reader.result
-let v=xml.match(/<vNF>(.*?)<\/vNF>/)
-alert("Valor NF: "+(v?v[1]:"Não encontrado"))
-}
-reader.readAsText(file)
-}
-
-// ================= BACKUP =================
+// BACKUP
 function backup(){
 alert(JSON.stringify(db))
 }
 
-// INICIO
+// INIT
 abrir("empresas")
-// =============================
-// UPGRADE ESCRITÓRIO
-// =============================
 
-// Garante estrutura completa por empresa
-function garantirEstrutura(){
-
-db.empresas.forEach(e=>{
-
-if(!e.receber) e.receber=[]
-if(!e.pagar) e.pagar=[]
-if(!e.lancamentos) e.lancamentos=[]
-if(!e.impostos) e.impostos={}
-if(!e.alertas) e.alertas=[]
-
-})
-
-salvar()
-}
-
-// =============================
-// PAINEL ESCRITÓRIO
-// =============================
-function painelEscritorio(){
-
-let html="<h2>Painel do Escritório</h2>"
-
-db.empresas.forEach((e,i)=>{
-
-let faturamento = (e.receber||[]).reduce((a,b)=>a+b,0)
-let despesas = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-html += `
-<div style="border:1px solid #ccc;padding:10px;margin:5px">
-<b>${e.nome}</b><br>
-Regime: ${e.regime || "Não definido"}<br>
-Faturamento: ${faturamento}<br>
-Despesas: ${despesas}<br>
-Lucro: ${faturamento - despesas}<br>
-<button onclick="selecionar(${i})">Entrar</button>
-</div>
-`
-
-})
-
-conteudo.innerHTML = html
-}
-
-// =============================
-// IMPOSTOS COMPLETOS
-// =============================
-function calcularImpostos(){
-
-let i = localStorage.getItem("empresa")
-if(i==null){ alert("Selecione empresa"); return }
-
-let e = db.empresas[i]
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-
-let resultado = ""
-
-if(e.regime=="SIMPLES"){
-resultado = fat * 0.06
-}
-else if(e.regime=="PRESUMIDO"){
-resultado = fat * 0.1333
-}
-else if(e.regime=="REAL"){
-resultado = fat * 0.15
-}
-
-alert("Imposto estimado: "+resultado)
-}
-
-// =============================
-// DRE PROFISSIONAL
-// =============================
-function gerarDREProfissional(){
-
-let i = localStorage.getItem("empresa")
-let e = db.empresas[i]
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-let texto =
-"DEMONSTRAÇÃO DE RESULTADO\n\n"+
-"Receita: "+r+"\n"+
-"Despesas: "+d+"\n"+
-"Lucro: "+(r-d)
-
-download(texto,"DRE.txt")
-}
-
-// =============================
-// ALERTAS AUTOMÁTICOS
-// =============================
-function gerarAlertas(){
-
-db.empresas.forEach(e=>{
-e.alertas = [
-"DAS dia 20",
-"DCTF pendente",
-"SPED pendente"
-]
-})
-
-salvar()
-
-alert("Alertas atualizados")
-}
-
-// =============================
-// NF-e AUTOMÁTICA (INTEGRA)
-// =============================
-function importarXMLFinanceiro(valor){
-
-let i = localStorage.getItem("empresa")
-let e = db.empresas[i]
-
-e.receber.push(parseFloat(valor)||0)
-
-salvar()
-
-alert("NF lançada no financeiro")
-}
-
-// =============================
-// CORRIGE SISTEMA
-// =============================
-garantirEstrutura()
 </script>
 
 </body>

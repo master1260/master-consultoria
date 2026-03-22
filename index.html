@@ -32,7 +32,6 @@ body{margin:0;font-family:Arial;display:flex}
 <div id="conteudo"></div>
 
 <script>
-
 // ================= BANCO =================
 let db = JSON.parse(localStorage.getItem("erp")) || {empresas:[]}
 
@@ -41,10 +40,25 @@ localStorage.setItem("erp", JSON.stringify(db))
 }
 
 // ================= EMPRESA ATIVA =================
+let empresaIndex = null
+
+function selecionar(i){
+empresaIndex = i
+localStorage.setItem("empresa", i)
+alert("Empresa ativa: " + db.empresas[i].nome)
+}
+
 function getEmpresa(){
-let i = parseInt(localStorage.getItem("empresa"))
-if(isNaN(i)){ alert("Selecione empresa"); return null }
-return db.empresas[i]
+if(empresaIndex === null){
+empresaIndex = parseInt(localStorage.getItem("empresa"))
+}
+
+if(isNaN(empresaIndex) || !db.empresas[empresaIndex]){
+alert("Selecione uma empresa")
+return null
+}
+
+return db.empresas[empresaIndex]
 }
 
 // ================= TELAS =================
@@ -57,6 +71,7 @@ conteudo.innerHTML=`
 
 <input id="nome" placeholder="Nome">
 <input id="cnpj" placeholder="CNPJ">
+
 <select id="regime">
 <option>SIMPLES</option>
 <option>PRESUMIDO</option>
@@ -67,7 +82,8 @@ conteudo.innerHTML=`
 
 <div id="lista"></div>
 `
-render()
+
+renderEmpresas()
 }
 
 // FINANCEIRO
@@ -81,7 +97,7 @@ conteudo.innerHTML=`
 <input id="pag" placeholder="Despesa">
 <button onclick="pagar()">Adicionar</button>
 
-<button onclick="fluxo()">Fluxo Caixa</button>
+<button onclick="fluxo()">Ver Fluxo</button>
 `
 }
 
@@ -100,7 +116,7 @@ if(t=="fiscal"){
 conteudo.innerHTML=`
 <h2>Fiscal</h2>
 <button onclick="impostos()">Calcular Impostos</button>
-<button onclick="das()">Gerar DAS</button>
+<button onclick="das()">DAS</button>
 `
 }
 
@@ -108,8 +124,8 @@ conteudo.innerHTML=`
 if(t=="rh"){
 conteudo.innerHTML=`
 <h2>RH</h2>
-<input id="salario" placeholder="Salário">
-<button onclick="folha()">Calcular Folha</button>
+<input id="salario">
+<button onclick="folha()">Calcular</button>
 `
 }
 
@@ -117,7 +133,7 @@ conteudo.innerHTML=`
 if(t=="sped"){
 conteudo.innerHTML=`
 <h2>SPED</h2>
-<button onclick="gerarSPED()">Gerar Arquivo</button>
+<button onclick="gerarSPED()">Gerar</button>
 `
 }
 
@@ -125,7 +141,7 @@ conteudo.innerHTML=`
 if(t=="relatorio"){
 conteudo.innerHTML=`
 <h2>Relatório</h2>
-<button onclick="relatorio()">Gerar Relatório</button>
+<button onclick="relatorio()">Gerar</button>
 `
 }
 
@@ -133,7 +149,7 @@ conteudo.innerHTML=`
 if(t=="alertas"){
 conteudo.innerHTML=`
 <h2>Alertas</h2>
-<button onclick="alertas()">Ver Pendências</button>
+<button onclick="alertas()">Ver</button>
 `
 }
 
@@ -143,102 +159,102 @@ conteudo.innerHTML=`
 function addEmpresa(){
 
 let emp = {
-nome:nome.value,
-cnpj:cnpj.value,
-regime:regime.value,
-receber:[],
-pagar:[]
+nome: document.getElementById("nome").value,
+cnpj: document.getElementById("cnpj").value,
+regime: document.getElementById("regime").value,
+receber: [],
+pagar: []
 }
 
 db.empresas.push(emp)
 salvar()
-render()
+renderEmpresas()
 }
 
-function render(){
+function renderEmpresas(){
+
 let html=""
+
 db.empresas.forEach((e,i)=>{
 html+=`
 <div class="card">
 ${e.nome} (${e.regime})
-<button onclick="selecionar(${i})">Entrar</button>
+<button onclick="selecionar(${i})">Selecionar</button>
 </div>
 `
 })
-lista.innerHTML=html
-}
 
-function selecionar(i){
-localStorage.setItem("empresa", i)
-alert("Empresa: "+db.empresas[i].nome)
+document.getElementById("lista").innerHTML = html
 }
 
 // ================= FINANCEIRO =================
 function receber(){
-let e=getEmpresa(); if(!e) return
-e.receber.push(+rec.value||0)
+let e = getEmpresa(); if(!e) return
+let v = parseFloat(document.getElementById("rec").value)||0
+e.receber.push(v)
 salvar()
+alert("Receita lançada")
 }
 
 function pagar(){
-let e=getEmpresa(); if(!e) return
-e.pagar.push(+pag.value||0)
+let e = getEmpresa(); if(!e) return
+let v = parseFloat(document.getElementById("pag").value)||0
+e.pagar.push(v)
 salvar()
+alert("Despesa lançada")
 }
 
 function fluxo(){
-let e=getEmpresa(); if(!e) return
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
+let e = getEmpresa(); if(!e) return
+let r = e.receber.reduce((a,b)=>a+b,0)
+let d = e.pagar.reduce((a,b)=>a+b,0)
 alert("Saldo: "+(r-d))
 }
 
 // ================= CONTÁBIL =================
 function dre(){
-let e=getEmpresa(); if(!e) return
-let lucro=e.receber.reduce((a,b)=>a+b,0)-e.pagar.reduce((a,b)=>a+b,0)
-alert("Lucro: "+lucro)
+let e = getEmpresa(); if(!e) return
+let r = e.receber.reduce((a,b)=>a+b,0)
+let d = e.pagar.reduce((a,b)=>a+b,0)
+alert("Lucro: "+(r-d))
 }
 
 function balancete(){dre()}
 
-function balanco(){alert("Balanço gerado")}
+function balanco(){alert("Balanço OK")}
 
 // ================= FISCAL =================
 function impostos(){
-let e=getEmpresa(); if(!e) return
-let fat=e.receber.reduce((a,b)=>a+b,0)
+let e = getEmpresa(); if(!e) return
+let fat = e.receber.reduce((a,b)=>a+b,0)
 
-let imposto=0
+let imp=0
+if(e.regime=="SIMPLES") imp=fat*0.06
+if(e.regime=="PRESUMIDO") imp=fat*0.1333
+if(e.regime=="REAL") imp=fat*0.15
 
-if(e.regime=="SIMPLES") imposto=fat*0.06
-if(e.regime=="PRESUMIDO") imposto=fat*0.1333
-if(e.regime=="REAL") imposto=fat*0.15
-
-alert("Imposto: "+imposto)
+alert("Imposto: "+imp)
 }
 
 function das(){
-let e=getEmpresa(); if(!e) return
-let fat=e.receber.reduce((a,b)=>a+b,0)
+let e = getEmpresa(); if(!e) return
+let fat = e.receber.reduce((a,b)=>a+b,0)
 alert("DAS: "+(fat*0.06))
 }
 
 // ================= RH =================
 function folha(){
-let sal=+salario.value||0
-let inss=sal*0.08
-let fgts=sal*0.08
+let sal = parseFloat(document.getElementById("salario").value)||0
+let inss = sal*0.08
+let fgts = sal*0.08
 alert("INSS:"+inss+"\nFGTS:"+fgts)
 }
 
 // ================= SPED =================
 function gerarSPED(){
-let txt="|0000|SPED|\n"
+let e = getEmpresa(); if(!e) return
 
-db.empresas.forEach(e=>{
-txt+=`|0100|${e.nome}|${e.cnpj}|\n`
-})
+let txt = `|0000|SPED|\n|0100|${e.nome}|${e.cnpj}|\n`
 
 let a=document.createElement("a")
 a.href=URL.createObjectURL(new Blob([txt]))
@@ -248,7 +264,12 @@ a.click()
 
 // ================= RELATÓRIO =================
 function relatorio(){
-alert("Relatório gerado")
+let e = getEmpresa(); if(!e) return
+
+let r = e.receber.reduce((a,b)=>a+b,0)
+let d = e.pagar.reduce((a,b)=>a+b,0)
+
+alert(`Relatório\nReceita:${r}\nDespesa:${d}\nLucro:${r-d}`)
 }
 
 // ================= ALERTAS =================
@@ -258,313 +279,7 @@ alert("DAS / DCTF / SPED pendentes")
 
 // INICIO
 abrir("empresas")
-// ======================================
-// 🔥 UPGRADE PROFISSIONAL ERP (SEM QUEBRAR)
-// ======================================
 
-// ===== EMPRESA ATIVA VISUAL =====
-function empresaAtualInfo(){
-let e = getEmpresa()
-if(!e) return
-conteudo.innerHTML += `<hr><b>Empresa ativa:</b> ${e.nome}`
-}
-
-// ===== DASHBOARD PROFISSIONAL =====
-function dashboard(){
-
-let totalEmp = db.empresas.length
-let receita = 0
-let despesa = 0
-
-db.empresas.forEach(e=>{
-receita += (e.receber||[]).reduce((a,b)=>a+b,0)
-despesa += (e.pagar||[]).reduce((a,b)=>a+b,0)
-})
-
-conteudo.innerHTML=`
-<h2>Dashboard</h2>
-
-<div class="card">Empresas: ${totalEmp}</div>
-<div class="card">Receita: ${receita}</div>
-<div class="card">Despesa: ${despesa}</div>
-<div class="card">Lucro: ${receita-despesa}</div>
-`
-}
-
-// ===== BALANÇO MELHOR =====
-function balanco(){
-let e = getEmpresa(); if(!e) return
-
-let ativo = (e.receber||[]).reduce((a,b)=>a+b,0)
-let passivo = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-alert(
-"Balanço\n\n"+
-"Ativo: "+ativo+"\n"+
-"Passivo: "+passivo+"\n"+
-"Resultado: "+(ativo-passivo)
-)
-}
-
-// ===== DRE PROFISSIONAL =====
-function dre(){
-let e = getEmpresa(); if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-let texto =
-"DRE\n\n"+
-"Receita: "+r+"\n"+
-"Despesa: "+d+"\n"+
-"Lucro: "+(r-d)
-
-alert(texto)
-}
-
-// ===== ALERTAS INTELIGENTES =====
-function alertas(){
-
-let lista=""
-
-db.empresas.forEach(e=>{
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-if(fat>0){
-lista+=`🔴 ${e.nome} - verificar DAS / DCTF\n`
-}else{
-lista+=`🟢 ${e.nome} OK\n`
-}
-
-})
-
-alert(lista)
-}
-
-// ===== SPED MELHOR =====
-function gerarSPED(){
-
-let txt="|0000|SPED CONTABIL|\n"
-
-db.empresas.forEach(e=>{
-txt+=`|0100|${e.nome}|${e.cnpj}|${e.regime}|\n`
-
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-txt+=`|I050|FATURAMENTO|${fat}|\n`
-})
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([txt]))
-a.download="SPED_COMPLETO.txt"
-a.click()
-}
-
-// ===== RELATÓRIO PROFISSIONAL =====
-function relatorio(){
-
-let e = getEmpresa(); if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-let texto =
-"RELATÓRIO CONTÁBIL\n\n"+
-"Empresa: "+e.nome+"\n"+
-"CNPJ: "+e.cnpj+"\n\n"+
-"Receita: "+r+"\n"+
-"Despesa: "+d+"\n"+
-"Lucro: "+(r-d)
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([texto]))
-a.download="RELATORIO.txt"
-a.click()
-}
-
-// ===== FOLHA MELHOR =====
-function folha(){
-
-let sal=+salario.value||0
-
-let inss=sal*0.08
-let fgts=sal*0.08
-let liquido=sal-inss
-
-alert(
-"Folha de Pagamento\n\n"+
-"Salário: "+sal+"\n"+
-"INSS: "+inss+"\n"+
-"FGTS: "+fgts+"\n"+
-"Líquido: "+liquido
-)
-}
-
-// ===== GARANTE ESTRUTURA =====
-function ajustarSistema(){
-
-db.empresas.forEach(e=>{
-if(!e.receber) e.receber=[]
-if(!e.pagar) e.pagar=[]
-})
-
-salvar()
-}
-
-ajustarSistema()
-  // =====================================
-// 🔥 CORREÇÃO TOTAL (NÃO APAGA NADA)
-// =====================================
-
-// GARANTE EMPRESA VÁLIDA
-function getEmpresaSafe(){
-let i = parseInt(localStorage.getItem("empresa"))
-
-if(isNaN(i) || !db.empresas[i]){
-alert("Selecione uma empresa válida")
-return null
-}
-
-return db.empresas[i]
-}
-
-// FORÇA SELEÇÃO VISUAL
-window.selecionar = function(i){
-
-i = parseInt(i)
-
-if(isNaN(i)) return
-
-localStorage.setItem("empresa", i)
-
-let e = db.empresas[i]
-
-if(e){
-alert("Empresa ativa: " + e.nome)
-}else{
-alert("Erro ao selecionar")
-}
-}
-
-// REESCREVE FUNÇÕES CRÍTICAS (SEM QUEBRAR)
-
-// FINANCEIRO
-window.receber = function(){
-let e = getEmpresaSafe()
-if(!e) return
-
-let v = parseFloat(document.getElementById("rec")?.value) || 0
-
-e.receber.push(v)
-salvar()
-
-alert("Receita lançada")
-}
-
-window.pagar = function(){
-let e = getEmpresaSafe()
-if(!e) return
-
-let v = parseFloat(document.getElementById("pag")?.value) || 0
-
-e.pagar.push(v)
-salvar()
-
-alert("Despesa lançada")
-}
-
-// CONTÁBIL
-window.dre = function(){
-let e = getEmpresaSafe()
-if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-alert(`DRE\n\nReceita: ${r}\nDespesa: ${d}\nLucro: ${r-d}`)
-}
-
-// FISCAL
-window.impostos = function(){
-let e = getEmpresaSafe()
-if(!e) return
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-
-let imp = 0
-
-if(e.regime=="SIMPLES") imp=fat*0.06
-else if(e.regime=="PRESUMIDO") imp=fat*0.1333
-else imp=fat*0.15
-
-alert("Imposto: " + imp)
-}
-
-// SPED FUNCIONAL
-window.gerarSPED = function(){
-
-let e = getEmpresaSafe()
-if(!e) return
-
-let txt = `|0000|SPED|\n|0100|${e.nome}|${e.cnpj}|${e.regime}|\n`
-
-let a = document.createElement("a")
-a.href = URL.createObjectURL(new Blob([txt]))
-a.download = "SPED.txt"
-a.click()
-}
-
-// RELATÓRIO REAL
-window.relatorio = function(){
-
-let e = getEmpresaSafe()
-if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-let texto = `
-RELATÓRIO
-
-Empresa: ${e.nome}
-CNPJ: ${e.cnpj}
-
-Receita: ${r}
-Despesa: ${d}
-Lucro: ${r-d}
-`
-
-let a = document.createElement("a")
-a.href = URL.createObjectURL(new Blob([texto]))
-a.download = "relatorio.txt"
-a.click()
-}
-
-// ALERTAS FUNCIONANDO
-window.alertas = function(){
-
-let lista=""
-
-db.empresas.forEach(e=>{
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-if(fat>0){
-lista+=`🔴 ${e.nome} - impostos pendentes\n`
-}else{
-lista+=`🟢 ${e.nome} OK\n`
-}
-})
-
-alert(lista)
-}
-
-// GARANTE ESTRUTURA
-db.empresas.forEach(e=>{
-if(!e.receber) e.receber=[]
-if(!e.pagar) e.pagar=[]
-})
-
-salvar()
 </script>
 
 </body>

@@ -15,37 +15,38 @@ body{margin:0;font-family:Arial;display:flex}
 
 <body>
 
+<!-- 🔥 MENU (FALTAVA ISSO) -->
 <div id="menu">
 <h2>ERP PRO</h2>
 
 <button onclick="abrir('empresas')">Empresas</button>
-<button onclick="abrir('financeiro')">Financeiro</button>
-<button onclick="abrir('contabil')">Contábil</button>
-<button onclick="abrir('fiscal')">Fiscal</button>
-<button onclick="abrir('sped')">SPED</button>
-<button onclick="abrir('alertas')">Alertas</button>
+ <button onclick="dashboard()">Dashboard</button>
+<button onclick="abrirFinanceiro()">Financeiro</button>
+<button onclick="abrirContabil()">Contábil</button>
+<button onclick="abrirFiscal()">Fiscal</button>
+<button onclick="abrirRH()">RH</button>
+<button onclick="abrirAlertas()">Alertas</button>
 
 <button onclick="logout()">Sair</button>
 </div>
 
+<!-- 🔥 TELA -->
 <div id="conteudo"></div>
 
 <script type="module">
 
-// 🔥 FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 👉 COLE SUA CONFIG AQUI
 const firebaseConfig = {
- apiKey: "AIzaSyClzgqmuiz6I8j7arw1Eqrd5uWpnPiABpI",
+ apiKey: "SUA_API_KEY",
  authDomain: "erp-daythi.firebaseapp.com",
  projectId: "erp-daythi",
  storageBucket: "erp-daythi.firebasestorage.app",
  messagingSenderId: "18144529318",
  appId: "1:18144529318:web:7304d2af2d5bf850d85d67"
- };
+};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -53,12 +54,22 @@ const db = getFirestore(app);
 
 let usuario = null
 
-// ================= LOGIN =================
+// LOGIN AUTOMÁTICO
+onAuthStateChanged(auth, (user) => {
+if(user){
+usuario = user.uid
+abrir("empresas")
+}else{
+loginTela()
+}
+})
+
+// LOGIN
 window.loginTela = function(){
 conteudo.innerHTML=`
 <h2>Login</h2>
-<input id="email" placeholder="Email"><br>
-<input id="senha" placeholder="Senha" type="password"><br>
+<input id="email" placeholder="Email"><br><br>
+<input id="senha" type="password" placeholder="Senha"><br><br>
 
 <button onclick="login()">Entrar</button>
 <button onclick="registrar()">Criar Conta</button>
@@ -69,34 +80,32 @@ window.login = async function(){
 let email = document.getElementById("email").value
 let senha = document.getElementById("senha").value
 
-let user = await signInWithEmailAndPassword(auth, email, senha)
-usuario = user.user.uid
-
-abrir("empresas")
+try{
+await signInWithEmailAndPassword(auth, email, senha)
+}catch(e){
+alert(e.message)
+}
 }
 
 window.registrar = async function(){
 let email = document.getElementById("email").value
 let senha = document.getElementById("senha").value
 
-let user = await createUserWithEmailAndPassword(auth, email, senha)
-usuario = user.user.uid
-
-abrir("empresas")
+try{
+await createUserWithEmailAndPassword(auth, email, senha)
+}catch(e){
+alert(e.message)
+}
 }
 
 window.logout = function(){
 signOut(auth)
-location.reload()
 }
 
-// ================= EMPRESAS =================
+// EMPRESAS
 window.abrir = async function(t){
 
-if(!usuario){
-loginTela()
-return
-}
+if(!usuario){ loginTela(); return }
 
 if(t=="empresas"){
 
@@ -117,6 +126,12 @@ conteudo.innerHTML=`
 <div id="lista"></div>
 `
 
+carregarEmpresas()
+}
+}
+
+async function carregarEmpresas(){
+
 let q = query(collection(db,"empresas"), where("user","==",usuario))
 let dados = await getDocs(q)
 
@@ -127,70 +142,302 @@ let e = doc.data()
 
 html+=`
 <div class="card">
-${e.nome} (${e.regime})
+<b>${e.nome}</b><br>
+${e.cnpj}<br>
+${e.regime}
 </div>
 `
 })
 
-lista.innerHTML = html
-}
+document.getElementById("lista").innerHTML = html
 }
 
-// ================= SALVAR EMPRESA =================
 window.salvarEmpresa = async function(){
 
 let emp = {
-nome: document.getElementById("nome").value,
-cnpj: document.getElementById("cnpj").value,
-regime: document.getElementById("regime").value,
+nome: nome.value,
+cnpj: cnpj.value,
+regime: regime.value,
 user: usuario
 }
 
 await addDoc(collection(db,"empresas"), emp)
 
-alert("Salvo")
-abrir("empresas")
+alert("Empresa salva")
+carregarEmpresas()
 }
 
-// ================= INICIO =================
-loginTela()
-// ================= LOGIN =================
+// FINANCEIRO
+window.abrirFinanceiro = function(){
 
-function telaLogin(){
-conteudo.innerHTML = `
-<h2>Login</h2>
+conteudo.innerHTML=`
+<h2>Financeiro</h2>
 
-<input id="email" placeholder="Email"><br><br>
-<input id="senha" type="password" placeholder="Senha"><br><br>
+<input id="valor">
+<select id="tipo">
+<option>receita</option>
+<option>despesa</option>
+</select>
 
-<button onclick="registrar()">Criar Conta</button>
-<button onclick="logar()">Entrar</button>
+<button onclick="lancar()">Lançar</button>
+<div id="fluxo"></div>
+`
+
+carregarFluxo()
+}
+
+async function lancar(){
+await addDoc(collection(db,"financeiro"),{
+valor: parseFloat(valor.value),
+tipo: tipo.value,
+user: usuario
+})
+carregarFluxo()
+}
+
+async function carregarFluxo(){
+
+let q=query(collection(db,"financeiro"), where("user","==",usuario))
+let dados=await getDocs(q)
+
+let r=0,d=0
+
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
+
+fluxo.innerHTML=`Receita:${r}<br>Despesa:${d}<br>Lucro:${r-d}`
+}
+
+// CONTÁBIL
+window.abrirContabil = async function(){
+
+let q=query(collection(db,"financeiro"), where("user","==",usuario))
+let dados=await getDocs(q)
+
+let r=0,d=0
+
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
+
+conteudo.innerHTML=`
+<h2>DRE</h2>
+Receita:${r}<br>
+Despesa:${d}<br>
+Lucro:${r-d}
 `
 }
 
-async function registrar(){
-let email = document.getElementById("email").value
-let senha = document.getElementById("senha").value
+// FISCAL
+window.abrirFiscal = async function(){
 
-try{
-await createUserWithEmailAndPassword(auth, email, senha)
-alert("Conta criada")
-}catch(e){
-alert(e.message)
-}
+let q=query(collection(db,"financeiro"), where("user","==",usuario))
+let dados=await getDocs(q)
+
+let fat=0
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") fat+=e.valor
+})
+
+conteudo.innerHTML=`
+<h2>Fiscal</h2>
+DAS:${fat*0.06}
+`
 }
 
-async function logar(){
-let email = document.getElementById("email").value
-let senha = document.getElementById("senha").value
+// RH
+window.abrirRH = function(){
 
-try{
-await signInWithEmailAndPassword(auth, email, senha)
-alert("Logado com sucesso")
-telalogin()
-}catch(e){
-alert(e.message)
+conteudo.innerHTML=`
+<h2>Folha</h2>
+<input id="salario">
+<button onclick="calc()">Calcular</button>
+<div id="res"></div>
+`
 }
+
+function calc(){
+let s=parseFloat(salario.value)
+res.innerHTML=`INSS:${s*0.08}`
+}
+
+// ALERTAS
+window.abrirAlertas = function(){
+conteudo.innerHTML="DAS / DCTF / SPED pendentes"
+}
+window.dashboard = async function(){
+
+let q = query(collection(db,"empresas"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let total = dados.size
+
+let qf = query(collection(db,"financeiro"), where("user","==",usuario))
+let fin = await getDocs(qf)
+
+let receita=0, despesa=0
+
+fin.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") receita+=e.valor
+else despesa+=e.valor
+})
+
+conteudo.innerHTML = `
+<h2>Dashboard</h2>
+
+<div class="card">Empresas: ${total}</div>
+<div class="card">Receita: ${receita}</div>
+<div class="card">Despesa: ${despesa}</div>
+<div class="card">Lucro: ${receita-despesa}</div>
+`
+}
+window.calcularImpostos = async function(){
+
+let q = query(collection(db,"financeiro"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let fat=0
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") fat+=e.valor
+})
+
+let simples = fat*0.06
+let presumido = fat*0.1333
+let real = fat*0.15
+
+conteudo.innerHTML = `
+<h2>Impostos</h2>
+
+Faturamento: ${fat}<br><br>
+
+Simples: ${simples}<br>
+Presumido: ${presumido}<br>
+Real: ${real}
+`
+}
+window.relatorio = async function(){
+
+let q = query(collection(db,"financeiro"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let r=0,d=0
+
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
+
+let texto = `
+RELATÓRIO EMPRESARIAL
+
+Receita: ${r}
+Despesa: ${d}
+Lucro: ${r-d}
+
+Obrigações:
+- DAS
+- DCTF
+- SPED
+- ECF
+`
+
+let blob = new Blob([texto])
+let a = document.createElement("a")
+a.href = URL.createObjectURL(blob)
+a.download = "relatorio.txt"
+a.click()
+}
+window.balancete = async function(){
+
+let q = query(collection(db,"financeiro"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let r=0,d=0
+
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
+
+conteudo.innerHTML = `
+<h2>Balancete</h2>
+
+Débitos: ${d}<br>
+Créditos: ${r}<br>
+Saldo: ${r-d}
+`
+}
+
+window.balanco = async function(){
+
+let q = query(collection(db,"financeiro"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let r=0,d=0
+
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
+
+conteudo.innerHTML = `
+<h2>Balanço</h2>
+
+Ativo: ${r}<br>
+Passivo: ${d}<br>
+Patrimônio: ${r-d}
+`
+}
+window.sped = async function(){
+
+let q = query(collection(db,"empresas"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let txt = "|0000|SPED|\n"
+
+dados.forEach(doc=>{
+let e=doc.data()
+txt += `|0100|${e.nome}|${e.cnpj}|\n`
+})
+
+txt += "|0990|FIM|"
+
+let a=document.createElement("a")
+a.href=URL.createObjectURL(new Blob([txt]))
+a.download="sped.txt"
+a.click()
+}
+window.alertasInteligentes = async function(){
+
+let q = query(collection(db,"financeiro"), where("user","==",usuario))
+let dados = await getDocs(q)
+
+let fat=0
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") fat+=e.valor
+})
+
+let status = fat>0 ? "🔴 Pendente" : "🟢 OK"
+
+conteudo.innerHTML = `
+<h2>Alertas</h2>
+
+DAS: ${status}<br>
+DCTF: ${status}<br>
+SPED: ${status}
+`
 }
 </script>
 

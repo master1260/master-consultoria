@@ -2,12 +2,12 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>ERP FUNCIONAL</title>
+<title>ERP MASTER PRO</title>
 
 <style>
 body{margin:0;font-family:Arial;display:flex}
-#menu{width:240px;background:#0b2c5a;color:#fff;padding:10px;height:100vh}
-#menu button{width:100%;margin:5px 0;padding:10px;background:#1e88e5;color:#fff;border:none}
+#menu{width:250px;background:#0b2c5a;color:#fff;padding:10px;height:100vh}
+#menu button{width:100%;margin:5px 0;padding:10px;border:none;background:#1e88e5;color:#fff;border-radius:5px}
 #conteudo{flex:1;padding:20px}
 .card{border:1px solid #ccc;padding:10px;margin:5px;border-radius:6px}
 </style>
@@ -16,53 +16,87 @@ body{margin:0;font-family:Arial;display:flex}
 <body>
 
 <div id="menu">
-<h3>ERP</h3>
+<h2>ERP PRO</h2>
+
 <button onclick="abrir('empresas')">Empresas</button>
 <button onclick="abrir('financeiro')">Financeiro</button>
 <button onclick="abrir('contabil')">Contábil</button>
 <button onclick="abrir('fiscal')">Fiscal</button>
-<button onclick="abrir('rh')">RH</button>
 <button onclick="abrir('sped')">SPED</button>
-<button onclick="abrir('relatorio')">Relatório</button>
 <button onclick="abrir('alertas')">Alertas</button>
+
+<button onclick="logout()">Sair</button>
 </div>
 
 <div id="conteudo"></div>
 
-<script>
+<script type="module">
 
-// ===== BANCO =====
-const KEY="ERP_FUNCIONAL_V1"
-let db=JSON.parse(localStorage.getItem(KEY))||{empresas:[]}
+// 🔥 FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-function salvar(){
-localStorage.setItem(KEY,JSON.stringify(db))
+// 👉 COLE SUA CONFIG AQUI
+const firebaseConfig = {
+  apiKey: "COLE_AQUI",
+  authDomain: "COLE_AQUI",
+  projectId: "COLE_AQUI"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let usuario = null
+
+// ================= LOGIN =================
+window.loginTela = function(){
+conteudo.innerHTML=`
+<h2>Login</h2>
+<input id="email" placeholder="Email"><br>
+<input id="senha" placeholder="Senha" type="password"><br>
+
+<button onclick="login()">Entrar</button>
+<button onclick="registrar()">Criar Conta</button>
+`
 }
 
-// ===== EMPRESA ATIVA =====
-let empresaIndex=null
+window.login = async function(){
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
 
-function selecionar(i){
-empresaIndex=i
-localStorage.setItem("empresa",i)
-alert("Empresa ativa: "+db.empresas[i].nome)
-}
+let user = await signInWithEmailAndPassword(auth, email, senha)
+usuario = user.user.uid
 
-function getEmpresa(){
-if(empresaIndex===null){
-empresaIndex=parseInt(localStorage.getItem("empresa"))
-}
-if(isNaN(empresaIndex)||!db.empresas[empresaIndex]){
-alert("Selecione uma empresa")
-return null
-}
-return db.empresas[empresaIndex]
+abrir("empresas")
 }
 
-// ===== TELAS =====
-function abrir(t){
+window.registrar = async function(){
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
+
+let user = await createUserWithEmailAndPassword(auth, email, senha)
+usuario = user.user.uid
+
+abrir("empresas")
+}
+
+window.logout = function(){
+signOut(auth)
+location.reload()
+}
+
+// ================= EMPRESAS =================
+window.abrir = async function(t){
+
+if(!usuario){
+loginTela()
+return
+}
 
 if(t=="empresas"){
+
 conteudo.innerHTML=`
 <h2>Empresas</h2>
 
@@ -75,490 +109,49 @@ conteudo.innerHTML=`
 <option>REAL</option>
 </select>
 
-<button onclick="addEmpresa()">Salvar</button>
+<button onclick="salvarEmpresa()">Salvar</button>
 
 <div id="lista"></div>
 `
-render()
-}
 
-if(t=="financeiro"){
-conteudo.innerHTML=`
-<h2>Financeiro</h2>
+let q = query(collection(db,"empresas"), where("user","==",usuario))
+let dados = await getDocs(q)
 
-<input id="rec" placeholder="Receita">
-<button onclick="receber()">Adicionar</button>
-
-<input id="pag" placeholder="Despesa">
-<button onclick="pagar()">Adicionar</button>
-
-<button onclick="fluxo()">Fluxo</button>
-`
-}
-
-if(t=="contabil"){
-conteudo.innerHTML=`
-<h2>Contábil</h2>
-<button onclick="dre()">DRE</button>
-<button onclick="balanco()">Balanço</button>
-`
-}
-
-if(t=="fiscal"){
-conteudo.innerHTML=`
-<h2>Fiscal</h2>
-<button onclick="impostos()">Calcular</button>
-<button onclick="das()">DAS</button>
-`
-}
-
-if(t=="rh"){
-conteudo.innerHTML=`
-<h2>RH</h2>
-<input id="salario">
-<button onclick="folha()">Calcular</button>
-`
-}
-
-if(t=="sped"){
-conteudo.innerHTML=`
-<h2>SPED</h2>
-<button onclick="sped()">Gerar</button>
-`
-}
-
-if(t=="relatorio"){
-conteudo.innerHTML=`
-<h2>Relatório</h2>
-<button onclick="relatorio()">Gerar</button>
-`
-}
-
-if(t=="alertas"){
-conteudo.innerHTML=`
-<h2>Alertas</h2>
-<button onclick="alertas()">Ver</button>
-`
-}
-
-}
-
-// ===== EMPRESAS =====
-function addEmpresa(){
-let emp={
-nome:nome.value,
-cnpj:cnpj.value,
-regime:regime.value,
-receber:[],
-pagar:[]
-}
-db.empresas.push(emp)
-salvar()
-render()
-}
-
-function render(){
 let html=""
-db.empresas.forEach((e,i)=>{
+
+dados.forEach(doc=>{
+let e = doc.data()
+
 html+=`
 <div class="card">
-<b>${e.nome}</b> (${e.regime})<br>
-<button onclick="selecionar(${i})">Selecionar</button>
+${e.nome} (${e.regime})
 </div>
 `
 })
-lista.innerHTML=html
+
+lista.innerHTML = html
+}
 }
 
-// ===== FINANCEIRO =====
-function receber(){
-let e=getEmpresa(); if(!e)return
-e.receber.push(parseFloat(rec.value)||0)
-salvar()
-alert("Receita ok")
+// ================= SALVAR EMPRESA =================
+window.salvarEmpresa = async function(){
+
+let emp = {
+nome: document.getElementById("nome").value,
+cnpj: document.getElementById("cnpj").value,
+regime: document.getElementById("regime").value,
+user: usuario
 }
 
-function pagar(){
-let e=getEmpresa(); if(!e)return
-e.pagar.push(parseFloat(pag.value)||0)
-salvar()
-alert("Despesa ok")
-}
+await addDoc(collection(db,"empresas"), emp)
 
-function fluxo(){
-let e=getEmpresa(); if(!e)return
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
-alert("Saldo: "+(r-d))
-}
-
-// ===== CONTÁBIL =====
-function dre(){
-let e=getEmpresa(); if(!e)return
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
-alert("Lucro: "+(r-d))
-}
-
-function balanco(){
-let e=getEmpresa(); if(!e)return
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
-alert("Ativo:"+r+"\nPassivo:"+d)
-}
-
-// ===== FISCAL =====
-function impostos(){
-let e=getEmpresa(); if(!e)return
-let fat=e.receber.reduce((a,b)=>a+b,0)
-
-let imp=0
-if(e.regime=="SIMPLES")imp=fat*0.06
-if(e.regime=="PRESUMIDO")imp=fat*0.1333
-if(e.regime=="REAL")imp=fat*0.15
-
-alert("Imposto: "+imp)
-}
-
-function das(){
-let e=getEmpresa(); if(!e)return
-let fat=e.receber.reduce((a,b)=>a+b,0)
-alert("DAS: "+(fat*0.06))
-}
-
-// ===== RH =====
-function folha(){
-let sal=parseFloat(salario.value)||0
-alert("INSS:"+(sal*0.08)+" FGTS:"+(sal*0.08))
-}
-
-// ===== SPED =====
-function sped(){
-let e=getEmpresa(); if(!e)return
-
-let txt=`|0000|SPED|\n|0100|${e.nome}|${e.cnpj}|${e.regime}|\n|0990|FIM|`
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([txt]))
-a.download="sped.txt"
-a.click()
-}
-
-// ===== RELATÓRIO =====
-function relatorio(){
-let e=getEmpresa(); if(!e)return
-
-let r=e.receber.reduce((a,b)=>a+b,0)
-let d=e.pagar.reduce((a,b)=>a+b,0)
-
-alert("Receita:"+r+"\nDespesa:"+d+"\nLucro:"+(r-d))
-}
-
-// ===== ALERTAS =====
-function alertas(){
-alert("DAS / DCTF / SPED / ECF pendentes")
-}
-
-// ===== INICIO =====
+alert("Salvo")
 abrir("empresas")
-  // =============================
-// 🏢 PAINEL ESCRITÓRIO
-// =============================
-function painelEscritorio(){
-
-let html="<h2>Painel do Escritório</h2>"
-
-db.empresas.forEach((e,i)=>{
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-let status = fat > 0 ? "🔴 PENDENTE" : "🟢 OK"
-let das = fat * 0.06
-
-html += `
-<div class="card">
-<b>${e.nome}</b><br>
-Faturamento: ${fat}<br>
-Status: ${status}<br>
-DAS: ${das}<br>
-<button onclick="selecionar(${i})">Abrir</button>
-</div>
-`
-})
-
-conteudo.innerHTML = html
 }
 
-// =============================
-// 📊 DASHBOARD
-// =============================
-function dashboardGeral(){
+// ================= INICIO =================
+loginTela()
 
-let total = db.empresas.length
-let receita = 0
-
-db.empresas.forEach(e=>{
-receita += (e.receber||[]).reduce((a,b)=>a+b,0)
-})
-
-conteudo.innerHTML = `
-<h2>Dashboard</h2>
-<div class="card">Empresas: ${total}</div>
-<div class="card">Receita: ${receita}</div>
-`
-}
-
-// =============================
-// 🚨 ALERTAS
-// =============================
-function alertasInteligentes(){
-
-let lista="ALERTAS:\n\n"
-
-db.empresas.forEach(e=>{
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-if(fat>0){
-lista+=`🔴 ${e.nome} pendente\n`
-}else{
-lista+=`🟢 ${e.nome} ok\n`
-}
-})
-
-alert(lista)
-}
-
-// =============================
-// 📄 RELATÓRIO
-// =============================
-function relatorioProfissional(){
-
-let e = getEmpresa()
-if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-alert(
-"RELATÓRIO\n\n"+
-"Empresa: "+e.nome+"\n"+
-"Receita: "+r+"\n"+
-"Despesa: "+d+"\n"+
-"Lucro: "+(r-d)
-)
-}
-// =============================
-// 🔥 FISCAL PROFISSIONAL
-// =============================
-
-function calcularFiscalCompleto(){
-
-let e = getEmpresa()
-if(!e) return
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-
-let simples = fat * 0.06
-let presumido_irpj = fat * 0.048
-let presumido_csll = fat * 0.0288
-let pis = fat * 0.0065
-let cofins = fat * 0.03
-
-alert(
-"=== FISCAL ===\n\n"+
-"Faturamento: "+fat+"\n\n"+
-
-"SIMPLES:\nDAS: "+simples+"\n\n"+
-
-"PRESUMIDO:\nIRPJ: "+presumido_irpj+
-"\nCSLL: "+presumido_csll+
-"\nPIS: "+pis+
-"\nCOFINS: "+cofins
-)
-}
-
-// =============================
-// 📅 DAS COM VENCIMENTO
-// =============================
-function gerarDASCompleto(){
-
-let e = getEmpresa()
-if(!e) return
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-let das = fat * 0.06
-
-let hoje = new Date()
-let venc = new Date(hoje.getFullYear(), hoje.getMonth(), 20)
-
-alert(
-"DAS\n\n"+
-"Valor: "+das+"\n"+
-"Vencimento: "+venc.toLocaleDateString()
-)
-}
-
-// =============================
-// 📁 SPED MAIS COMPLETO
-// =============================
-function gerarSPEDCompleto(){
-
-let e = getEmpresa()
-if(!e) return
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-
-let txt =
-`|0000|LECD|${e.nome}|
-|0100|${e.cnpj}|
-|I050|RECEITA|${fat}|
-|I050|DESPESA|0|
-|I200|RESULTADO|${fat}|
-|0990|FIM|`
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([txt]))
-a.download="SPED_COMPLETO.txt"
-a.click()
-}
-
-// =============================
-// 🚨 ALERTAS REAIS
-// =============================
-function painelObrigacoes(){
-
-let lista="OBRIGAÇÕES:\n\n"
-
-db.empresas.forEach(e=>{
-lista+=`
-${e.nome}
-- DAS dia 20
-- DCTF mensal
-- SPED contábil
-- ECF anual
-
-`
-})
-
-alert(lista)
-}
-// ======================================
-// 🏢 PAINEL ESCRITÓRIO (NÍVEL DOMÍNIO)
-// ======================================
-
-function painelEscritorio(){
-
-let html="<h2>Painel do Escritório</h2>"
-
-db.empresas.forEach((e,i)=>{
-
-let fat = (e.receber||[]).reduce((a,b)=>a+b,0)
-
-// STATUS
-let status = fat > 0 ? "🔴 PENDENTE" : "🟢 OK"
-
-// DAS
-let das = fat * 0.06
-
-// VENCIMENTO
-let hoje = new Date()
-let venc = new Date(hoje.getFullYear(), hoje.getMonth(), 20)
-
-html += `
-<div style="border:1px solid #ccc;padding:10px;margin:5px">
-
-<b>${e.nome}</b><br>
-Regime: ${e.regime}<br>
-Faturamento: R$ ${fat}<br>
-
-<b>Status:</b> ${status}<br><br>
-
-DAS: R$ ${das}<br>
-Vencimento: ${venc.toLocaleDateString()}<br><br>
-
-<button onclick="selecionar(${i})">Abrir</button>
-
-</div>
-`
-})
-
-conteudo.innerHTML = html
-}
-
-// ======================================
-// 📊 DASHBOARD GERAL
-// ======================================
-function dashboardGeral(){
-
-let total = db.empresas.length
-let receita = 0
-
-db.empresas.forEach(e=>{
-receita += (e.receber||[]).reduce((a,b)=>a+b,0)
-})
-
-conteudo.innerHTML = `
-<h2>Dashboard</h2>
-
-<div class="card">Empresas: ${total}</div>
-<div class="card">Receita Total: ${receita}</div>
-`
-}
-
-// ======================================
-// 🚨 ALERTAS INTELIGENTES
-// ======================================
-function alertasInteligentes(){
-
-let lista="🚨 ALERTAS\n\n"
-
-db.empresas.forEach(e=>{
-
-let fat=(e.receber||[]).reduce((a,b)=>a+b,0)
-
-if(fat > 0){
-lista+=`🔴 ${e.nome} - DAS / DCTF pendente\n`
-}else{
-lista+=`🟢 ${e.nome} OK\n`
-}
-
-})
-
-alert(lista)
-}
-
-// ======================================
-// 📄 RELATÓRIO PROFISSIONAL
-// ======================================
-function relatorioProfissional(){
-
-let e = getEmpresa()
-if(!e) return
-
-let r = (e.receber||[]).reduce((a,b)=>a+b,0)
-let d = (e.pagar||[]).reduce((a,b)=>a+b,0)
-
-let texto =
-`RELATÓRIO CONTÁBIL
-
-Empresa: ${e.nome}
-CNPJ: ${e.cnpj}
-
-Receita: ${r}
-Despesa: ${d}
-Lucro: ${r-d}
-
-Obrigações:
-- DAS
-- DCTF
-- SPED
-- ECF
-`
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([texto]))
-a.download="relatorio.txt"
-a.click()
-}
 </script>
 
 </body>

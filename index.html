@@ -39,10 +39,13 @@ import { getFirestore, collection, addDoc, getDocs, query, where } from "https:/
 
 // 👉 COLE SUA CONFIG AQUI
 const firebaseConfig = {
-  apiKey: "COLE_AQUI",
-  authDomain: "COLE_AQUI",
-  projectId: "COLE_AQUI"
-};
+ apiKey: "AIzaSyClzgqmuiz6I8j7arw1Eqrd5uWpnPiABpI",
+ authDomain: "erp-daythi.firebaseapp.com",
+ projectId: "erp-daythi",
+ storageBucket: "erp-daythi.firebasestorage.app",
+ messagingSenderId: "18144529318",
+ appId: "1:18144529318:web:7304d2af2d5bf850d85d67"
+ };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -151,7 +154,44 @@ abrir("empresas")
 
 // ================= INICIO =================
 loginTela()
+// ================= LOGIN =================
 
+function telaLogin(){
+conteudo.innerHTML = `
+<h2>Login</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="senha" type="password" placeholder="Senha"><br><br>
+
+<button onclick="registrar()">Criar Conta</button>
+<button onclick="logar()">Entrar</button>
+`
+}
+
+async function registrar(){
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
+
+try{
+await createUserWithEmailAndPassword(auth, email, senha)
+alert("Conta criada")
+}catch(e){
+alert(e.message)
+}
+}
+
+async function logar(){
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
+
+try{
+await signInWithEmailAndPassword(auth, email, senha)
+alert("Logado com sucesso")
+telalogin()
+}catch(e){
+alert(e.message)
+}
+}
 </script>
 
 </body>

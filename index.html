@@ -10,11 +10,9 @@ body{margin:0;font-family:Arial;display:flex}
 #menu button{width:100%;margin:4px 0;padding:10px;border:none;background:#1e88e5;color:#fff;border-radius:5px}
 #conteudo{flex:1;padding:20px}
 .card{border:1px solid #ccc;padding:10px;margin:5px;border-radius:6px}
-input,select{padding:6px;margin:4px}
-textarea{width:100%;height:80px}
 </style>
-
 </head>
+
 <body>
 
 <div id="menu">
@@ -24,41 +22,83 @@ textarea{width:100%;height:80px}
 <button onclick="abrir('financeiro')">Financeiro</button>
 <button onclick="abrir('contabil')">Contábil</button>
 <button onclick="abrir('fiscal')">Fiscal</button>
+<button onclick="abrir('rh')">RH</button>
 <button onclick="abrir('dashboard')">Dashboard</button>
 
 </div>
 
 <div id="conteudo"></div>
 
-<script>
+<script type="module">
 
-// ================= BANCO =================
-let db = JSON.parse(localStorage.getItem("erp")) || {empresas:[]}
+// FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-function salvar(){
-localStorage.setItem("erp", JSON.stringify(db))
+const firebaseConfig = {
+apiKey: "AIzaSyClzg...",
+authDomain: "erp-daythi.firebaseapp.com",
+projectId: "erp-daythi"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const dbOnline = getFirestore(app);
+
+let db = {empresas:[]}
+
+// LOGIN
+window.login = async ()=>{
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
+await signInWithEmailAndPassword(auth,email,senha)
 }
 
-// ================= EMPRESA ATIVA =================
-function getEmpresa(){
-let i = parseInt(localStorage.getItem("empresa"))
-if(isNaN(i)) return null
-return db.empresas[i]
+window.registrar = async ()=>{
+let email = document.getElementById("email").value
+let senha = document.getElementById("senha").value
+await createUserWithEmailAndPassword(auth,email,senha)
 }
 
-// ================= ABRIR TELAS =================
-function abrir(t){
+// CONTROLE
+onAuthStateChanged(auth, async(user)=>{
+if(user){
+window.userId = user.uid
+await carregar()
+abrir("empresas")
+}else{
+conteudo.innerHTML = `
+<h2>Login</h2>
+<input id="email"><br>
+<input id="senha" type="password"><br>
+<button onclick="login()">Entrar</button>
+<button onclick="registrar()">Criar</button>
+`
+}
+})
+
+// BANCO
+async function salvarOnline(emp){
+await addDoc(collection(dbOnline,"empresas"),{...emp,user:userId})
+}
+
+async function carregar(){
+const q = query(collection(dbOnline,"empresas"),where("user","==",userId))
+const snap = await getDocs(q)
+db.empresas=[]
+snap.forEach(d=>db.empresas.push(d.data()))
+}
+
+// EMPRESAS
+window.abrir = function(t){
 
 if(t=="empresas"){
 conteudo.innerHTML=`
 <h2>Empresas</h2>
 
-<textarea id="listaImportar" placeholder="Nome;CNPJ;REGIME"></textarea>
-<button onclick="importar()">IMPORTAR</button>
-
-<h3>Nova Empresa</h3>
-<input id="nome" placeholder="Nome">
-<input id="cnpj" placeholder="CNPJ">
+<input id="nome">
+<input id="cnpj">
 <select id="regime">
 <option>SIMPLES</option>
 <option>PRESUMIDO</option>
@@ -66,174 +106,100 @@ conteudo.innerHTML=`
 </select>
 
 <button onclick="addEmpresa()">Salvar</button>
-
 <div id="lista"></div>
 `
-renderEmpresas()
+render()
 }
 
-// FINANCEIRO
 if(t=="financeiro"){
 conteudo.innerHTML=`
-<h2>Financeiro</h2>
-
-<input id="valorReceber" placeholder="Receber">
-<button onclick="receber()">Adicionar</button>
-
-<input id="valorPagar" placeholder="Pagar">
-<button onclick="pagar()">Adicionar</button>
-
+<input id="rec">
+<button onclick="receber()">Receber</button>
+<input id="pag">
+<button onclick="pagar()">Pagar</button>
 <button onclick="fluxo()">Fluxo</button>
 `
 }
 
-// CONTABIL
 if(t=="contabil"){
 conteudo.innerHTML=`
-<h2>Contábil</h2>
-<button onclick="balancete()">Balancete</button>
-<button onclick="balanco()">Balanço</button>
 <button onclick="dre()">DRE</button>
+<button onclick="balancete()">Balancete</button>
 `
 }
 
-// FISCAL
 if(t=="fiscal"){
 conteudo.innerHTML=`
-<h2>Fiscal</h2>
-<button onclick="das()">DAS</button>
-<button onclick="impostos()">Impostos</button>
+<button onclick="imposto()">Calcular Imposto</button>
 <button onclick="alertas()">Alertas</button>
 `
 }
 
-// DASHBOARD
-if(t=="dashboard"){
+if(t=="rh"){
 conteudo.innerHTML=`
-<h2>Dashboard</h2>
-Total empresas: ${db.empresas.length}
+<input id="sal">
+<button onclick="folha()">Folha</button>
 `
 }
 
 }
 
-// ================= EMPRESAS =================
-function addEmpresa(){
-
-let emp = {
-nome: document.getElementById("nome").value,
-cnpj: document.getElementById("cnpj").value,
-regime: document.getElementById("regime").value,
-receber: [],
-pagar: []
+// EMPRESA
+window.addEmpresa = async ()=>{
+let emp={
+nome:nome.value,
+cnpj:cnpj.value,
+regime:regime.value,
+receber:[],
+pagar:[]
 }
-
 db.empresas.push(emp)
-
-salvar()
-renderEmpresas()
+await salvarOnline(emp)
+render()
 }
 
-function importar(){
-
-let linhas = document.getElementById("listaImportar").value.split("\n")
-
-linhas.forEach(l=>{
-let [nome,cnpj,regime] = l.split(";")
-
-if(nome){
-db.empresas.push({
-nome,cnpj,regime,
-receber:[],pagar:[]
-})
-}
-})
-
-salvar()
-renderEmpresas()
-}
-
-function renderEmpresas(){
-
+function render(){
 let html=""
-
 db.empresas.forEach((e,i)=>{
-html+=`
-<div class="card">
-${e.nome} (${e.regime})
-<button onclick="selecionar(${i})">Selecionar</button>
-</div>
-`
+html+=`<div class="card">${e.nome}
+<button onclick="sel(${i})">Entrar</button></div>`
 })
-
-document.getElementById("lista").innerHTML = html
+lista.innerHTML=html
 }
 
-function selecionar(i){
-localStorage.setItem("empresa", i)
-alert("Empresa selecionada: "+db.empresas[i].nome)
+window.sel=(i)=>localStorage.setItem("emp",i)
+
+// GET EMPRESA
+function emp(){
+return db.empresas[localStorage.getItem("emp")]
 }
 
-// ================= FINANCEIRO =================
-function receber(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-e.receber.push(parseFloat(valorReceber.value)||0)
-salvar()
+// FINANCEIRO
+window.receber=()=>{emp().receber.push(+rec.value)}
+window.pagar=()=>{emp().pagar.push(+pag.value)}
+window.fluxo=()=>alert("Saldo:"+(
+emp().receber.reduce((a,b)=>a+b,0)-
+emp().pagar.reduce((a,b)=>a+b,0)
+))
+
+// CONTABIL
+window.dre=()=>alert("Lucro:"+(
+emp().receber.reduce((a,b)=>a+b,0)-
+emp().pagar.reduce((a,b)=>a+b,0)
+))
+
+window.balancete=window.dre
+
+// FISCAL
+window.imposto=()=>{
+let fat=emp().receber.reduce((a,b)=>a+b,0)
+alert("Imposto:"+(fat*0.06))
 }
 
-function pagar(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-e.pagar.push(parseFloat(valorPagar.value)||0)
-salvar()
-}
+window.alertas=()=>alert("DAS / DCTF / SPED pendente")
 
-function fluxo(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-let r = e.receber.reduce((a,b)=>a+b,0)
-let d = e.pagar.reduce((a,b)=>a+b,0)
-alert("Saldo: "+(r-d))
-}
-
-// ================= CONTABIL =================
-function balancete(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-let total = e.receber.reduce((a,b)=>a+b,0)-e.pagar.reduce((a,b)=>a+b,0)
-alert("Balancete: "+total)
-}
-
-function balanco(){
-alert("Balanço estruturado")
-}
-
-function dre(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-let lucro = e.receber.reduce((a,b)=>a+b,0)-e.pagar.reduce((a,b)=>a+b,0)
-alert("DRE: "+lucro)
-}
-
-// ================= FISCAL =================
-function das(){
-let e = getEmpresa()
-if(!e) return alert("Selecione empresa")
-let fat = e.receber.reduce((a,b)=>a+b,0)
-alert("DAS: "+(fat*0.06))
-}
-
-function impostos(){
-alert("IRPJ, CSLL, PIS, COFINS")
-}
-
-function alertas(){
-alert("DCTF, SPED, ECF pendentes")
-}
-
-// INICIO
-abrir("empresas")
+// RH
+window.folha=()=>alert("Folha calculada")
 
 </script>
 

@@ -96,7 +96,7 @@ box-shadow:0 2px 6px rgba(0,0,0,0.1);
 <button onclick="abrirDRE()">DRE</button>
 <button onclick="abrirAlertas()">Alertas</button>
 
-<button onclick="calcularImposto()">Imposto REAL</button> <!-- AQUI -->
+<button onclick="calcularImposto()">Imposto REAL</button> 
 
 <button onclick="logout()">Sair</button>
 </div>
@@ -431,7 +431,93 @@ CSLL: ${dados.csll}
 `)
 }
 window.alertasInteligentes = ()=>alert("Alertas")
+// ================= IMPOSTO AUTOMÁTICO (FUNCIONA NO CELULAR) =================
+window.calcularImposto = async function(){
 
+if(!empresaAtiva){
+   return alert("Selecione uma empresa primeiro")
+}
+
+// buscar dados financeiros da empresa
+let q = query(collection(db,"financeiro"), where("empresa","==",empresaAtiva))
+let dados = await getDocs(q)
+
+let faturamento = 0
+let despesas = 0
+
+dados.forEach(doc=>{
+   let e = doc.data()
+   if(e.tipo == "receita") faturamento += e.valor
+   else despesas += e.valor
+})
+
+// buscar regime da empresa
+let docEmp = await getDocs(query(collection(db,"empresas"), where("user","==",usuario)))
+
+let regime = "SIMPLES"
+
+docEmp.forEach(doc=>{
+   if(doc.id == empresaAtiva){
+      regime = doc.data().regime
+   }
+})
+
+// ================= CÁLCULO POR REGIME =================
+
+let das = 0
+let irpj = 0
+let csll = 0
+
+if(regime == "SIMPLES"){
+   das = faturamento * 0.06
+}
+
+if(regime == "PRESUMIDO"){
+   irpj = faturamento * 0.048
+   csll = faturamento * 0.0288
+}
+
+if(regime == "REAL"){
+   let lucro = faturamento - despesas
+   if(lucro < 0) lucro = 0
+
+   irpj = lucro * 0.15
+   csll = lucro * 0.09
+}
+
+// ================= EXIBIÇÃO =================
+
+conteudo.innerHTML = `
+<div class="grid">
+
+<div class="card">
+<h2>Resumo Fiscal</h2>
+Regime: ${regime}
+</div>
+
+<div class="card">
+Faturamento: R$ ${faturamento.toFixed(2)}
+</div>
+
+<div class="card">
+Despesas: R$ ${despesas.toFixed(2)}
+</div>
+
+<div class="card">
+DAS: R$ ${das.toFixed(2)}
+</div>
+
+<div class="card">
+IRPJ: R$ ${irpj.toFixed(2)}
+</div>
+
+<div class="card">
+CSLL: R$ ${csll.toFixed(2)}
+</div>
+
+</div>
+`
+}
 </script>
 
 </body>

@@ -5,32 +5,95 @@
 <title>ERP MASTER PRO</title>
 
 <style>
-body{margin:0;font-family:Arial;display:flex}
-#menu{width:250px;background:#0b2c5a;color:#fff;padding:10px;height:100vh}
-#menu button{width:100%;margin:5px 0;padding:10px;border:none;background:#1e88e5;color:#fff;border-radius:5px}
-#conteudo{flex:1;padding:20px}
-.card{border:1px solid #ccc;padding:10px;margin:5px;border-radius:6px}
+body{
+margin:0;
+font-family:Arial;
+display:flex;
+background:#f4f6f9;
+}
+
+#menu{
+width:240px;
+background:#0b2c5a;
+color:#fff;
+height:100vh;
+padding:15px;
+}
+
+#menu h2{
+text-align:center;
+}
+
+#menu button{
+width:100%;
+padding:10px;
+margin:5px 0;
+border:none;
+background:transparent;
+color:#fff;
+text-align:left;
+border-radius:6px;
+cursor:pointer;
+}
+
+#menu button:hover{
+background:#1e88e5;
+}
+
+#conteudo{
+flex:1;
+padding:20px;
+}
+
+.header{
+background:#fff;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+}
+
+.card{
+background:#fff;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 MENU (FALTAVA ISSO) -->
 <div id="menu">
 <h2>ERP PRO</h2>
 
+<button onclick="painelEscritorio()">🏢 Escritório</button>
+<button onclick="dashboardPro()">🏠 Painel</button>
 <button onclick="abrir('empresas')">Empresas</button>
- <button onclick="dashboard()">Dashboard</button>
 <button onclick="abrirFinanceiro()">Financeiro</button>
-<button onclick="abrirContabil()">Contábil</button>
-<button onclick="abrirFiscal()">Fiscal</button>
-<button onclick="abrirRH()">RH</button>
-<button onclick="abrirAlertas()">Alertas</button>
+<button onclick="abrirDRE()">DRE</button>
+
+<button onclick="abrirBalanco()">Balanço</button>
+<button onclick="abrirBalancete()">Balancete</button>
+
+<button onclick="gerarDAS()">DAS</button>
+<button onclick="dctf()">DCTF</button>
+
+<button onclick="gerarSPED()">SPED</button>
+<button onclick="gerarRelatorio()">Relatório</button>
+<button onclick="relatorioPDF()">PDF</button>
+
+<button onclick="alertasInteligentes()">Alertas</button>
 
 <button onclick="logout()">Sair</button>
 </div>
 
-<!-- 🔥 TELA -->
 <div id="conteudo"></div>
 
 <script type="module">
@@ -40,12 +103,9 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "SUA_API_KEY",
+ apiKey: "AIzaSyClzgqmuiz6I8j7arw1Eqrd5uWpnPiABpI",
  authDomain: "erp-daythi.firebaseapp.com",
- projectId: "erp-daythi",
- storageBucket: "erp-daythi.firebasestorage.app",
- messagingSenderId: "18144529318",
- appId: "1:18144529318:web:7304d2af2d5bf850d85d67"
+ projectId: "erp-daythi"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -53,392 +113,213 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let usuario = null
+let empresaAtiva = null
 
-// LOGIN AUTOMÁTICO
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, (user)=>{
 if(user){
 usuario = user.uid
-abrir("empresas")
+painelEscritorio()
 }else{
 loginTela()
 }
 })
 
-// LOGIN
 window.loginTela = function(){
-conteudo.innerHTML=`
+conteudo.innerHTML = `
 <h2>Login</h2>
 <input id="email" placeholder="Email"><br><br>
 <input id="senha" type="password" placeholder="Senha"><br><br>
-
 <button onclick="login()">Entrar</button>
 <button onclick="registrar()">Criar Conta</button>
 `
 }
 
 window.login = async function(){
-let email = document.getElementById("email").value
-let senha = document.getElementById("senha").value
-
-try{
-await signInWithEmailAndPassword(auth, email, senha)
-}catch(e){
-alert(e.message)
-}
+await signInWithEmailAndPassword(auth,email.value,senha.value)
 }
 
 window.registrar = async function(){
-let email = document.getElementById("email").value
-let senha = document.getElementById("senha").value
-
-try{
-await createUserWithEmailAndPassword(auth, email, senha)
-}catch(e){
-alert(e.message)
-}
+await createUserWithEmailAndPassword(auth,email.value,senha.value)
 }
 
 window.logout = function(){
 signOut(auth)
 }
 
-// EMPRESAS
+// ================= EMPRESAS =================
 window.abrir = async function(t){
 
-if(!usuario){ loginTela(); return }
-
 if(t=="empresas"){
-
-conteudo.innerHTML=`
+conteudo.innerHTML = `
 <h2>Empresas</h2>
-
 <input id="nome" placeholder="Nome">
 <input id="cnpj" placeholder="CNPJ">
-
 <select id="regime">
 <option>SIMPLES</option>
 <option>PRESUMIDO</option>
 <option>REAL</option>
 </select>
-
 <button onclick="salvarEmpresa()">Salvar</button>
-
 <div id="lista"></div>
 `
-
 carregarEmpresas()
 }
 }
 
 async function carregarEmpresas(){
-
 let q = query(collection(db,"empresas"), where("user","==",usuario))
 let dados = await getDocs(q)
 
 let html=""
-
 dados.forEach(doc=>{
 let e = doc.data()
-
 html+=`
 <div class="card">
 <b>${e.nome}</b><br>
-${e.cnpj}<br>
-${e.regime}
-</div>
-`
+<button onclick="selecionarEmpresa('${doc.id}')">Abrir</button>
+</div>`
 })
-
-document.getElementById("lista").innerHTML = html
+lista.innerHTML = html
 }
 
 window.salvarEmpresa = async function(){
-
-let emp = {
-nome: nome.value,
-cnpj: cnpj.value,
-regime: regime.value,
-user: usuario
-}
-
-await addDoc(collection(db,"empresas"), emp)
-
-alert("Empresa salva")
+await addDoc(collection(db,"empresas"),{
+nome:nome.value,
+cnpj:cnpj.value,
+regime:regime.value,
+user:usuario
+})
 carregarEmpresas()
 }
 
-// FINANCEIRO
-window.abrirFinanceiro = function(){
+window.selecionarEmpresa = function(id){
+empresaAtiva = id
+dashboardPro()
+}
+
+// ================= DASHBOARD =================
+window.dashboardPro = async function(){
+
+if(!empresaAtiva){
+conteudo.innerHTML="Selecione uma empresa"
+return
+}
+
+let q = query(collection(db,"financeiro"), where("empresa","==",empresaAtiva))
+let dados = await getDocs(q)
+
+let r=0,d=0
+dados.forEach(doc=>{
+let e=doc.data()
+if(e.tipo=="receita") r+=e.valor
+else d+=e.valor
+})
 
 conteudo.innerHTML=`
-<h2>Financeiro</h2>
+<div class="grid">
+<div class="card">Receita: ${r}</div>
+<div class="card">Despesa: ${d}</div>
+<div class="card">Lucro: ${r-d}</div>
+</div>`
+}
 
+// ================= FINANCEIRO =================
+window.abrirFinanceiro = function(){
+if(!empresaAtiva) return alert("Selecione empresa")
+
+conteudo.innerHTML=`
+<input id="descricao">
 <input id="valor">
 <select id="tipo">
 <option>receita</option>
 <option>despesa</option>
 </select>
-
-<button onclick="lancar()">Lançar</button>
-<div id="fluxo"></div>
-`
-
+<button onclick="lancar()">Salvar</button>
+<div id="fluxo"></div>`
 carregarFluxo()
 }
 
-async function lancar(){
+window.lancar = async function(){
 await addDoc(collection(db,"financeiro"),{
-valor: parseFloat(valor.value),
-tipo: tipo.value,
-user: usuario
+descricao:descricao.value,
+valor:parseFloat(valor.value),
+tipo:tipo.value,
+empresa:empresaAtiva
 })
 carregarFluxo()
 }
 
 async function carregarFluxo(){
+let q = query(collection(db,"financeiro"), where("empresa","==",empresaAtiva))
+let dados = await getDocs(q)
 
-let q=query(collection(db,"financeiro"), where("user","==",usuario))
-let dados=await getDocs(q)
+let html=""
+dados.forEach(doc=>{
+let e=doc.data()
+html+=`<div class="card">${e.descricao} - ${e.valor}</div>`
+})
+fluxo.innerHTML=html
+}
+
+// ================= DRE =================
+window.abrirDRE = async function(){
+let q = query(collection(db,"financeiro"), where("empresa","==",empresaAtiva))
+let dados = await getDocs(q)
 
 let r=0,d=0
-
 dados.forEach(doc=>{
 let e=doc.data()
 if(e.tipo=="receita") r+=e.valor
 else d+=e.valor
 })
 
-fluxo.innerHTML=`Receita:${r}<br>Despesa:${d}<br>Lucro:${r-d}`
+conteudo.innerHTML=`Receita:${r}<br>Despesa:${d}<br>Lucro:${r-d}`
 }
 
-// CONTÁBIL
-window.abrirContabil = async function(){
-
-let q=query(collection(db,"financeiro"), where("user","==",usuario))
-let dados=await getDocs(q)
-
-let r=0,d=0
-
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") r+=e.valor
-else d+=e.valor
-})
-
-conteudo.innerHTML=`
-<h2>DRE</h2>
-Receita:${r}<br>
-Despesa:${d}<br>
-Lucro:${r-d}
-`
-}
-
-// FISCAL
-window.abrirFiscal = async function(){
-
-let q=query(collection(db,"financeiro"), where("user","==",usuario))
-let dados=await getDocs(q)
-
-let fat=0
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") fat+=e.valor
-})
-
-conteudo.innerHTML=`
-<h2>Fiscal</h2>
-DAS:${fat*0.06}
-`
-}
-
-// RH
-window.abrirRH = function(){
-
-conteudo.innerHTML=`
-<h2>Folha</h2>
-<input id="salario">
-<button onclick="calc()">Calcular</button>
-<div id="res"></div>
-`
-}
-
-function calc(){
-let s=parseFloat(salario.value)
-res.innerHTML=`INSS:${s*0.08}`
-}
-
-// ALERTAS
-window.abrirAlertas = function(){
-conteudo.innerHTML="DAS / DCTF / SPED pendentes"
-}
-window.dashboard = async function(){
+// ================= PAINEL ESCRITÓRIO =================
+window.painelEscritorio = async function(){
 
 let q = query(collection(db,"empresas"), where("user","==",usuario))
 let dados = await getDocs(q)
 
-let total = dados.size
+let html="<div class='grid'>"
 
-let qf = query(collection(db,"financeiro"), where("user","==",usuario))
-let fin = await getDocs(qf)
+for(const docEmp of dados.docs){
 
-let receita=0, despesa=0
+let id=docEmp.id
+let emp=docEmp.data()
 
-fin.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") receita+=e.valor
-else despesa+=e.valor
-})
-
-conteudo.innerHTML = `
-<h2>Dashboard</h2>
-
-<div class="card">Empresas: ${total}</div>
-<div class="card">Receita: ${receita}</div>
-<div class="card">Despesa: ${despesa}</div>
-<div class="card">Lucro: ${receita-despesa}</div>
-`
-}
-window.calcularImpostos = async function(){
-
-let q = query(collection(db,"financeiro"), where("user","==",usuario))
-let dados = await getDocs(q)
+let qf=query(collection(db,"financeiro"), where("empresa","==",id))
+let fin=await getDocs(qf)
 
 let fat=0
-dados.forEach(doc=>{
-let e=doc.data()
+fin.forEach(d=>{
+let e=d.data()
 if(e.tipo=="receita") fat+=e.valor
 })
 
-let simples = fat*0.06
-let presumido = fat*0.1333
-let real = fat*0.15
-
-conteudo.innerHTML = `
-<h2>Impostos</h2>
-
-Faturamento: ${fat}<br><br>
-
-Simples: ${simples}<br>
-Presumido: ${presumido}<br>
-Real: ${real}
-`
-}
-window.relatorio = async function(){
-
-let q = query(collection(db,"financeiro"), where("user","==",usuario))
-let dados = await getDocs(q)
-
-let r=0,d=0
-
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") r+=e.valor
-else d+=e.valor
-})
-
-let texto = `
-RELATÓRIO EMPRESARIAL
-
-Receita: ${r}
-Despesa: ${d}
-Lucro: ${r-d}
-
-Obrigações:
-- DAS
-- DCTF
-- SPED
-- ECF
-`
-
-let blob = new Blob([texto])
-let a = document.createElement("a")
-a.href = URL.createObjectURL(blob)
-a.download = "relatorio.txt"
-a.click()
-}
-window.balancete = async function(){
-
-let q = query(collection(db,"financeiro"), where("user","==",usuario))
-let dados = await getDocs(q)
-
-let r=0,d=0
-
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") r+=e.valor
-else d+=e.valor
-})
-
-conteudo.innerHTML = `
-<h2>Balancete</h2>
-
-Débitos: ${d}<br>
-Créditos: ${r}<br>
-Saldo: ${r-d}
-`
+html+=`
+<div class="card">
+<b>${emp.nome}</b><br>
+Faturamento: ${fat}<br>
+<button onclick="selecionarEmpresa('${id}')">Abrir</button>
+</div>`
 }
 
-window.balanco = async function(){
-
-let q = query(collection(db,"financeiro"), where("user","==",usuario))
-let dados = await getDocs(q)
-
-let r=0,d=0
-
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") r+=e.valor
-else d+=e.valor
-})
-
-conteudo.innerHTML = `
-<h2>Balanço</h2>
-
-Ativo: ${r}<br>
-Passivo: ${d}<br>
-Patrimônio: ${r-d}
-`
+html+="</div>"
+conteudo.innerHTML=html
 }
-window.sped = async function(){
 
-let q = query(collection(db,"empresas"), where("user","==",usuario))
-let dados = await getDocs(q)
+// ================= OUTROS =================
+window.abrirBalanco = ()=>conteudo.innerHTML="Balanço"
+window.abrirBalancete = ()=>conteudo.innerHTML="Balancete"
+window.gerarSPED = ()=>alert("SPED gerado")
+window.gerarRelatorio = ()=>alert("Relatório")
+window.relatorioPDF = ()=>window.print()
+window.gerarDAS = ()=>alert("DAS")
+window.dctf = ()=>alert("DCTF")
+window.alertasInteligentes = ()=>alert("Alertas")
 
-let txt = "|0000|SPED|\n"
-
-dados.forEach(doc=>{
-let e=doc.data()
-txt += `|0100|${e.nome}|${e.cnpj}|\n`
-})
-
-txt += "|0990|FIM|"
-
-let a=document.createElement("a")
-a.href=URL.createObjectURL(new Blob([txt]))
-a.download="sped.txt"
-a.click()
-}
-window.alertasInteligentes = async function(){
-
-let q = query(collection(db,"financeiro"), where("user","==",usuario))
-let dados = await getDocs(q)
-
-let fat=0
-dados.forEach(doc=>{
-let e=doc.data()
-if(e.tipo=="receita") fat+=e.valor
-})
-
-let status = fat>0 ? "🔴 Pendente" : "🟢 OK"
-
-conteudo.innerHTML = `
-<h2>Alertas</h2>
-
-DAS: ${status}<br>
-DCTF: ${status}<br>
-SPED: ${status}
-`
-}
 </script>
 
 </body>

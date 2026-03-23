@@ -328,6 +328,90 @@ window.dctf = ()=>alert("DCTF")
  // ================= IMPOSTO REAL (BACKEND) =================
 window.calcularImposto = async function(){
 
+if(!empresaAtiva){
+return alert("Selecione empresa")
+}
+
+// BUSCA EMPRESA
+let docEmp = await getDocs(query(collection(db,"empresas")))
+let empresa = null
+
+docEmp.forEach(doc=>{
+if(doc.id == empresaAtiva){
+empresa = doc.data()
+}
+})
+
+// BUSCA FINANCEIRO (RECEITAS)
+let q = query(collection(db,"financeiro"), where("empresa","==",empresaAtiva))
+let dados = await getDocs(q)
+
+let faturamento = 0
+
+dados.forEach(doc=>{
+let e = doc.data()
+if(e.tipo == "receita"){
+faturamento += e.valor
+}
+})
+
+// ================= CALCULO POR REGIME =================
+
+let resultado = {}
+
+if(empresa.regime == "SIMPLES"){
+
+resultado = {
+tipo: "Simples Nacional",
+imposto: faturamento * 0.06
+}
+
+}else if(empresa.regime == "PRESUMIDO"){
+
+resultado = {
+tipo: "Lucro Presumido",
+irpj: faturamento * 0.048,
+csll: faturamento * 0.0288
+}
+
+}else if(empresa.regime == "REAL"){
+
+resultado = {
+tipo: "Lucro Real",
+irpj: faturamento * 0.15,
+csll: faturamento * 0.09
+}
+
+}
+
+// ================= EXIBIÇÃO PROFISSIONAL =================
+
+conteudo.innerHTML = `
+<div class="header">
+<h2>Apuração Fiscal</h2>
+Empresa: ${empresa.nome}<br>
+Regime: ${resultado.tipo}<br>
+Faturamento: R$ ${faturamento.toFixed(2)}
+</div>
+
+<div class="grid">
+
+${resultado.imposto ? `
+<div class="card">DAS: R$ ${resultado.imposto.toFixed(2)}</div>
+` : ""}
+
+${resultado.irpj ? `
+<div class="card">IRPJ: R$ ${resultado.irpj.toFixed(2)}</div>
+` : ""}
+
+${resultado.csll ? `
+<div class="card">CSLL: R$ ${resultado.csll.toFixed(2)}</div>
+` : ""}
+
+</div>
+`
+}
+
 let resposta = await fetch("http://localhost:3000/impostos",{
 method:"POST",
 headers:{

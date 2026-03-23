@@ -90,6 +90,13 @@ box-shadow:0 2px 6px rgba(0,0,0,0.1);
 <button onclick="relatorioPDF()">PDF</button>
 
 <button onclick="alertasInteligentes()">Alertas</button>
+<button onclick="abrir('dashboard')">Dashboard</button>
+<button onclick="abrir('empresas')">Empresas</button>
+<button onclick="abrirFinanceiro()">Financeiro</button>
+<button onclick="abrirDRE()">DRE</button>
+<button onclick="abrirAlertas()">Alertas</button>
+
+<button onclick="calcularImposto()">Imposto REAL</button> <!-- AQUI -->
 
 <button onclick="logout()">Sair</button>
 </div>
@@ -318,6 +325,27 @@ window.gerarRelatorio = ()=>alert("Relatório")
 window.relatorioPDF = ()=>window.print()
 window.gerarDAS = ()=>alert("DAS")
 window.dctf = ()=>alert("DCTF")
+ // ================= IMPOSTO REAL (BACKEND) =================
+window.calcularImposto = async function(){
+
+let resposta = await fetch("http://localhost:3000/impostos",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+faturamento: 10000
+})
+})
+
+let dados = await resposta.json()
+
+alert(`
+DAS: ${dados.das}
+IRPJ: ${dados.irpj}
+CSLL: ${dados.csll}
+`)
+}
 window.alertasInteligentes = ()=>alert("Alertas")
 
 </script>
